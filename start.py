@@ -7,5 +7,5 @@ def hello(param):                      # call method hello
     return "Hello " + param         # which returns "hello world"
 
 
-if __name__ == "__main__":        # on running python app.py
-    app.run(debug=True)                     # run the flask app
+# if __name__ == "__main__":        # on running python app.py
+#    app.run(debug=True)                     # run the flask app
