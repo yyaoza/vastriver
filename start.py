@@ -3,7 +3,7 @@ app = Flask(__name__)             # create an app instance
 
 
 @app.route("/<param>")                   # at the end point /
-def hello(param):                      # call method hello
+def letsgo(param):                      # call method hello
     return "Hello " + param         # which returns "hello world"
 
 
