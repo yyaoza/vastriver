@@ -7,17 +7,25 @@ app = Flask(__name__)             # create an app instance
 # def lets_go(param):                      # call method hello
 #     return "Hello " + param         # which returns "hello world"
 
+posts = [
+    {
+        'name': 'Walt Yao',
+        'amount': '5 million',
+        'lastmod': 'March 26, 2021'
+    }
+]
+
 
 @app.route("/")                   # at the end point /
 def begin():                      # call method hello
     form = ftForm.MoneyForm()
-    return render_template('home.html')
+    return render_template('control.html', posts=posts)
 
 
 @app.route("/fundtransfer")  # at the end point /
 def fundtransfer():  # call method hello
     form = ftForm.MoneyForm()
-    return "<h1>Fund Transfer</h1>"
+    return render_template('fundtransfer.html', title="Fund Transfer", posts=posts)
 
 
 @app.route("/onewallet")  # at the end point /
