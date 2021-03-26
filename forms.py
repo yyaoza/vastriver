@@ -4,20 +4,20 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
 class RegistrationForm:
-    username = StringField('Amount',
-                           validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
+    # username = StringField('Amount',
+    #                        validators=[DataRequired(), Length(min=2, max=20)])
+    # email = StringField('Email',
+    #                     validators=[DataRequired(), Email()])
+    # password = PasswordField('Password', validators=[DataRequired()])
+    # confirm_password = PasswordField('Confirm Password',
+    #                                  validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
 
 
 class FundTransferForm:
-    email = StringField('E-mail',
-                         validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    # email = StringField('E-mail',
+    #                     validators=[DataRequired(), Email()])
+    # password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     amount = StringField('Amount')
     add = SubmitField('+')
