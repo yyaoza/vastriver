@@ -25,7 +25,7 @@ def begin():                      # call method hello
 @app.route("/fundtransfer")  # at the end point /
 def fundtransfer():  # call method hello
     form = ftForm.MoneyForm()
-    return render_template('fundtransfer.html', title="Fund Transfer", posts=posts)
+    return render_template('fundTransfer.html', title="Fund Transfer", posts=posts)
 
 
 @app.route("/onewallet")  # at the end point /

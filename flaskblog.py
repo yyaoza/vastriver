@@ -81,7 +81,7 @@ def home():
 def ow():
     form = RegistrationForm()
     if form.validate_on_submit():
-        flash(f'Account created for {form.username.data}!', 'success')
+        flash('Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
     return render_template('oneWallet.html', title='One Wallet', form=form)
 
