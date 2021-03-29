@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect
 
 from forms import FundTransferForm
-import requests
+import requests, xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shhh its a secret'
@@ -37,23 +37,29 @@ user = [
 @app.route("/")
 def start():
 
-    url = 'http://www.waltyao.com'
-    myobj = {'somekey': 'somevalue'}
+    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
+    payload = {'cCode': 'GUI',
+             'euID': 'c1c2c3c4',
+             'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
+             'output': '1'
+             }
 
-    x = requests.post(url)
+    x = requests.get(url, params=payload)
 
-    # print the response text (the content of the requested file):
-
-    print(x.text)
+    root = ET.fromstring(x.text)
 
     userdata = {
-            'balance': x.text,
-            'etransid': '2',
-            'transid': '3',
-            'datetime': 'em4pty',
-            'euid': '5',
-            'uid': '6'
-            }
+        'emailaddress': root[0].text,
+        'screenname': root[3].text,
+        'countrycode': root[4].text,
+        'name': root[1].text + ' ' + root[2].text,
+        'balance': 'xxx',
+        'etransid': 'xxx',
+        'transid': 'xxx',
+        'datetime': 'empty',
+        'euid': root[6].text,
+        'uid':  root[5].text,
+        }
 
     return render_template('layout.html', userdata=userdata)
 
