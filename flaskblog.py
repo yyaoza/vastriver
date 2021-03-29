@@ -1,9 +1,11 @@
 from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, FundTransferForm
+
+from forms import FundTransferForm
 import requests
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SECRET_KEY'] = 'shhh its a secret'
+# '5791628bb0b13ce0c676dfde280ba245'
 
 posts = [
     {
@@ -87,7 +89,7 @@ def ow():
             'euid': '5',
             'uid': '6'
             }
-    form = RegistrationForm()
+    form = FundTransferForm()
     if form.validate_on_submit():
         flash('Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
@@ -106,13 +108,9 @@ def ft():
             'uid': '6'
             }
     form = FundTransferForm()
-    # form.amount.data = "x.text"
-    # if form.validate_on_submit():
-    #     if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-    #         flash('You have been logged in!', 'success')
-    #         return redirect(url_for('home'))
-    #     else:
-    #         flash('Login Unsuccessful. Please check username and password', 'danger')
+    # if form.add:
+    #     flash('Account created for {form.username.data}!', 'success')
+    #     return redirect(url_for('home'))
     return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
 
 
