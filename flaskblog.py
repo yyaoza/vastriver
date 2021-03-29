@@ -59,7 +59,6 @@ def start():
 @app.route("/home")
 def home():
 
-
     userdata = {
             'balance': '1',
             'etransid': '2',
@@ -79,15 +78,33 @@ def home():
 
 @app.route("/ow", methods=['GET', 'POST'])
 def ow():
+
+    userdata = {
+            'balance': '1',
+            'etransid': '2',
+            'transid': '3',
+            'datetime': 'em4pty',
+            'euid': '5',
+            'uid': '6'
+            }
     form = RegistrationForm()
     if form.validate_on_submit():
         flash('Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
-    return render_template('oneWallet.html', title='One Wallet', form=form)
+    return render_template('oneWallet.html', title='One Wallet', form=form, userdata=userdata)
 
 
 @app.route("/ft", methods=['GET', 'POST'])
 def ft():
+
+    userdata = {
+            'balance': '1',
+            'etransid': '2',
+            'transid': '3',
+            'datetime': 'em4pty',
+            'euid': '5',
+            'uid': '6'
+            }
     form = FundTransferForm()
     # form.amount.data = "x.text"
     # if form.validate_on_submit():
@@ -96,7 +113,7 @@ def ft():
     #         return redirect(url_for('home'))
     #     else:
     #         flash('Login Unsuccessful. Please check username and password', 'danger')
-    return render_template('fundTransfer.html', title='Fund Transfer', form=form)
+    return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
 
 
 if __name__ == '__main__':
