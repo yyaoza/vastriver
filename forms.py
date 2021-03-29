@@ -18,5 +18,5 @@ class FundTransferForm(FlaskForm):
     password = PasswordField('Password')
     remember = BooleanField('Remember Me')
     amount = StringField('Amount')
-    add = SubmitField('+')
+    add = SubmitField('+', render_kw={"onclick": "add_amount()"})
     subtract = SubmitField('-')

@@ -1,3 +1,17 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+          $('a#add').on('click', function(e) {
+            e.preventDefault()
+            $.getJSON('/ft-add',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+</script>
+
 {% extends "layout.html" %}
 {% block content %}
     <div class="content-section">
@@ -13,6 +27,11 @@
                     {{ form.amount.label(class="form-control-label") }}
                 </div>
                 <div class="form-group">
+                    <form action="/ft-add">
+                    <button class='btn btn-outline-info' type="submit">+</button>
+                        </form>
+                    <a href=# id=minus><button class='btn btn-outline-info'>-</button></a>
+
                     {{ form.add(class="btn btn-outline-info") }}
                     {{ form.subtract(class="btn btn-outline-info") }}
                 </div>

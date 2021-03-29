@@ -78,3 +78,7 @@ a.article-title:hover {
 .account-heading {
   font-size: 1.25rem;
 }
+
+.account-heading-small {
+  font-size: 0.5rem;
+}
