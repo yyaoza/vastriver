@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-# from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import InputRequired, Regexp
 
 
 class RegistrationForm:
@@ -17,6 +17,6 @@ class FundTransferForm(FlaskForm):
     email = StringField('E-mail')
     password = PasswordField('Password')
     remember = BooleanField('Remember Me')
-    amount = StringField('Amount')
-    add = SubmitField('+', render_kw={"onclick": "add_amount()"})
+    amount = StringField('Amount', validators=[InputRequired()])
+    add = SubmitField('+')
     subtract = SubmitField('-')

@@ -41,6 +41,7 @@
               {% for category, message in messages %}
                 <div class="alert alert-{{ category }}">
                   {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
               {% endfor %}
             {% endif %}
@@ -101,20 +102,20 @@
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
                       <div class="account-heading">etransid</div>
-                      Cras justo odio
+                        {{ userdata.etransid }}
                     </div>
                 <!--    <span class="badge bg-primary rounded-pill">14</span>-->
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
                       <div class="account-heading">transid</div>
-                      Cras justo odio
+                        {{ userdata.transid }}
                     </div>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
                       <div class="account-heading">datetime</div>
-                      Cras justo odio
+                        {{ userdata.datetime }}
                     </div>
                   </li>
                 </ol>

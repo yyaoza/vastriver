@@ -1,5 +1,4 @@
 from flask import Flask, render_template, url_for, flash, redirect
-
 from forms import FundTransferForm
 import requests, xml.etree.ElementTree as ET
 
@@ -21,7 +20,7 @@ userdata = {
 }
 
 
-@app.route("/")
+@app.route('/')
 def start():
 
     url = 'https://diyft.uat1.evo-test.com/api/ecashier'
@@ -59,22 +58,44 @@ def start():
     return render_template('layout.html', userdata=userdata)
 
 
-@app.route("/ft", methods=['GET', 'POST'])
+@app.route('/ft', methods=['GET', 'POST'])
 def ft():
 
     form = FundTransferForm()
-    # if form.add.validate:
-    #     flash('Account created for !', 'success')
+    if form.validate_on_submit():
+        if form.subtract.data:
+            flash(form.amount.data + ' funds subtracted', 'warning')
+        elif form.add.data:
+            flash(form.amount.data + ' funds added', 'success')
+            ft_add(form.amount.data)
+        else:
+            flash('Error:' + form.amount.errors, 'error')
         # return redirect(url_for('home'))
     return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
 
-@app.route("/ft-add", methods=['GET', 'POST'])
-def ft_add():
-    flash('Account created for !', 'success')
-    return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
+
+def ft_add(amount):
+    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
+    payload = {'cCode': 'ECR',
+               'euID': 'c1c2c3c4',
+               'amount': amount,
+               'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
+               'eTransID': 'fake_eTransID',
+               'output': '1'
+               }
+    x = requests.get(url, params=payload)
+    edb = ET.fromstring(x.text)
+    userdata = {
+        'balance': edb[0].text,
+        'etransid': edb[1].text,
+        'transid': edb[2].text,
+        'datetime': edb[3].text
+    }
+
+    return render_template('layout.html', userdata=userdata)
 
 
-@app.route("/ow", methods=['GET', 'POST'])
+@app.route('/ow', methods=['GET', 'POST'])
 def ow():
 
     userdata = {
