@@ -4,8 +4,6 @@ import requests, xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shhh its a secret'
-# '5791628bb0b13ce0c676dfde280ba245'
-
 
 userdata = {
     'emailaddress': 'x',
@@ -20,28 +18,39 @@ userdata = {
     'uid': 'x',
 }
 
+payload = {
+    'cCode': 'xxx',
+    'amount': '0',
+    'euID': 'yaoza',
+    'ecID': 'diyft40000000001test123',
+    'eTransID': 'fake_eTransID',
+    'output': '1'
+}
+url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
+ecID = 'diyft40000000001test123'
+
+ow_url = 'http://10.10.88.42:9092/onewallet'
+
+# 'diyft40000000001pb6tgmiz2bcaaaac'
+
+def casinoCmd(cmd, amount=0):
+    if cmd=='GUI':
+       payload.update({'cCode': cmd})
+
+    else:
+        payload.update({'cCode': cmd,
+                        'amount': amount,
+                        })
+
+    x = requests.get(url, params=payload)
+    return ET.fromstring(x.text)
 
 @app.route('/')
 def start():
 
-    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
-    payload = {'cCode': 'GUI',
-             'euID': 'c1c2c3c4',
-             'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
-             'output': '1'
-             }
-    x = requests.get(url, params=payload)
-    gui = ET.fromstring(x.text)
+    gui = casinoCmd('GUI')
 
-    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
-    payload = {'cCode': 'RWA',
-             'euID': 'c1c2c3c4',
-             'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
-             'output': '1'
-             }
-    x = requests.get(url, params=payload)
-    rwa = ET.fromstring(x.text)
-
+    rwa = casinoCmd('RWA')
 
     userdata.update({
         'emailaddress': gui[0].text,
@@ -52,7 +61,6 @@ def start():
         'euid': gui[6].text,
         'uid':  gui[5].text,
         })
-
 
     return render_template('userinfo.html', userdata=userdata)
 
@@ -73,18 +81,9 @@ def ft():
 
     return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
 
-
 def ft_add(amount):
-    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
-    payload = {'cCode': 'ECR',
-               'euID': 'c1c2c3c4',
-               'amount': amount,
-               'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
-               'eTransID': 'fake_eTransID',
-               'output': '1'
-               }
-    x = requests.get(url, params=payload)
-    ecr = ET.fromstring(x.text)
+
+    ecr = casinoCmd('ECR', amount)
 
     userdata.update({
         'balance': ecr[0].text,
@@ -98,16 +97,8 @@ def ft_add(amount):
 
 
 def ft_subtract(amount):
-    url = 'https://diyft.uat1.evo-test.com/api/ecashier'
-    payload = {'cCode': 'EDB',
-               'euID': 'c1c2c3c4',
-               'amount': amount,
-               'ecID': 'diyft00000000001lwwnvexgmzfaaaac',
-               'eTransID': 'fake_eTransID',
-               'output': '1'
-               }
-    x = requests.get(url, params=payload)
-    edb = ET.fromstring(x.text)
+
+    edb = casinoCmd('EDB', amount)
 
     userdata.update({
         'balance': edb[0].text,
