@@ -36,85 +36,47 @@
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-4">
+        {% block content %}{% endblock %}
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
                 <div class="alert alert-{{ category }}">
-                  {{ message }}
+                    {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
                 </div>
               {% endfor %}
             {% endif %}
           {% endwith %}
-          {% block content %}{% endblock %}
         </div>
         <div class="col-md-8">
           <div class="content-section">
             <h3>User Information</h3>
-                <ol class="list-group list-group-numbered">
-                  <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">Name</div>
-                        {{ userdata.name }}
-                    </div>
-                  </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">E-mail</div>
-                        {{ userdata.emailaddress }}
-                    </div>
-                  </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">Screen Name</div>
-                        {{ userdata.screenname }}
-                    </div>
-                  </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">Country Code</div>
-                        {{ userdata.countrycode }}
-                    </div>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">euid</div>
-                      {{ userdata.euid }}
-                    </div>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">uid</div>
-                      {{ userdata.uid }}
-                    </div>
-                  </li>
-                    <span class="badge bg-primary rounded-pill"> </span>
-                </ol>
+                {% block userinfo %}{% endblock %}
 <!--            <p class='text-muted'>You can put any information here you'd like.-->
                  <ol class="list-group list-group-numbered">
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
-                      <div class="account-heading">Balance</div>
+                      <div class="account-heading-small">Balance</div>
                         {{ userdata.balance }}
                     </div>
                 <!--    <span class="badge bg-primary rounded-pill">14</span>-->
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
-                      <div class="account-heading">etransid</div>
+                      <div class="account-heading-small">etransid</div>
                         {{ userdata.etransid }}
                     </div>
                 <!--    <span class="badge bg-primary rounded-pill">14</span>-->
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
-                      <div class="account-heading">transid</div>
+                      <div class="account-heading-small">transid</div>
                         {{ userdata.transid }}
                     </div>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
-                      <div class="account-heading">datetime</div>
+                      <div class="account-heading-small">datetime</div>
                         {{ userdata.datetime }}
                     </div>
                   </li>

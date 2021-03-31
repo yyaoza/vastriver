@@ -82,3 +82,7 @@ a.article-title:hover {
 .account-heading-small {
   font-size: 0.5rem;
 }
+
+.list-group-item {
+  padding: .5rem 1.25rem;
+}
