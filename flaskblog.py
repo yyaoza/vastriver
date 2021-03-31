@@ -20,7 +20,6 @@ userdata = {
 
 payload = {
     'cCode': 'xxx',
-    'amount': '0',
     'euID': 'yaoza',
     'ecID': 'diyft40000000001test123',
     'eTransID': 'fake_eTransID',
@@ -35,7 +34,8 @@ ow_url = 'http://10.10.88.42:9092/onewallet'
 
 def casinoCmd(cmd, amount=0):
     if cmd=='GUI':
-       payload.update({'cCode': cmd})
+        payload.update({'cCode': cmd})
+        print(payload)
 
     else:
         payload.update({'cCode': cmd,
