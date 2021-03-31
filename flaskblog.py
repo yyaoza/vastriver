@@ -49,7 +49,6 @@ def casinoCmd(cmd, amount=0):
 def start():
 
     gui = casinoCmd('GUI')
-
     rwa = casinoCmd('RWA')
 
     userdata.update({
