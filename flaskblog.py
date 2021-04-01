@@ -35,7 +35,6 @@ ow_url = 'http://10.10.88.42:9092/onewallet'
 def casinoCmd(cmd, amount=0):
     if cmd=='GUI':
         payload.update({'cCode': cmd})
-        print(payload)
 
     else:
         payload.update({'cCode': cmd,
