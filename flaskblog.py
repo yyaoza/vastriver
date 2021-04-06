@@ -101,7 +101,20 @@ def start():
     return render_template('userinfo.html', userdata=userdata)
 
 
-@app.route('/ua', methods=['GET', 'POST'])
+@app.route('/preLaunch', methods=['GET', 'POST'])
+def preLaunch():
+
+    form = UserAuthenticationForm()
+
+    # print(form.language)
+
+    if form.validate_on_submit():
+        if form.update.data:
+            form.get_country()
+
+    return render_template('userAuthentication.html', title='Fund Transfer', form=form, userdata=userdata)
+
+
 def ua():
 
     # form = UserAuthenticationForm()
