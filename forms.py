@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import InputRequired, Regexp
+from wtforms.validators import InputRequired
 
 
 class RegistrationForm:
@@ -20,3 +20,9 @@ class FundTransferForm(FlaskForm):
     amount = StringField('Amount', validators=[InputRequired()])
     add = SubmitField('+')
     subtract = SubmitField('-')
+
+
+class UserAuthenticationForm(FlaskForm):
+    key = 'diyft40000000001'
+    token = 'test123'
+    hostname = 'diyft4.uat1.evo-test.com'

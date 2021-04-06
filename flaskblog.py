@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import FundTransferForm
-import requests, xml.etree.ElementTree as ET
+from flask import Flask, request, render_template, url_for, flash, redirect
+from forms import FundTransferForm, UserAuthenticationForm
+import requests, webbrowser, xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shhh its a secret'
@@ -30,7 +30,44 @@ ecID = 'diyft40000000001test123'
 
 ow_url = 'http://10.10.88.42:9092/onewallet'
 
-# 'diyft40000000001pb6tgmiz2bcaaaac'
+UApayload = {
+    'uuid': 'random', # assigned
+    'player': {
+        'id': 'yaoza', # assigned by licensee
+        'update': False,
+        'firstName': 'firstName', # assigned
+        'lastName': 'lastName', # assigned
+        'nickname': 'nickname', # assigned
+        'country': 'DE', # assigned
+        'language': 'fr', # assigned
+        'currency': 'CNY', # assigned
+        'session': {
+          'id': '111ssss3333rrrrr45555', # assigned by licensee
+          'ip': '192.168.0.1' # assigned
+        }
+    },
+    'config': {
+    'brand': {
+      'skin': '1'
+    },
+    'game': {
+      'category': 'roulette',
+      'interface': 'view1'
+
+    },
+    'channel': {
+      'wrapped': False,
+      'mobile': False
+    },
+    'urls': {
+      'cashier': 'http://www.chs.ee', # assigned by licensee
+      'responsibleGaming': 'http://www.RGam.ee', # assigned by licensee
+      'lobby': 'http://www.lobb.ee', # assigned by licensee
+      'sessionTimeout': 'http://www.sesstm.ee' # assigned by licensee
+    },
+    'freeGames': False
+  }
+}
 
 def casinoCmd(cmd, amount=0):
     if cmd=='GUI':
@@ -50,6 +87,7 @@ def start():
     gui = casinoCmd('GUI')
     rwa = casinoCmd('RWA')
 
+    global userdata
     userdata.update({
         'emailaddress': gui[0].text,
         'screenname': gui[3].text,
@@ -62,6 +100,42 @@ def start():
 
     return render_template('userinfo.html', userdata=userdata)
 
+
+@app.route('/ua', methods=['GET', 'POST'])
+def ua():
+
+    # form = UserAuthenticationForm()
+
+    # print('$$$' + request.host_url)
+
+    UApayload.update({
+    'config': {
+    'brand': {
+      'skin': '1'
+    },
+    'game': {
+      'category': 'roulette',
+      'interface': 'view1'
+
+    },
+    'channel': {
+      'wrapped': False,
+      'mobile': False
+    },
+    'urls': {
+      'cashier': request.host_url, # assigned by licensee
+      'responsibleGaming': 'http://www.RGam.ee', # assigned by licensee
+      'lobby': 'http://www.lobb.ee', # assigned by licensee
+      'sessionTimeout': 'http://www.sesstm.ee' # assigned by licensee
+    },
+    'freeGames': False
+    }})
+
+    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UApayload)
+    webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
+
+    print(userdata)
+    return render_template('userinfo.html', userdata=userdata)
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
