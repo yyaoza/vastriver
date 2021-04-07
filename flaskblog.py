@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, flash, redirect
+from flask import Flask, request, Markup, render_template, url_for, flash, redirect
 from forms import FundTransferForm, UserAuthenticationForm
 import requests, webbrowser, xml.etree.ElementTree as ET
 
@@ -9,7 +9,8 @@ userdata = {
     'emailaddress': 'x',
     'screenname': 'x',
     'countrycode': 'x',
-    'name': 'x',
+    'firstName': 'x',
+    'lastName': 'x',
     'balance': '0.0',
     'etransid': '###',
     'transid': '###',
@@ -47,25 +48,25 @@ UApayload = {
         }
     },
     'config': {
-    'brand': {
-      'skin': '1'
-    },
-    'game': {
-      'category': 'roulette',
-      'interface': 'view1'
+        'brand': {
+          'skin': '1'
+        },
+        'game': {
+          'category': 'roulette',
+          'interface': 'view1'
 
-    },
-    'channel': {
-      'wrapped': False,
-      'mobile': False
-    },
-    'urls': {
-      'cashier': 'http://www.chs.ee', # assigned by licensee
-      'responsibleGaming': 'http://www.RGam.ee', # assigned by licensee
-      'lobby': 'http://www.lobb.ee', # assigned by licensee
-      'sessionTimeout': 'http://www.sesstm.ee' # assigned by licensee
-    },
-    'freeGames': False
+        },
+        'channel': {
+          'wrapped': False,
+          'mobile': False
+        },
+        'urls': {
+          'cashier': 'http://www.chs.ee', # assigned by licensee
+          'responsibleGaming': 'http://www.RGam.ee', # assigned by licensee
+          'lobby': 'http://www.lobb.ee', # assigned by licensee
+          'sessionTimeout': 'http://www.sesstm.ee' # assigned by licensee
+        },
+        'freeGames': False
   }
 }
 
@@ -85,15 +86,16 @@ def casinoCmd(cmd, amount=0):
 def start():
 
     gui = casinoCmd('GUI')
-    rwa = casinoCmd('RWA')
+    # rwa = casinoCmd('RWA')
 
-    global userdata
+    # global userdata
     userdata.update({
         'emailaddress': gui[0].text,
         'screenname': gui[3].text,
         'countrycode': gui[4].text,
-        'name': gui[1].text + ' ' + gui[2].text,
-        'balance': rwa[3].text,
+        'firstName': gui[1].text,
+        'lastName': gui[2].text,
+        # 'balance': rwa[3].text,
         'euid': gui[6].text,
         'uid':  gui[5].text,
         })
@@ -106,20 +108,32 @@ def preLaunch():
 
     form = UserAuthenticationForm()
 
-    # print(form.language)
+    # form.firstName.data = userdata['firstName']
+    # form.lastName.data = userdata['lastName']
+    # form.nickName.data = userdata['screenname']
+    # form.country.data = userdata['countrycode']
 
     if form.validate_on_submit():
         if form.update.data:
-            form.get_country()
+            print(form.firstName.data)
+            UApayload['player']['firstName'] = form.firstName.data
+            UApayload['player']['lastName'] = form.lastName.data
+            UApayload['player']['nickName'] = form.nickName.data
+            UApayload['player']['country'] = form.country.data
+            UApayload['player']['language'] = form.language.data
+            UApayload['player']['update'] = True
+            UApayload['config']['urls']['cashier'] = request.host_url
+            UApayload['config']['game']['category'] = form.game.data
 
-    return render_template('userAuthentication.html', title='Fund Transfer', form=form, userdata=userdata)
+            x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UApayload)
+            print(UApayload)
+            # webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
+            flash(Markup('Game link: <a href=\"https://diyft4.uat1.evo-test.com' + x.json()['entry'] + "\" class=\"alert-link\">Click here</a>"), 'success')
+
+    return render_template('userAuthentication.html', form=form, userdata=userdata)
 
 
 def ua():
-
-    # form = UserAuthenticationForm()
-
-    # print('$$$' + request.host_url)
 
     UApayload.update({
     'config': {
@@ -154,6 +168,9 @@ def ua():
 def ft():
 
     form = FundTransferForm()
+    rwa = casinoCmd('RWA')
+    userdata['balance'] = rwa[3].text
+
     if form.validate_on_submit():
         if form.subtract.data:
             flash(form.amount.data + ' funds subtracted', 'warning')
@@ -164,10 +181,11 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', title='Fund Transfer', form=form, userdata=userdata)
+    return render_template('fundTransfer.html', form=form, userdata=userdata)
 
 def ft_add(amount):
 
+    form = FundTransferForm()
     ecr = casinoCmd('ECR', amount)
 
     userdata.update({
@@ -178,11 +196,12 @@ def ft_add(amount):
     })
     print(userdata)
 
-    return render_template('userinfo.html', userdata=userdata)
+    return render_template('fundTransfer.html', form=form, userdata=userdata)
 
 
 def ft_subtract(amount):
 
+    form = FundTransferForm()
     edb = casinoCmd('EDB', amount)
 
     userdata.update({
@@ -192,7 +211,7 @@ def ft_subtract(amount):
         'datetime': edb[3].text
     })
 
-    return render_template('userinfo.html', userdata=userdata)
+    return render_template('fundTransfer.html', form=form, userdata=userdata)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
@@ -210,7 +229,7 @@ def ow():
     if form.validate_on_submit():
         flash('Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
-    return render_template('oneWallet.html', title='One Wallet', form=form, userdata=userdata)
+    return render_template('oneWallet.html', form=form, userdata=userdata)
 
 
 if __name__ == '__main__':

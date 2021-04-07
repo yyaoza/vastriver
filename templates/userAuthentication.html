@@ -6,16 +6,28 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Edit User Info</legend>
                 <div class="form-group">
-                    {{ form.firstName.label(class="form-control-label") }}
-                    {{ form.firstName(class="form-control form-control-lg") }}
+                    {{ form.firstName.label(class="account-heading-small") }}
+                    {{ form.firstName(class="form-control form-control-sm") }}
                 </div>
                 <div class="form-group">
-                    {{ form.country.label(class="form-control-label") }}<br>
-                    {{ form.country(class="form-control form-control-lg") }}
+                    {{ form.lastName.label(class="account-heading-small") }}
+                    {{ form.lastName(class="form-control form-control-sm") }}
                 </div>
                 <div class="form-group">
-                    {{ form.language.label(class="form-control-label") }}<br>
-                    {{ form.language(class="form-control form-control-lg") }}
+                    {{ form.nickName.label(class="account-heading-small") }}
+                    {{ form.nickName(class="form-control form-control-sm") }}
+                </div>
+                <div class="form-group">
+                    {{ form.country.label(class="account-heading-small") }}<br>
+                    {{ form.country(class="form-control form-control-sm") }}
+                </div>
+                <div class="form-group">
+                    {{ form.language.label(class="account-heading-small") }}<br>
+                    {{ form.language(class="form-control form-control-sm") }}
+                </div>
+                <div class="form-group">
+                    {{ form.game.label(class="account-heading-small") }}<br>
+                    {{ form.game(class="form-control form-control-sm") }}
                 </div>
                 <div class="form-group">
                     {{ form.update(class="btn btn-outline-info") }}

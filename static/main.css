@@ -80,9 +80,21 @@ a.article-title:hover {
 }
 
 .account-heading-small {
-  font-size: 0.5rem;
+  font-size: 0.75rem;
 }
 
 .list-group-item {
   padding: .5rem 1.25rem;
+}
+
+.form-group {
+  font-size: 0.5rem;
+}
+
+.form-control-lg {
+  font-size: 1.25rem;
+}
+
+.mb-4, .my-4 {
+    margin-bottom: 0.5rem!important;
 }

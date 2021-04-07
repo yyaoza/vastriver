@@ -1,18 +1,43 @@
-{% extends "userinfo.html" %}
+<!--{% extends "userinfo.html" %}-->
 {% block content %}
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Fund Transfer</legend>
+                <h6>Current Balance</h6>
+                <h4>{{ userdata['balance'] }}</h4>
                 <div class="form-group">
-                    {{ form.amount.label(class="form-control-label") }}
+                    {{ form.amount.label(class="account-heading-small") }}
                     {{ form.amount(class="form-control form-control-lg") }}
                 </div>
                 <div class="form-group">
                     {{ form.add(class="btn btn-outline-info") }}
                     {{ form.subtract(class="btn btn-outline-info") }}
                 </div>
+                <h6>Transaction Details</h6>
+
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                      <div class="account-heading-small">etransid</div>
+                        {{ userdata['etransid'] }}
+                    </div>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                      <div class="account-heading-small">transid</div>
+                      {{ userdata['transid'] }}
+                    </div>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                      <div class="account-heading-small">datetime</div>
+                      {{ userdata['datetime'] }}
+                    </div>
+                  </li>
+                </ol>
+
             </fieldset>
         </form>
     </div>

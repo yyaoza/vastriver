@@ -307,9 +307,18 @@ country_choices = [('AD', 'Andorra'),
                    ('AB', 'Abkhazia'),
                    ('XK', 'Kosovo')]
 
+game_choices = [('game_shows', 'Game Shows'),
+                ('baccarat_sicbo', 'Baccarat'),
+                ('poker', 'Poker'),
+                ('top_games', 'Top Games'),
+                ('roulette', 'Roulette'),
+                ('blackjack', 'Blackjack'),
+                ('reward_games', 'Reward Games'),
+                ('slots', 'Slots')]
+
 
 class FundTransferForm(FlaskForm):
-    amount = FloatField('Amount', validators=[InputRequired()])
+    amount = StringField('Amount', validators=[InputRequired()])
     add = SubmitField('+')
     subtract = SubmitField('-')
 
@@ -318,10 +327,11 @@ class UserAuthenticationForm(FlaskForm):
 
     firstName = StringField('First Name')
     lastName = StringField('Last Name')
-    nickName = StringField('Nickname')
+    nickName = StringField('Screen Name')
     country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
+    game = SelectField('Game Category', choices=game_choices)
     update = SubmitField('Update')
 
     def get_country(self):
-        print(self.country)
+        print(self.country.data)
