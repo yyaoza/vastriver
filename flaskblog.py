@@ -32,9 +32,9 @@ ecID = 'diyft40000000001test123'
 ow_url = 'http://10.10.88.42:9092/onewallet'
 
 UApayload = {
-    'uuid': 'random', # assigned
+    'uuid': 'random', # assigned, should be uid
     'player': {
-        'id': 'yaoza', # assigned by licensee
+        'id': 'yaoza', # assigned by licensee, should be euid
         'update': False,
         'firstName': 'firstName', # assigned
         'lastName': 'lastName', # assigned
@@ -99,6 +99,20 @@ def start():
         'euid': gui[6].text,
         'uid':  gui[5].text,
         })
+
+    UApayload['player']['firstName'] = gui[1].text
+    UApayload['player']['lastName'] = gui[2].text
+    UApayload['player']['nickName'] = gui[3].text
+    UApayload['player']['country'] = gui[4].text
+    UApayload['uuid'] = gui[5].text
+    UApayload['player']['id'] = gui[6].text
+    # UApayload['player']['language'] = form.language.data
+    # UApayload['player']['update'] = True
+    UApayload['config']['urls']['cashier'] = request.host_url
+    # UApayload['config']['game']['category'] = form.game.data
+
+    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UApayload)
+    # flash(Markup('Game link: <a href=\"https://diyft4.uat1.evo-test.com' + x.json()['entry'] + "\" class=\"alert-link\">Click here</a>"), 'success')
 
     return render_template('userinfo.html', userdata=userdata)
 
