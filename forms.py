@@ -327,7 +327,7 @@ class UserAuthenticationForm(FlaskForm):
 
     firstName = StringField('First Name')
     lastName = StringField('Last Name')
-    nickName = StringField('Screen Name')
+    nickName = StringField('Nickname')
     country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
     game = SelectField('Game Category', choices=game_choices)

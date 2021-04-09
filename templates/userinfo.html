@@ -4,39 +4,26 @@
       <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
           <div class="account-heading-small">Name</div>
-            {{ userdata.firstName }} {{ userdata.lastName }}
+            {{ UA_payload.player.firstName }} {{ UA_payload.player.lastName }}
         </div>
       </li>
         <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
-          <div class="account-heading-small">E-mail/Login ID</div>
-            {{ userdata.emailaddress }}
+          <div class="account-heading-small">User ID</div>
+            {{ UA_payload.player.id }}
         </div>
       </li>
         <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
-          <div class="account-heading-small">Screen Name</div>
-            {{ userdata.screenname }}
+          <div class="account-heading-small">Nickname</div>
+            {{ UA_payload.player.nickname }}
         </div>
       </li>
         <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
           <div class="account-heading-small">Country Code</div>
-            {{ userdata.countrycode }}
+            {{ UA_payload.player.country }}
         </div>
       </li>
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-          <div class="account-heading-small">euid</div>
-          {{ userdata.euid }}
-        </div>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-          <div class="account-heading-small">uid</div>
-          {{ userdata.uid }}
-        </div>
-      </li>
-<!--        <span class="badge bg-primary rounded-pill"> </span>-->
     </ol>
 {% endblock userinfo %}

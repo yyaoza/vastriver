@@ -16,18 +16,52 @@
         <title>Evo Test Platform</title>
     {% endif %}
 </head>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+        {{ form.language.label(class="account-heading-small") }}<br>
+        {{ form.language(class="form-control form-control-sm") }}
+        </div>
+        <div class="form-group">
+        {{ form.game.label(class="account-heading-small") }}<br>
+        {{ form.game(class="form-control form-control-sm") }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <a href="{{ url_for('gameLaunch') }}"><button type="button" class="btn btn-primary" data-dismiss="modal">Launch</button></a>
+      </div>
+    </div>
+  </div>
+</div>
 <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-6" href="/">Evolution Test Platform</a>
+          <a class="navbar-brand mr-6" href="/">Home</a>
             <div class="navbar-nav mr-auto">
-                <a class="nav-item nav-link" href="{{ url_for('preLaunch') }}">Edit User Info</a>
+                <a class="nav-item nav-link" href="{{ url_for('updateInfo') }}">Edit User Info</a>
                 <a class="nav-item nav-link" href="{{ url_for('ft') }}">Fund Transfer</a>
                 <a class="nav-item nav-link" href="{{ url_for('ow') }}">One Wallet</a>
             </div>
             <div class="navbar-nav mr-6">
-                <a class="nav-item nav-link" href="{{ url_for('preLaunch') }}"><font color="red">Launch Game</font></a>
+                <a href="{{ link }}" target="_blank">
+                <button type="button" class="btn btn-info">
+                    <span class="badge bg-warning"> Launch Lobby </span>
+                </button></a>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                  Launch game lobby
+                </button>
+
             </div>
         </div>
       </nav>
@@ -52,35 +86,6 @@
           <div class="content-section">
             <h3>User Information</h3>
                 {% block userinfo %}{% endblock %}
-<!--            <p class='text-muted'>You can put any information here you'd like.-->
-                 <ol class="list-group list-group-numbered">
-<!--                  <li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--                    <div class="ms-2 me-auto">-->
-<!--                      <div class="account-heading-small">Balance</div>-->
-<!--                        {{ userdata.balance }}-->
-<!--                    </div>-->
-<!--                &lt;!&ndash;    <span class="badge bg-primary rounded-pill">14</span>&ndash;&gt;-->
-<!--                  </li>-->
-<!--                  <li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--                    <div class="ms-2 me-auto">-->
-<!--                      <div class="account-heading-small">etransid</div>-->
-<!--                        {{ userdata.etransid }}-->
-<!--                    </div>-->
-<!--                &lt;!&ndash;    <span class="badge bg-primary rounded-pill">14</span>&ndash;&gt;-->
-<!--                  </li>-->
-<!--                  <li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--                    <div class="ms-2 me-auto">-->
-<!--                      <div class="account-heading-small">transid</div>-->
-<!--                        {{ userdata.transid }}-->
-<!--                    </div>-->
-<!--                  </li>-->
-<!--                  <li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--                    <div class="ms-2 me-auto">-->
-<!--                      <div class="account-heading-small">datetime</div>-->
-<!--                        {{ userdata.datetime }}-->
-<!--                    </div>-->
-<!--                  </li>-->
-                </ol>
           </div>
         </div>
       </div>
