@@ -102,7 +102,7 @@ def updateInfo():
     # launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
 
     global theSession
-    uaform = UserAuthenticationForm(theSession.UA_payload['player'])
+    uaform = UserAuthenticationForm()
     # uaform.firstName.data = theSession.UA_payload['player']['firstName']
     # uaform.lastName.data = theSession.UA_payload['player']['lastName']
     # uaform.nickName.data = theSession.UA_payload['player']['nickname']
@@ -120,7 +120,7 @@ def updateInfo():
             # UA_payload['player']['country'] = form.country.data
             # UA_payload['player']['language'] = form.language.data
             # UA_payload['player']['update'] = True
-            # UA_payload['config']['urls']['cashier'] = request.host_url
+            # UA_payload['config']['urls']['cashier'] = request.host_url`
             # UA_payload['config']['game']['category'] = form.game.data
             #
             # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
