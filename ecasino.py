@@ -163,7 +163,7 @@ def gameLaunch():
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
 
-    return
+    return render_template('userinfo.html', UA_payload=theSession.UA_payload, link=theSession.link, form=uaform)
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
@@ -185,7 +185,7 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', form=form, userdata=theSession.userdata, UA_payload=theSession.UA_payload, link=theSession.link)
+    return render_template('fundTransfer.html', ft_form=form, form=uaform, userdata=theSession.userdata, UA_payload=theSession.UA_payload, link=theSession.link)
 
 def ft_add(amount):
 
