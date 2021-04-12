@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import InputRequired
 
 language_choices = [('al', 'Albanian'),
@@ -319,14 +319,16 @@ game_choices = [('game_shows', 'Game Shows'),
 
 class FundTransferForm(FlaskForm):
     amount = StringField('Amount', validators=[InputRequired()])
+    language = SelectField('Language', choices=language_choices)
+    game = SelectField('Game Category', choices=game_choices)
     add = SubmitField('+')
     subtract = SubmitField('-')
 
 
 class UserAuthenticationForm(FlaskForm):
-    firstName = StringField('First Name')
-    lastName = StringField('Last Name')
-    nickName = StringField('Nickname')
+    firstName = StringField('First Name', validators=[InputRequired()])
+    lastName = StringField('Last Name', validators=[InputRequired()])
+    nickName = StringField('Nickname', validators=[InputRequired()])
     country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
     game = SelectField('Game Category', choices=game_choices)

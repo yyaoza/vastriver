@@ -92,6 +92,10 @@ class Session:
         x = requests.get(self.url + 'api/ecashier', params=self.cashier_payload)
         return ET.fromstring(x.text)
 
+    def set_lang_game(self, form):
+        self.UA_payload['player']['language'] = form.language.data
+        self.UA_payload['config']['game']['category'] = form.game.data
+
     def get_user_info(self):
         gui = self.casino_cmd('GUI')
         self.UA_payload['player']['firstName'] = gui[1].text
