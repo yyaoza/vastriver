@@ -13,16 +13,28 @@
         {{ UA_payload.player.firstName }} {{ UA_payload.player.lastName }}
         </div>
       </li>
-        <li class="list-group-item d-flex justify-content-between align-items-start">
+      <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
           <div class="account-heading-small">Nickname</div>
             {{ UA_payload.player.nickname }}
         </div>
       </li>
-        <li class="list-group-item d-flex justify-content-between align-items-start">
+      <li class="list-group-item d-flex justify-content-between align-items-start">
         <div class="ms-2 me-auto">
           <div class="account-heading-small">Country Code</div>
             {{ UA_payload.player.country }}
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="account-heading-small">Language</div>
+            {{ UA_payload.player.language }}
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+          <div class="account-heading-small">Game Category</div>
+            {{ UA_payload.config.game.category }}
         </div>
       </li>
     </ol>
