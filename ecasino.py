@@ -1,6 +1,6 @@
 from flask import Flask, request, Markup, render_template, url_for, flash, redirect
 from forms import FundTransferForm, UserAuthenticationForm
-from structures import userdata, UA_dataStruct
+from structures import userdataStruct, UA_dataStruct, Session
 import requests, webbrowser, xml.etree.ElementTree as ET
 
 app = Flask(__name__)
@@ -19,9 +19,14 @@ ecID = 'diyft40000000001test123'
 ow_url = 'http://10.10.88.42:9092/onewallet'
 
 UA_payload = UA_dataStruct
-
+# print(UA_payload)
 x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
+# print(x.text)
 launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+
+uaform = ''
+ftform = ''
+theSession = ''
 
 def casinoCmd(cmd, amount=0):
     if cmd=='GUI':
@@ -74,52 +79,60 @@ def getUserInfo():
 @app.route('/')
 def start():
 
-    getUserInfo()
-    form = UserAuthenticationForm()
+    global theSession
+    theSession = Session(request.host_url)
+    # theSession.get_user_info()
+    # getUserInfo()
+    global uaform
+    uaform = UserAuthenticationForm()
 
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
-    launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+    # launchLink = theSession.get_link()
+    # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
+    # launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
 
-    return render_template('userinfo.html', UA_payload=UA_payload, link=launchLink, form=form)
+    return render_template('userinfo.html', UA_payload=theSession.UA_payload, link=theSession.link, form=uaform)
 
 
 @app.route('/updateInfo', methods=['GET', 'POST'])
 def updateInfo():
-    global UApayload
-    UA_payload = UA_dataStruct
-    form = UserAuthenticationForm()
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
-    launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+    # global UApayload
+    # UA_payload = UA_dataStruct
+    # form = UserAuthenticationForm()
+    # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
+    # launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
 
-    # form.firstName.data = userdata['firstName']
-    # form.lastName.data = userdata['lastName']
-    # form.nickName.data = userdata['screenname']
-    # form.country.data = userdata['countrycode']
-
-    if form.validate_on_submit():
-        if form.update.data:
-            print(form.firstName.data)
-            global UApayload
-            UA_payload = UA_dataStruct
-            UA_payload['player']['firstName'] = form.firstName.data
-            UA_payload['player']['lastName'] = form.lastName.data
-            UA_payload['player']['nickname'] = form.nickName.data
-            UA_payload['player']['country'] = form.country.data
-            UA_payload['player']['language'] = form.language.data
-            UA_payload['player']['update'] = True
-            UA_payload['config']['urls']['cashier'] = request.host_url
-            UA_payload['config']['game']['category'] = form.game.data
-
-            x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
-            link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
-            print("*Writing payload", UA_payload, sep="---->")
+    global theSession
+    uaform = UserAuthenticationForm(theSession.UA_payload['player'])
+    # uaform.firstName.data = theSession.UA_payload['player']['firstName']
+    # uaform.lastName.data = theSession.UA_payload['player']['lastName']
+    # uaform.nickName.data = theSession.UA_payload['player']['nickname']
+    # uaform.country.data = theSession.UA_payload['player']['country']
+    if uaform.validate_on_submit():
+        if uaform.update.data:
+            print('**Update button pressed --->' + uaform.firstName.data)
+            theSession.update_user_info(uaform)
+            #
+            # global UApayload
+            # UA_payload = UA_dataStruct
+            # UA_payload['player']['firstName'] = form.firstName.data
+            # UA_payload['player']['lastName'] = form.lastName.data
+            # UA_payload['player']['nickname'] = form.nickName.data
+            # UA_payload['player']['country'] = form.country.data
+            # UA_payload['player']['language'] = form.language.data
+            # UA_payload['player']['update'] = True
+            # UA_payload['config']['urls']['cashier'] = request.host_url
+            # UA_payload['config']['game']['category'] = form.game.data
+            #
+            # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
+            # link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+            # print("*Writing payload", UA_payload, sep="---->")
 
             # getUserInfo()
             # webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
             # flash(Markup('Game link: <a href=\"https://diyft4.uat1.evo-test.com' + x.json()['entry'] + "\" class=\"alert-link\">Click here</a>"), 'success')
             flash('User Info Updated!', 'success')
 
-    return render_template('editUser.html', form=form, UA_payload=UA_payload, link=launchLink)
+    return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload, link=theSession.link)
 
 @app.route('/gameLaunch')
 def gameLaunch():
@@ -156,21 +169,23 @@ def gameLaunch():
 def ft():
 
     form = FundTransferForm()
-    rwa = casinoCmd('RWA')
+    # rwa = casinoCmd('RWA')
     global userdata
-    userdata['balance'] = rwa[3].text
+    # userdata['balance'] = rwa[3].text
 
     if form.validate_on_submit():
         if form.subtract.data:
             flash(form.amount.data + ' funds subtracted', 'warning')
-            ft_subtract(form.amount.data)
+            theSession.ft_subtract(form.amount.data)
+            # ft_subtract(form.amount.data)
         elif form.add.data:
             flash(form.amount.data + ' funds added', 'success')
-            ft_add(form.amount.data)
+            # ft_add(form.amount.data)
+            theSession.ft_add(form.amount.data)
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', form=form, userdata=userdata, UA_payload=UA_payload, link=launchLink)
+    return render_template('fundTransfer.html', form=form, userdata=theSession.userdata, UA_payload=theSession.UA_payload, link=theSession.link)
 
 def ft_add(amount):
 

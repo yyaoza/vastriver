@@ -1,6 +1,7 @@
-import requests, xml.etree.ElementTree as ET
-from flask import request
-from forms import UserAuthenticationForm
+import requests
+import xml.etree.ElementTree as ET
+
+# from flask import request
 
 userdataStruct = {
     'emailaddress': 'x',
@@ -18,6 +19,11 @@ userdataStruct = {
 
 UA_dataStruct = {
     'uuid': 'random',  # assigned, should be uid
+    'transaction': {
+        'etransid': '###',
+        'transid': '###',
+        'datetime': '###',
+    },
     'player': {
         'balance': '0.0',
         'id': 'yaoza',  # assigned by licensee, should be euid
@@ -47,7 +53,7 @@ UA_dataStruct = {
             'mobile': False
         },
         'urls': {
-            'cashier': request.host_url,  # assigned by licensee
+            'cashier': 'http://www.RGam.ee',  # assigned by licensee
             'responsibleGaming': 'http://www.RGam.ee',  # assigned by licensee
             'lobby': 'http://www.lobb.ee',  # assigned by licensee
             'sessionTimeout': 'http://www.sesstm.ee'  # assigned by licensee
@@ -71,10 +77,13 @@ class Session:
         'output': '1'
     }
 
+    def __init__(self, hostname):
+        self.UA_payload['config']['urls']['cashier'] = hostname
+        self.get_user_info()
+
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':
             self.cashier_payload.update({'cCode': cmd})
-
         else:
             self.cashier_payload.update({'cCode': cmd,
                                          'amount': amount,
@@ -92,7 +101,8 @@ class Session:
         self.UA_payload['player']['update'] = False
         self.UA_payload['uuid'] = gui[5].text
         self.UA_payload['player']['id'] = gui[6].text
-        self.UA_payload['config']['urls']['cashier'] = request.host_url
+        rwa = self.casino_cmd('RWA')
+        self.UA_payload['player']['balance'] = rwa[3].text
 
     def update_user_info(self, form):
         self.UA_payload['player']['firstName'] = form.firstName.data
@@ -102,10 +112,15 @@ class Session:
         self.UA_payload['player']['language'] = form.language.data
         self.UA_payload['player']['update'] = True
         self.UA_payload['config']['game']['category'] = form.game.data
+        print("*Writing payload", self.UA_payload, sep="---->")
         self.get_link()
 
     def ft_add(self, amount):
         ecr = self.casino_cmd('ECR', amount)
+        self.UA_payload['player']['balance'] = ecr[0].text
+        self.UA_payload['transaction']['etransid'] = ecr[1].text
+        self.UA_payload['transaction']['transid'] = ecr[2].text
+        self.UA_payload['transaction']['datetime'] = ecr[3].text
         self.userdata.update({
             'balance': ecr[0].text,
             'etransid': ecr[1].text,
@@ -115,6 +130,10 @@ class Session:
 
     def ft_subtract(self, amount):
         ecr = self.casino_cmd('EDB', amount)
+        self.UA_payload['player']['balance'] = ecr[0].text
+        self.UA_payload['transaction']['etransid'] = ecr[1].text
+        self.UA_payload['transaction']['transid'] = ecr[2].text
+        self.UA_payload['transaction']['datetime'] = ecr[3].text
         self.userdata.update({
             'balance': ecr[0].text,
             'etransid': ecr[1].text,
@@ -124,5 +143,5 @@ class Session:
 
     def get_link(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
+        print(x.text)
         link = self.url + x.json()['entry']
-        return link

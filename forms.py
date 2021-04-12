@@ -324,7 +324,6 @@ class FundTransferForm(FlaskForm):
 
 
 class UserAuthenticationForm(FlaskForm):
-
     firstName = StringField('First Name')
     lastName = StringField('Last Name')
     nickName = StringField('Nickname')
@@ -333,5 +332,14 @@ class UserAuthenticationForm(FlaskForm):
     game = SelectField('Game Category', choices=game_choices)
     update = SubmitField('Update')
 
-    def get_country(self):
-        print(self.country.data)
+    # def __init__(self, player_info=dict()):
+    #     if player_info is None:
+    #         self.firstName = StringField('First Name')
+    #         self.lastName = StringField('Last Name')
+    #         self.nickName = StringField('Nickname')
+    #         self.country = StringField('Country')
+    #     else:
+    #         self.firstName = StringField('First Name', default=player_info['firstName'])
+    #         self.lastName = StringField('Last Name', default=player_info['lastName'])
+    #         self.nickName = StringField('Nickname', default=player_info['nickname'])
+    #         self.country = StringField('Country', default=player_info['country'])
