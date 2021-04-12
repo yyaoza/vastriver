@@ -86,6 +86,11 @@ def start():
     global uaform
     uaform = UserAuthenticationForm()
 
+    if uaform.validate_on_submit():
+        if uaform.update.data:
+            print('**Update button pressed --->' + uaform.firstName.data)
+            theSession.update_user_info(uaform)
+
     # launchLink = theSession.get_link()
     # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
     # launchLink = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
@@ -136,34 +141,14 @@ def updateInfo():
 
 @app.route('/gameLaunch')
 def gameLaunch():
+    # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
+    global theSession
+    theSession.get_link()
+    # print(theSession.link)
+    webbrowser.open(theSession.get_link())
 
-    UA_payload.update({
-    'config': {
-    'brand': {
-      'skin': '1'
-    },
-    'game': {
-      'category': 'roulette',
-      'interface': 'view1'
+    return render_template('userinfo.html', UA_payload=theSession.UA_payload, link=theSession.link, form=uaform)
 
-    },
-    'channel': {
-      'wrapped': False,
-      'mobile': False
-    },
-    'urls': {
-      'cashier': request.host_url, # assigned by licensee
-      'responsibleGaming': 'http://www.RGam.ee', # assigned by licensee
-      'lobby': 'http://www.lobb.ee', # assigned by licensee
-      'sessionTimeout': 'http://www.sesstm.ee' # assigned by licensee
-    },
-    'freeGames': False
-    }})
-
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=UA_payload)
-    webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
-
-    return
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():

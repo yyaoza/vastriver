@@ -143,5 +143,6 @@ class Session:
 
     def get_link(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
-        print(x.text)
-        link = self.url + x.json()['entry']
+        link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        print(link)
+        return link
