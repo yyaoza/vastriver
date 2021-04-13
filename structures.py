@@ -1,76 +1,68 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as xmlTree
 
 import random
 import requests
 import string
 
-# from flask import request
 
-userdataStruct = {
-    'emailaddress': 'x',
-    'screenname': 'x',
-    'countrycode': 'x',
-    'firstName': 'x',
-    'lastName': 'x',
-    'balance': '0.0',
-    'etransid': '###',
-    'transid': '###',
-    'datetime': '###',
-    'euid': 'x',
-    'uid': 'x',
-}
+class Session:
+    UA_payload = {
+        'uuid': 'random',  # assigned, should be uid
+        'transaction': {
+            'etransid': '###',
+            'transid': '###',
+            'datetime': '###',
+        },
+        'player': {
+            'balance': '0.0',
+            'id': 'yaoza',  # assigned by licensee, should be euid
+            'update': False,
+            'firstName': 'firstName',  # assigned
+            'lastName': 'lastName',  # assigned
+            'nickname': 'nickname',  # assigned
+            'country': 'DE',  # assigned
+            'language': 'fr',  # assigned
+            'currency': 'CNY',  # assigned
+            'session': {
+                'id': '111ssss3333rrrrr45555',  # assigned by licensee
+                'ip': '192.168.0.1'  # assigned
+            }
+        },
+        'config': {
+            'brand': {
+                'skin': '1'
+            },
+            'game': {
+                'category': 'roulette',
+                'interface': 'view1'
 
-UA_dataStruct = {
-    'uuid': 'random',  # assigned, should be uid
-    'transaction': {
+            },
+            'channel': {
+                'wrapped': False,
+                'mobile': False
+            },
+            'urls': {
+                'cashier': 'http://www.RGam.ee',  # assigned by licensee
+                'responsibleGaming': 'http://www.RGam.ee',  # assigned by licensee
+                'lobby': 'http://www.lobb.ee',  # assigned by licensee
+                'sessionTimeout': 'http://www.sesstm.ee'  # assigned by licensee
+            },
+            'freeGames': False
+        }
+    }
+    userdata = {
+        'emailaddress': 'x',
+        'screenname': 'x',
+        'countrycode': 'x',
+        'firstName': 'x',
+        'lastName': 'x',
+        'balance': '0.0',
         'etransid': '###',
         'transid': '###',
         'datetime': '###',
-    },
-    'player': {
-        'balance': '0.0',
-        'id': 'yaoza',  # assigned by licensee, should be euid
-        'update': False,
-        'firstName': 'firstName',  # assigned
-        'lastName': 'lastName',  # assigned
-        'nickname': 'nickname',  # assigned
-        'country': 'DE',  # assigned
-        'language': 'fr',  # assigned
-        'currency': 'CNY',  # assigned
-        'session': {
-            'id': '111ssss3333rrrrr45555',  # assigned by licensee
-            'ip': '192.168.0.1'  # assigned
-        }
-    },
-    'config': {
-        'brand': {
-            'skin': '1'
-        },
-        'game': {
-            'category': 'roulette',
-            'interface': 'view1'
-
-        },
-        'channel': {
-            'wrapped': False,
-            'mobile': False
-        },
-        'urls': {
-            'cashier': 'http://www.RGam.ee',  # assigned by licensee
-            'responsibleGaming': 'http://www.RGam.ee',  # assigned by licensee
-            'lobby': 'http://www.lobb.ee',  # assigned by licensee
-            'sessionTimeout': 'http://www.sesstm.ee'  # assigned by licensee
-        },
-        'freeGames': False
+        'euid': 'x',
+        'uid': 'x',
     }
-}
-
-
-class Session:
-    UA_payload = UA_dataStruct
-    userdata = userdataStruct
-    link = ''
-    # url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
     url = 'https://diyft4.uat1.evo-test.com/'
     cashier_payload = {
         'cCode': 'xxx',
@@ -93,7 +85,7 @@ class Session:
                                          })
 
         x = requests.get(self.url + 'api/ecashier', params=self.cashier_payload)
-        return ET.fromstring(x.text)
+        return xmlTree.fromstring(x.text)
 
     def set_lang_game(self, form):
         self.UA_payload['player']['language'] = form.language.data

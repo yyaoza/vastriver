@@ -321,7 +321,7 @@ class OneWalletForm(FlaskForm):
     sid = StringField('sid', validators=[InputRequired()])
     uuid = StringField('uuid', validators=[InputRequired()])
     userID = StringField('userID', validators=[InputRequired()])
-    submit = SubmitField('Submit')
+    push = SubmitField('push')
 
 
 class FundTransferForm(FlaskForm):

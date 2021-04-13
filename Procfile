@@ -1,1 +1,1 @@
-web: gunicorn ecasino:app
+web: gunicorn vastRiver:app
