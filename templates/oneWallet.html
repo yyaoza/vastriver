@@ -4,24 +4,17 @@
         <form method="POST" action="">
             {{ ow_form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">One Wallet Parameters</legend>
-                <div class="form-group">
-                    {{ ow_form.sid.label(class="account-heading-small") }}
-                    {{ ow_form.sid(class="form-control form-control-sm") }}
-                </div>
+                <legend class="border-bottom mb-4">userid management</legend>
+<!--                D-->
                 <div class="form-group">
                     {{ ow_form.userID.label(class="account-heading-small") }}
                     {{ ow_form.userID(class="form-control form-control-sm") }}
                 </div>
                 <div class="form-group">
-                    {{ ow_form.uuid.label(class="account-heading-small") }}
-                    {{ ow_form.uuid(class="form-control form-control-sm") }}
-                </div>
-                <div class="form-group">
-                    {{ ow_form.push(class="btn btn-outline-info") }}
+                    {{ ow_form.add_userid(class="btn btn-outline-info") }}
+                    {{ ow_form.find_userid(class="btn btn-outline-info") }}
                 </div>
                 <h6>Transaction Details</h6>
-
                 <ol class="list-group list-group-numbered">
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">

@@ -1,13 +1,16 @@
 from datetime import datetime
+import pytz
 # from models import User
-
+import random
+import string
 import requests
 import webbrowser
 import xml.etree.ElementTree as xmlTree
 from flask_sqlalchemy import SQLAlchemy
-from typing import Callable
+# from sqlalchemy import *
+# from typing import Callable
 
-from flask import Flask, request, render_template, flash
+from flask import Flask, request, render_template, flash, Markup
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletForm
 from structures import Session
 
@@ -17,7 +20,7 @@ ENV = 'dev'
 
 if ENV == 'dev':
     app.debug = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/template1'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
 else:
     app.debug = False
     app.config['SQLALCHEMY_DATABASE_URI'] = ''
@@ -25,27 +28,27 @@ else:
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 # initialize
 db = SQLAlchemy(app)
 
 
 # create db model
 class UserEntry(db.Model):
-    __tablename__ = 'sid'
-    sid = db. Column(db.String(50), nullable=False, unique=True)
+    __tablename__ = 'user_entries'
+    sid = db.Column(db.String(50), nullable=False, unique=True)
     uuid = db.Column(db.String(50), nullable=False, unique=True)
     userID = db.Column(db.String(50), primary_key=True, unique=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    date_created = db.Column(db.DateTime, default=datetime.now())
 
-    def __init__(self, sid, uuid, userID):
+    def __init__(self, sid='', uuid='', userID=''):
         self.sid = sid
         self.uuid = uuid
         self.userID = userID
 
 
 db.create_all()
-db.session.commit()
+print('ran create all')
+# db.session.commit()
 
 url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
 ecID = 'diyft40000000001test123'
@@ -77,7 +80,7 @@ def casinoCmd(cmd, amount=0):
     return xmlTree.fromstring(x.text)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def start():
     global theSession
     theSession = Session(request.host_url)
@@ -145,20 +148,31 @@ def ow():
     form = OneWalletForm()
 
     if form.validate_on_submit():
-        if form.push.data:
-            sid = form.sid.data
-            uuid = form.uuid.data
-            userID = form.userID.data
-            print("<data - ", sid, uuid, userID)
-    #         flash(form.amount.data + ' funds subtracted', 'warning')
-    #         theSession.ft_subtract(form.amount.data)
-    #         # ft_subtract(form.amount.data)
-    #     elif form.add.data:
-    #         flash(form.amount.data + ' funds added', 'success')
-    #         # ft_add(form.amount.data)
-    #         theSession.ft_add(form.amount.data)
-    #     else:
-    #         flash('Error:' + form.amount.errors, 'error')
+        if form.add_userid.data:
+            dataclass = UserEntry()
+            if not dataclass.query.filter_by(userID=form.userID.data).all():
+                uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+                sid = str(len(dataclass.query.all()) + 1)
+                dataclass = UserEntry(sid, uuid, form.userID.data)
+                db.session.add(dataclass)
+                db.session.commit()
+                userid = form.userID.data
+                flash(Markup('<strong>Created:</strong><br>userid:'+userid+'<br>sid:'+sid+'<br>uuid:'+uuid), 'success')
+            else:
+                flash(Markup('<strong>' + form.userID.data + '</strong> already exists!'), 'danger')
+
+            # if not dataclass.query.filter_by(userID=form.userID.data).all():
+            #     flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
+            # else:
+            #     flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
+            # print('heeeeeere onetime!->>>>' + oneitem)
+
+        elif form.find_userid.data:
+            dataclass = UserEntry()
+            if not dataclass.query.filter_by(userID=form.userID.data).all():
+                flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
+            else:
+                flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
 
     return render_template('oneWallet.html', ow_form=form, form=uaform, userdata=theSession.userdata,
                            UA_payload=theSession.UA_payload)

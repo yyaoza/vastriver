@@ -318,10 +318,11 @@ game_choices = [('game_shows', 'Game Shows'),
 
 
 class OneWalletForm(FlaskForm):
-    sid = StringField('sid', validators=[InputRequired()])
-    uuid = StringField('uuid', validators=[InputRequired()])
+    # sid = StringField('sid', validators=[InputRequired()])
+    # uuid = StringField('uuid', validators=[InputRequired()])
     userID = StringField('userID', validators=[InputRequired()])
-    push = SubmitField('push')
+    add_userid = SubmitField('Add')
+    find_userid = SubmitField('Find')
 
 
 class FundTransferForm(FlaskForm):
@@ -338,15 +339,3 @@ class UserAuthenticationForm(FlaskForm):
     language = SelectField('Language', choices=language_choices)
     game = SelectField('Game Category', choices=game_choices)
     update = SubmitField('Update')
-
-    # def __init__(self, player_info=dict()):
-    #     if player_info is None:
-    #         self.firstName = StringField('First Name')
-    #         self.lastName = StringField('Last Name')
-    #         self.nickName = StringField('Nickname')
-    #         self.country = StringField('Country')
-    #     else:
-    #         self.firstName = StringField('First Name', default=player_info['firstName'])
-    #         self.lastName = StringField('Last Name', default=player_info['lastName'])
-    #         self.nickName = StringField('Nickname', default=player_info['nickname'])
-    #         self.country = StringField('Country', default=player_info['country'])
