@@ -317,10 +317,15 @@ game_choices = [('game_shows', 'Game Shows'),
                 ('slots', 'Slots')]
 
 
+class OneWalletForm(FlaskForm):
+    sid = StringField('sid', validators=[InputRequired()])
+    uuid = StringField('uuid', validators=[InputRequired()])
+    userID = StringField('userID', validators=[InputRequired()])
+    submit = SubmitField('Submit')
+
+
 class FundTransferForm(FlaskForm):
     amount = StringField('Amount', validators=[InputRequired()])
-    # language = SelectField('Language', choices=language_choices)
-    # game = SelectField('Game Category', choices=game_choices)
     add = SubmitField('+')
     subtract = SubmitField('-')
 

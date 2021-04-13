@@ -1,5 +1,8 @@
-import requests
 import xml.etree.ElementTree as ET
+
+import random
+import requests
+import string
 
 # from flask import request
 
@@ -115,9 +118,10 @@ class Session:
         self.UA_payload['player']['country'] = form.country.data
         self.UA_payload['player']['language'] = form.language.data
         self.UA_payload['player']['update'] = True
+        self.UA_payload['player']['session']['id'] = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         self.UA_payload['config']['game']['category'] = form.game.data
         print("*Writing payload", self.UA_payload, sep="---->")
-        self.get_link()
+        self.process_UA2()
 
     def ft_add(self, amount):
         ecr = self.casino_cmd('ECR', amount)
@@ -145,7 +149,13 @@ class Session:
             'datetime': ecr[3].text
         })
 
-    def get_link(self):
+    def process_UA2(self):
+        x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
+        link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        print(link)
+        return link
+
+    def process_ow_check(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
         link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
         print(link)
