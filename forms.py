@@ -317,12 +317,35 @@ game_choices = [('game_shows', 'Game Shows'),
                 ('slots', 'Slots')]
 
 
-class OneWalletForm(FlaskForm):
+class OneWalletAddUser(FlaskForm):
     # sid = StringField('sid', validators=[InputRequired()])
     # uuid = StringField('uuid', validators=[InputRequired()])
-    userID = StringField('userID', validators=[InputRequired()])
+    userID_added = StringField('userID', validators=[InputRequired()])
+    balance = StringField('Starting balance', validators=[InputRequired()])
     add_userid = SubmitField('Add')
+
+
+class OneWalletFindUser(FlaskForm):
+    # sid = StringField('sid', validators=[InputRequired()])
+    # uuid = StringField('uuid', validators=[InputRequired()])
+    userID = StringField('Player ID', validators=[InputRequired()])
     find_userid = SubmitField('Find')
+
+
+# class OW_add_user(FlaskForm):
+#     # sid = StringField('sid', validators=[InputRequired()])
+#     # uuid = StringField('uuid', validators=[InputRequired()])
+#     player_id = StringField('userID', validators=[InputRequired()])
+#     firstName = StringField('First Name', validators=[InputRequired()])
+#     lastName = StringField('Last Name', validators=[InputRequired()])
+#     nickname = StringField('Nickname', validators=[InputRequired()])
+#     country = SelectField('Country', choices=country_choices)
+#     language = SelectField('Language', choices=language_choices)
+#     game = SelectField('Game Category', choices=game_choices)
+#     player_currency = StringField('userID', validators=[InputRequired()])
+#     # player_id = StringField('userID', validators=[InputRequired()])
+#     add_userid = SubmitField('Add')
+#     find_userid = SubmitField('Find')
 
 
 class FundTransferForm(FlaskForm):
@@ -334,7 +357,7 @@ class FundTransferForm(FlaskForm):
 class UserAuthenticationForm(FlaskForm):
     firstName = StringField('First Name', validators=[InputRequired()])
     lastName = StringField('Last Name', validators=[InputRequired()])
-    nickName = StringField('Nickname', validators=[InputRequired()])
+    nickname = StringField('Nickname', validators=[InputRequired()])
     country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
     game = SelectField('Game Category', choices=game_choices)

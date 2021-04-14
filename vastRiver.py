@@ -1,17 +1,21 @@
 from datetime import datetime
-# from models import User
 import random
 import string
 import requests
 import webbrowser
 import xml.etree.ElementTree as xmlTree
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import *
-# from typing import Callable
 
 from flask import Flask, request, render_template, flash, Markup
-from forms import FundTransferForm, UserAuthenticationForm, OneWalletForm
+from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 from theSession import Session
+
+url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
+ecID = 'diyft40000000001test123'
+ow_url = 'http://10.10.88.42:9092/onewallet'
+uaform = ''
+ftform = ''
+theSession = ''
 
 app = Flask(__name__)
 
@@ -28,16 +32,17 @@ app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # initialize
-db = SQLAlchemy(app)
+db_sid = SQLAlchemy(app)
+# db_sid = SQLAlchemy(app)
 
 
 # create sid model
-class SidEntry(db.Model):
+class SidEntry(db_sid.Model):
     __tablename__ = 'sessions'
-    sid = db.Column(db.String(50), nullable=False, primary_key=True, unique=True)
-    uuid = db.Column(db.String(50), nullable=False, unique=True)
-    userID = db.Column(db.String(50), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.now())
+    sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True)
+    uuid = db_sid.Column(db_sid.String(50), nullable=False, unique=True)
+    userID = db_sid.Column(db_sid.String(50), nullable=False)
+    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
 
     def __init__(self, userID='', sid='', uuid=''):
         self.sid = sid
@@ -46,51 +51,38 @@ class SidEntry(db.Model):
 
 
 # create sid model
-class UserEntry(db.Model):
+class UserEntry(db_sid.Model):
     __tablename__ = 'users'
-    # sid = db.Column(db.String(50), nullable=False, primary_key=True, unique=True)
-    uuid = db.Column(db.String(50), nullable=False, unique=True)
-    player_id = db.Column(db.String(50), primary_key=True)
-    player_update = db.Column(db.String(50), nullable=False)
-    player_firstName = db.Column(db.String(50), nullable=False)
-    player_lastName = db.Column(db.String(50), nullable=False)
-    player_nickname = db.Column(db.String(50), nullable=False)
-    player_country = db.Column(db.String(50), nullable=False)
-    player_language = db.Column(db.String(50), nullable=False)
-    player_currency = db.Column(db.String(50), nullable=False)
-    game_category = db.Column(db.String(50), nullable=False)
-    game_interface = db.Column(db.String(50), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.now())
+    # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
+    player_id = db_sid.Column(db_sid.String(50))
+    balance = db_sid.Column(db_sid.String(50))
+    uuid = db_sid.Column(db_sid.String(50), primary_key=True)
+    # player_update = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_firstName = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_lastName = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_nickname = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_country = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_language = db_sid.Column(db_sid.String(50), nullable=False)
+    # player_currency = db_sid.Column(db_sid.String(50), nullable=False)
+    # game_category = db_sid.Column(db_sid.String(50), nullable=False)
+    # game_interface = db_sid.Column(db_sid.String(50), nullable=False)
+    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
 
-    def __init__(self, player_id='', sid='', uuid='', player_update='', player_firstName='',
-                 player_lastName='', player_nickname='', player_country='', player_language='',
-                 player_currency='', game_category='', game_interface=''):
-        self.sid = sid
+    def __init__(self, player_id='', balance='', uuid=''):
         self.uuid = uuid
         self.player_id = player_id
-        self.player_update = player_update
-        self.player_firstName = player_firstName
-        self.player_lastName = player_lastName
-        self.player_nickname = player_nickname
-        self.player_country = player_country
-        self.player_language = player_language
-        self.player_currency = player_currency
-        self.game_category = game_category
-        self.game_interface = game_interface
+        self.balance = balance
+        # self.player_lastName = player_lastName
+        # self.player_nickname = player_nickname
+        # self.player_country = player_country
+        # self.player_language = player_language
+        # self.player_currency = player_currency
+        # self.game_category = game_category
+        # self.game_interface = game_interface
 
-
-db.create_all()
-print('ran create all')
-# db.session.commit()
-
-url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
-ecID = 'diyft40000000001test123'
-
-ow_url = 'http://10.10.88.42:9092/onewallet'
-
-uaform = ''
-ftform = ''
-theSession = ''
+# if ENV == 'dev':
+#     db_sid.create_all()
+#     db_sid.session.commit()
 
 
 def casinoCmd(cmd, amount=0):
@@ -159,43 +151,49 @@ def ft():
 
 @app.route('/ow', methods=['GET', 'POST'])
 def ow():
-    form = OneWalletForm()
+    find_form = OneWalletFindUser()
+    add_form = OneWalletAddUser()
 
-    if form.validate_on_submit():
-        if form.add_userid.data:
-            dataclass = SidEntry()
-            if not dataclass.query.filter_by(userID=form.userID.data).all():
-                uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-                sid = str(len(dataclass.query.all()) + 1)
-                dataclass = SidEntry(form.userID.data, sid, uuid)
-                db.session.add(dataclass)
-                db.session.commit()
-                userid = form.userID.data
-                flash(Markup('<strong>Created:</strong><br>userid:'+userid+'<br>sid:'+sid+'<br>uuid:'+uuid), 'success')
-            else:
-                flash(Markup('<strong>' + form.userID.data + '</strong> already exists!'), 'danger')
+    if find_form.find_userid.data and find_form.validate_on_submit():
+        dataclass_users = UserEntry()
+        if not dataclass_users.query.filter_by(player_id=find_form.userID.data).all():
+            flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
+        else:
+            dataclass_sid = SidEntry()
+            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+            sid = str(len(dataclass_sid.query.all()) + 1)
+            print("sid:" + sid)
+            dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
+            db_sid.session.add(dataclass_sid)
+            db_sid.session.commit()
+            userid = find_form.userID.data
+            flash(Markup('SID Created for:' + userid + '<br><strong>sid:' + sid + '</strong><br>uuid:' + uuid),
+                  'success')
 
-            # if not dataclass.query.filter_by(userID=form.userID.data).all():
-            #     flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
-            # else:
-            #     flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
-            # print('heeeeeere onetime!->>>>' + oneitem)
 
-        elif form.find_userid.data:
-            dataclass = SidEntry()
-            if not dataclass.query.filter_by(userID=form.userID.data).all():
-                flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
-            else:
-                # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
-                uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-                sid = str(len(dataclass.query.all()) + 1)
-                dataclass = SidEntry(form.userID.data, sid, uuid)
-                db.session.add(dataclass)
-                db.session.commit()
-                userid = form.userID.data
-                flash(Markup('<strong>' + form.userID.data + '</strong> found!'+'<br>sid:'+sid+'<br>uuid:'+uuid), 'success')
+        # if not dataclass.query.filter_by(userID=form.userID.data).all():
+        #     flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
+        # else:
+        #     flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
+        # print('heeeeeere onetime!->>>>' + oneitem)
 
-    return render_template('oneWallet.html', ow_form=form, form=uaform, UA_payload=theSession.UA_payload)
+    if add_form.add_userid.data and add_form.validate_on_submit():
+        dataclass = UserEntry()
+        if not dataclass.query.filter_by(userID=add_form.userID_added.data).all():
+            # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
+            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+            # sid = str(len(dataclass.query.all()) + 1)
+            dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data, uuid)
+            db_sid.session.add(dataclass)
+            db_sid.session.commit()
+            flash(
+                Markup('<strong>' + add_form.userID_added.data + '</strong> found!' + '<br>balance:'
+                       + add_form.balance.data + '<br>uuid:' + uuid), 'success')
+        else:
+            flash(Markup('<strong>' + add_form.userID.data + '</strong> already exists!'), 'danger')
+
+    return render_template('oneWallet.html', ow_findUser_form=find_form, ow_addUser_form=add_form, form=uaform,
+                           UA_payload=theSession.UA_payload)
 
 
 if __name__ == '__main__':

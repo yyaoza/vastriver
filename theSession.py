@@ -108,7 +108,7 @@ class Session:
     def update_user_info(self, form):
         self.UA_payload['player']['firstName'] = form.firstName.data
         self.UA_payload['player']['lastName'] = form.lastName.data
-        self.UA_payload['player']['nickname'] = form.nickName.data
+        self.UA_payload['player']['nickname'] = form.nickname.data
         self.UA_payload['player']['country'] = form.country.data
         self.UA_payload['player']['language'] = form.language.data
         self.UA_payload['player']['update'] = True
