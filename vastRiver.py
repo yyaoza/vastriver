@@ -154,9 +154,9 @@ def ow():
     find_form = OneWalletFindUser()
     add_form = OneWalletAddUser()
 
+    dataclass = UserEntry()
     if find_form.find_userid.data and find_form.validate_on_submit():
-        dataclass_users = UserEntry()
-        if not dataclass_users.query.filter_by(player_id=find_form.userID.data).all():
+        if not dataclass.query.filter_by(player_id=find_form.userID.data).all():
             flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
         else:
             dataclass_sid = SidEntry()
@@ -178,8 +178,8 @@ def ow():
         # print('heeeeeere onetime!->>>>' + oneitem)
 
     if add_form.add_userid.data and add_form.validate_on_submit():
-        dataclass = UserEntry()
-        if not dataclass.query.filter_by(userID=add_form.userID_added.data).all():
+        # dataclass = UserEntry()
+        if not dataclass.query.filter_by(player_id=add_form.userID_added.data).all():
             # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
             # sid = str(len(dataclass.query.all()) + 1)
@@ -190,7 +190,7 @@ def ow():
                 Markup('<strong>' + add_form.userID_added.data + '</strong> found!' + '<br>balance:'
                        + add_form.balance.data + '<br>uuid:' + uuid), 'success')
         else:
-            flash(Markup('<strong>' + add_form.userID.data + '</strong> already exists!'), 'danger')
+            flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
     return render_template('oneWallet.html', ow_findUser_form=find_form, ow_addUser_form=add_form, form=uaform,
                            UA_payload=theSession.UA_payload)
