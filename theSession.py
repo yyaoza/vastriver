@@ -100,6 +100,8 @@ class Session:
         self.UA_payload['player']['update'] = False
         self.UA_payload['uuid'] = gui[5].text
         self.UA_payload['player']['id'] = gui[6].text
+
+    def get_user_balance(self):
         rwa = self.casino_cmd('RWA')
         self.UA_payload['player']['balance'] = rwa[3].text
 

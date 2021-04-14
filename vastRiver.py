@@ -1,5 +1,4 @@
 from datetime import datetime
-import pytz
 # from models import User
 import random
 import string
@@ -12,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flask import Flask, request, render_template, flash, Markup
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletForm
-from structures import Session
+from theSession import Session
 
 app = Flask(__name__)
 
@@ -32,18 +31,52 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-# create db model
-class UserEntry(db.Model):
-    __tablename__ = 'user_entries'
-    sid = db.Column(db.String(50), nullable=False, unique=True)
+# create sid model
+class SidEntry(db.Model):
+    __tablename__ = 'sessions'
+    sid = db.Column(db.String(50), nullable=False, primary_key=True, unique=True)
     uuid = db.Column(db.String(50), nullable=False, unique=True)
-    userID = db.Column(db.String(50), primary_key=True, unique=True)
+    userID = db.Column(db.String(50), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
 
-    def __init__(self, sid='', uuid='', userID=''):
+    def __init__(self, userID='', sid='', uuid=''):
         self.sid = sid
         self.uuid = uuid
         self.userID = userID
+
+
+# create sid model
+class UserEntry(db.Model):
+    __tablename__ = 'users'
+    # sid = db.Column(db.String(50), nullable=False, primary_key=True, unique=True)
+    uuid = db.Column(db.String(50), nullable=False, unique=True)
+    player_id = db.Column(db.String(50), primary_key=True)
+    player_update = db.Column(db.String(50), nullable=False)
+    player_firstName = db.Column(db.String(50), nullable=False)
+    player_lastName = db.Column(db.String(50), nullable=False)
+    player_nickname = db.Column(db.String(50), nullable=False)
+    player_country = db.Column(db.String(50), nullable=False)
+    player_language = db.Column(db.String(50), nullable=False)
+    player_currency = db.Column(db.String(50), nullable=False)
+    game_category = db.Column(db.String(50), nullable=False)
+    game_interface = db.Column(db.String(50), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now())
+
+    def __init__(self, player_id='', sid='', uuid='', player_update='', player_firstName='',
+                 player_lastName='', player_nickname='', player_country='', player_language='',
+                 player_currency='', game_category='', game_interface=''):
+        self.sid = sid
+        self.uuid = uuid
+        self.player_id = player_id
+        self.player_update = player_update
+        self.player_firstName = player_firstName
+        self.player_lastName = player_lastName
+        self.player_nickname = player_nickname
+        self.player_country = player_country
+        self.player_language = player_language
+        self.player_currency = player_currency
+        self.game_category = game_category
+        self.game_interface = game_interface
 
 
 db.create_all()
@@ -106,6 +139,8 @@ def gameLaunch():
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
+    global theSession
+    theSession.get_user_balance()
     form = FundTransferForm()
     global userdata
 
@@ -119,28 +154,7 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', ft_form=form, form=uaform, userdata=theSession.userdata,
-                           UA_payload=theSession.UA_payload)
-
-
-def ft_add(amount):
-    form = FundTransferForm()
-
-    print(userdata)
-
-    theSession.ft_add(amount)
-
-    return render_template('fundTransfer.html', form=form, userdata=theSession.userdata,
-                           UA_payload=theSession.UA_payload)
-
-
-def ft_subtract(amount):
-    form = FundTransferForm()
-
-    theSession.ft_subtract(amount)
-
-    return render_template('fundTransfer.html', form=form, userdata=theSession.userdata,
-                           UA_payload=theSession.UA_payload)
+    return render_template('fundTransfer.html', ft_form=form, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
@@ -149,11 +163,11 @@ def ow():
 
     if form.validate_on_submit():
         if form.add_userid.data:
-            dataclass = UserEntry()
+            dataclass = SidEntry()
             if not dataclass.query.filter_by(userID=form.userID.data).all():
                 uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
                 sid = str(len(dataclass.query.all()) + 1)
-                dataclass = UserEntry(sid, uuid, form.userID.data)
+                dataclass = SidEntry(form.userID.data, sid, uuid)
                 db.session.add(dataclass)
                 db.session.commit()
                 userid = form.userID.data
@@ -168,14 +182,20 @@ def ow():
             # print('heeeeeere onetime!->>>>' + oneitem)
 
         elif form.find_userid.data:
-            dataclass = UserEntry()
+            dataclass = SidEntry()
             if not dataclass.query.filter_by(userID=form.userID.data).all():
                 flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
             else:
-                flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
+                # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
+                uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+                sid = str(len(dataclass.query.all()) + 1)
+                dataclass = SidEntry(form.userID.data, sid, uuid)
+                db.session.add(dataclass)
+                db.session.commit()
+                userid = form.userID.data
+                flash(Markup('<strong>' + form.userID.data + '</strong> found!'+'<br>sid:'+sid+'<br>uuid:'+uuid), 'success')
 
-    return render_template('oneWallet.html', ow_form=form, form=uaform, userdata=theSession.userdata,
-                           UA_payload=theSession.UA_payload)
+    return render_template('oneWallet.html', ow_form=form, form=uaform, UA_payload=theSession.UA_payload)
 
 
 if __name__ == '__main__':

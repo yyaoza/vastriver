@@ -14,28 +14,6 @@
                     {{ ow_form.add_userid(class="btn btn-outline-info") }}
                     {{ ow_form.find_userid(class="btn btn-outline-info") }}
                 </div>
-                <h6>Transaction Details</h6>
-                <ol class="list-group list-group-numbered">
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">etransid</div>
-                        {{ UA_payload.transaction.etransid }}
-                    </div>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">transid</div>
-                      {{ UA_payload.transaction.transid }}
-                    </div>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                      <div class="account-heading-small">datetime</div>
-                      {{ UA_payload.transaction.datetime }}
-                    </div>
-                  </li>
-                </ol>
-
             </fieldset>
         </form>
     </div>
