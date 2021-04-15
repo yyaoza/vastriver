@@ -105,6 +105,17 @@ def casinoCmd(cmd, amount=0):
     return xmlTree.fromstring(x.text)
 
 
+@app.route('/test', methods=['GET', 'POST'])
+def test():
+    # handle the POST request
+    if request.method == 'POST':
+        language = request.form.get('language')
+        framework = request.form.get('framework')
+        return '''
+                          <h1>The language value is: {}</h1>
+                          <h1>The framework value is: {}</h1>'''.format(language, framework)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def start():
     global theSession
