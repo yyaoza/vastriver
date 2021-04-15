@@ -110,17 +110,36 @@ def casinoCmd(cmd, amount=0):
     return xmlTree.fromstring(x.text)
 
 
-@app.route('/test', methods=['GET', 'POST'])
-def test():
+def search_sid(userid):
+    dataclass = UserEntry()
+    return dataclass.query.filter_by(player_id=userid).all()
+
+
+@app.route('/api/check', methods=['POST'])
+def check():
     # handle the POST request
     if request.method == 'POST':
         auth_token = request.args['authToken']
+        request_data = request.get_json(force=True)
+
         if auth_token == 's3cr3tV4lu3':
-            return json.dumps(
-                {
-                    "status": "VALID"
-                }
-            )
+            if request_data:
+                if 'sid' in request_data:
+                    sid = request_data['sid']
+                if 'userID' in request_data:
+                    userid = request_data['userID']
+                    if not search_sid(userid):
+                        status = 'INVALID_PARAMETER'
+                    else:
+                        status = 'OK'
+
+                return json.dumps(
+                    {
+                        "status": status,
+                        "sid": sid,
+                        "uuid": ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+                    }
+                )
         else:
             return json.dumps(
                 {
@@ -180,7 +199,7 @@ def ow():
 
     dataclass = UserEntry()
     if find_form.find_userid.data and find_form.validate_on_submit():
-        if not dataclass.query.filter_by(player_id=find_form.userID.data).all():
+        if not search_sid(find_form.userID.data):
             flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
         else:
             dataclass_sid = SidEntry()
@@ -194,16 +213,8 @@ def ow():
             flash(Markup('SID Created for:' + userid + '<br><strong>sid:' + sid + '</strong><br>uuid:' + uuid),
                   'success')
 
-
-        # if not dataclass.query.filter_by(userID=form.userID.data).all():
-        #     flash(Markup('<strong>' + form.userID.data + '</strong> does not exist!'), 'danger')
-        # else:
-        #     flash(Markup('<strong>' + form.userID.data + '</strong> found!'), 'success')
-        # print('heeeeeere onetime!->>>>' + oneitem)
-
     if add_form.add_userid.data and add_form.validate_on_submit():
-        # dataclass = UserEntry()
-        if not dataclass.query.filter_by(player_id=add_form.userID_added.data).all():
+        if not search_sid(find_form.userID.data):
             # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
             # sid = str(len(dataclass.query.all()) + 1)
