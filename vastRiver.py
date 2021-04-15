@@ -115,7 +115,7 @@ def test():
     # handle the POST request
     if request.method == 'POST':
         auth_token = request.args['authToken']
-        if auth_token is 's3cr3tV4lu3':
+        if auth_token == 's3cr3tV4lu3':
             return json.loads(
                 {
                     "status": "VALID"
