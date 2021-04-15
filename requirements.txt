@@ -18,14 +18,5 @@ requests~=2.25.1
 certifi~=2020.12.5
 chardet~=4.0.0
 urllib3~=1.26.4
-flask_wtf==0.14.3pip==21.0.1
-setuptools==54.2.0
-WTForms==2.3.3
-idna==2.10
-requests==2.25.1
-certifi==2020.12.5
-chardet==4.0.0
-urllib3==1.26.4
 flask_wtf==0.14.3
 gunicorn==20.0.4
-
