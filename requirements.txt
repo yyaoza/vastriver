@@ -20,3 +20,5 @@ chardet~=4.0.0
 urllib3~=1.26.4
 flask_wtf==0.14.3
 gunicorn==20.0.4
+FLASK-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.7
