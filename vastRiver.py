@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import json
 import random
 import string
 import requests
@@ -31,7 +32,11 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+
+if os.environ.get('DATABASE_URL') is None:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 # initialize
 db_sid = SQLAlchemy(app)
 
@@ -109,12 +114,19 @@ def casinoCmd(cmd, amount=0):
 def test():
     # handle the POST request
     if request.method == 'POST':
-        language = request.form.get('language')
-        framework = request.form.get('framework')
-        return '''
-                          <h1>The language value is: {}</h1>
-                          <h1>The framework value is: {}</h1>'''.format(language, framework)
-
+        auth_token = request.args['authToken']
+        if auth_token is 's3cr3tV4lu3':
+            return json.loads(
+                {
+                    "status": "VALID"
+                }
+            )
+        else:
+            return json.loads(
+                {
+                    "status": "INVALID_TOKEN_ID"
+                }
+            )
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
