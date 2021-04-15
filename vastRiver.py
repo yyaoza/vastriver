@@ -85,6 +85,7 @@ class UserEntry(db_sid.Model):
         # self.game_category = game_category
         # self.game_interface = game_interface
 
+
 # if ENV == 'dev':
 #     db_sid.create_all()
 #     db_sid.session.commit()
@@ -115,8 +116,20 @@ def search_sid(userid):
     return dataclass.query.filter_by(player_id=userid).all()
 
 
+def create_sid():
+    dataclass_sid = SidEntry()
+    find_form = OneWalletFindUser()
+    sid = str(len(dataclass_sid.query.all()) + 1)
+    # print("sid:" + sid)
+    uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+    dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
+    db_sid.session.add(dataclass_sid)
+    db_sid.session.commit()
+    return sid
+
+
 @app.route('/api/check', methods=['POST'])
-def check():
+def check_user():
     # handle the POST request
     if request.method == 'POST':
         auth_token = request.args['authToken']
@@ -124,14 +137,45 @@ def check():
 
         if auth_token == 's3cr3tV4lu3':
             if request_data:
-                if 'sid' in request_data:
+                if request_data['sid']:
                     sid = request_data['sid']
-                if 'userID' in request_data:
-                    userid = request_data['userID']
+                if request_data['userId']:
+                    userid = request_data['userId']
                     if not search_sid(userid):
                         status = 'INVALID_PARAMETER'
                     else:
                         status = 'OK'
+                return json.dumps(
+                    {
+                        "status": status,
+                        "sid": sid,
+                        "uuid": ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+                    }
+                )
+        else:
+            return json.dumps(
+                {
+                    "status": "INVALID_TOKEN_ID"
+                }
+            )
+
+
+@app.route('/api/sid', methods=['POST'])
+def new_sid():
+    # handle the POST request
+    if request.method == 'POST':
+        auth_token = request.args['authToken']
+        request_data = request.get_json(force=True)
+
+        if auth_token == 's3cr3tV4lu3':
+            if request_data:
+                if request_data['userId']:
+                    userid = request_data['userId']
+                    if not search_sid(userid):
+                        status = 'INVALID_PARAMETER'
+                    else:
+                        status = 'OK'
+                        sid = create_sid()
 
                 return json.dumps(
                     {
