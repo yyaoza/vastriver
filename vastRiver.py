@@ -116,17 +116,18 @@ def test():
     if request.method == 'POST':
         auth_token = request.args['authToken']
         if auth_token == 's3cr3tV4lu3':
-            return json.loads(
+            return json.dumps(
                 {
                     "status": "VALID"
                 }
             )
         else:
-            return json.loads(
+            return json.dumps(
                 {
                     "status": "INVALID_TOKEN_ID"
                 }
             )
+
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
