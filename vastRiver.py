@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 import random
 import string
 import requests
@@ -19,21 +20,20 @@ theSession = ''
 
 app = Flask(__name__)
 
-ENV = 'dev'
+# ENV = 'dev'
+# if ENV == 'dev':
+#     app.debug = True
+# else:
+#     app.debug = False
 
-if ENV == 'dev':
-    app.debug = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
-else:
-    app.debug = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = ''
+# production db
+# postgres://rtdjyavocrnvgd:adfc33630f7ec16f6d7a366b0bd90539b0f381415f382a0231fcac1be2d25f52@ec2-54-205-183-19.compute-1.amazonaws.com:5432/d125pokplf1vlb
 
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 # initialize
 db_sid = SQLAlchemy(app)
-# db_sid = SQLAlchemy(app)
 
 
 # create sid model
