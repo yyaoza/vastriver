@@ -118,7 +118,7 @@ def db_search_sid(userid):
 
 def db_debit(userid, amount):
     user = UserEntry().query.filter_by(player_id=userid).all()[0]
-    balance = float(user.balance) - amount
+    balance = round(float(user.balance) - amount, 2)
 
     if balance >= 0:
         user.balance = balance
@@ -151,7 +151,7 @@ def send_json(status='', sid='', uuid='', balance=''):
     if sid:
         dump["sid"] = sid
     if balance:
-        dump["balance"] = float(balance)
+        dump["balance"] = balance
         dump["bonus"] = 0.0
     if uuid:
         dump["uuid"] = uuid
@@ -251,9 +251,9 @@ def sufficient_funds(userid='', status={}):
         if 'amount' in request_data['transaction']:
             balance = db_debit(userid, request_data['transaction']['amount'])
             if balance >= 0:
-                return {'balance': balance, 'error': 0}
+                return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
             else:
-                return {'balance': [], 'error': 2}
+                return {'balance': [], 'validD': 2}
         else:
             return 1
     elif status['valid'] == 2:

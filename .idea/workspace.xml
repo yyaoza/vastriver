@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e079a07a-61ae-4678-987f-bb8409b6f356" name="Default Changelist" comment="error handling&#10;sid, check, balance completed">
+    <list default="true" id="e079a07a-61ae-4678-987f-bb8409b6f356" name="Default Changelist" comment="broken debit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vastRiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/vastRiver.py" afterDir="false" />
     </list>
@@ -250,7 +250,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618566893759</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="broken debit">
+      <created>1618570534669</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1618570534669</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -283,17 +290,11 @@
     <MESSAGE value="check() POST processing under construction" />
     <MESSAGE value="api call for check and sid complete" />
     <MESSAGE value="error handling&#10;sid, check, balance completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="error handling&#10;sid, check, balance completed" />
+    <MESSAGE value="broken debit" />
+    <option name="LAST_COMMIT_MESSAGE" value="broken debit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/vastRiver.py</url>
-          <line>278</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
