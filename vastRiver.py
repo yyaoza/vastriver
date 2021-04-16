@@ -33,7 +33,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-if os.environ.get('DATABASE_URL') is None:
+if not os.environ.get('DATABASE_URL'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
@@ -111,12 +111,12 @@ def casinoCmd(cmd, amount=0):
     return xmlTree.fromstring(x.text)
 
 
-def search_sid(userid):
+def db_search_sid(userid):
     dataclass = UserEntry()
     return dataclass.query.filter_by(player_id=userid).all()
 
 
-def create_sid():
+def db_create_sid():
     dataclass_sid = SidEntry()
     find_form = OneWalletFindUser()
     sid = str(len(dataclass_sid.query.all()) + 1)
@@ -128,68 +128,155 @@ def create_sid():
     return sid
 
 
+def db_get_balance(userid):
+    dataclass = UserEntry()
+    return dataclass.query.filter_by(player_id=userid).all()[0].balance
+
+
+def send_json(status='', sid='', uuid='', balance=''):
+    dump = {}
+    if status:
+        dump["status"] = status
+    if sid:
+        dump["sid"] = sid
+    if balance:
+        dump["balance"] = float(balance)
+        dump["bonus"] = 0.0
+    if uuid:
+        dump["uuid"] = uuid
+    return json.dumps(dump)
+
+
+def valid_tokenID(valid=True):
+    if valid:
+        if 'authToken' in request.args and request.args['authToken'] == 's3cr3tV4lu3':
+            return True
+        else:
+            return False
+    else:
+        return send_json('INVALID_TOKEN_ID')
+
+
+def valid_userID(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        if 'userId' in request_data and db_search_sid(request_data['userId']):
+            return request_data['userId']
+        else:
+            return False
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_uuid(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        if 'uuid' in request_data:
+            return request_data['uuid']
+        else:
+            return False
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_sid(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        if 'sid' in request_data:
+            return request_data['sid']
+        else:
+            return False
+    else:
+        return send_json('INVALID_SID')
+
+
+def valid_channel(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        return 'channel' in request_data and 'type' in request_data['channel']
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_game(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        return 'game' in request_data
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_currency(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        return 'currency' in request_data
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+@app.route('/api/balance', methods=['POST'])
+def get_balance():
+    # handle the POST request
+    if request.method == 'POST':
+        request_data = request.get_json(force=True)
+
+        if valid_tokenID():
+            if valid_sid():
+                userid = valid_userID()
+                if userid:
+                    if valid_game():
+                        if valid_currency():
+                            uuid = valid_uuid()
+                            if uuid:
+                                return send_json("OK", False, uuid, db_get_balance(userid))
+                            else:
+                                return valid_uuid(False)
+                        else:
+                            return valid_currency(False)
+                    else:
+                        return valid_game(False)
+                else:
+                    return valid_userID(False)
+            else:
+                return valid_sid(False)
+        else:
+            return valid_tokenID(False)
+
+
+@app.route('/api/sid', methods=['POST'])
 @app.route('/api/check', methods=['POST'])
 def check_user():
     # handle the POST request
     if request.method == 'POST':
-        auth_token = request.args['authToken']
         request_data = request.get_json(force=True)
 
-        if auth_token == 's3cr3tV4lu3':
-            if request_data:
-                if request_data['sid']:
-                    sid = request_data['sid']
-                if request_data['userId']:
-                    userid = request_data['userId']
-                    if not search_sid(userid):
-                        status = 'INVALID_PARAMETER'
+        if valid_tokenID():
+            if valid_sid():
+                sid = db_create_sid()
+                if valid_userID():
+                    if valid_channel():
+                        uuid = valid_uuid()
+                        if uuid:
+                            return send_json("OK", sid, uuid)
+                        else:
+                            return valid_uuid(False)
                     else:
-                        status = 'OK'
-                return json.dumps(
-                    {
-                        "status": status,
-                        "sid": sid,
-                        "uuid": ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-                    }
-                )
+                        return valid_channel(False)
+                else:
+                    return valid_userID(False)
+            else:
+                return valid_sid(False)
         else:
-            return json.dumps(
-                {
-                    "status": "INVALID_TOKEN_ID"
-                }
-            )
-
-
-@app.route('/api/sid', methods=['POST'])
-def new_sid():
-    # handle the POST request
-    if request.method == 'POST':
-        auth_token = request.args['authToken']
-        request_data = request.get_json(force=True)
-
-        if auth_token == 's3cr3tV4lu3':
-            if request_data:
-                if request_data['userId']:
-                    userid = request_data['userId']
-                    if not search_sid(userid):
-                        status = 'INVALID_PARAMETER'
-                    else:
-                        status = 'OK'
-                        sid = create_sid()
-
-                return json.dumps(
-                    {
-                        "status": status,
-                        "sid": sid,
-                        "uuid": ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-                    }
-                )
-        else:
-            return json.dumps(
-                {
-                    "status": "INVALID_TOKEN_ID"
-                }
-            )
+            return valid_tokenID(False)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -243,7 +330,7 @@ def ow():
 
     dataclass = UserEntry()
     if find_form.find_userid.data and find_form.validate_on_submit():
-        if not search_sid(find_form.userID.data):
+        if not db_search_sid(find_form.userID.data):
             flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
         else:
             dataclass_sid = SidEntry()
@@ -258,7 +345,7 @@ def ow():
                   'success')
 
     if add_form.add_userid.data and add_form.validate_on_submit():
-        if not search_sid(find_form.userID.data):
+        if not db_search_sid(find_form.userID.data):
             # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
             # sid = str(len(dataclass.query.all()) + 1)
