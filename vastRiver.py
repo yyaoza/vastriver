@@ -38,71 +38,56 @@ if not os.environ.get('DATABASE_URL'):
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 # initialize
-db_sid = SQLAlchemy(app)
+the_db = SQLAlchemy(app)
 
 
-class TransEntry(db_sid.Model):
+class TransEntry(the_db.Model):
+    __tablename__ = 'transactions'
+    trans_id = the_db.Column(the_db.String(20), nullable=False, primary_key=True)
+    ref_id = the_db.Column(the_db.String(20), nullable=False, unique=True)
+    user_id = the_db.Column(the_db.String(50), nullable=False)
+    uuid = the_db.Column(the_db.String(50), nullable=False)
+    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
+
+    def __init__(self, user_id='', trans_id='',  ref_id='', uuid=''):
+        self.ref_id = ref_id
+        self.trans_id = trans_id
+        self.uuid = uuid
+        self.user_id = user_id
+
+
+class SidEntry(the_db.Model):
     __tablename__ = 'sessions'
-    sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True)
-    uuid = db_sid.Column(db_sid.String(50), nullable=False, unique=True)
-    userID = db_sid.Column(db_sid.String(50), nullable=False)
-    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
+    sid = the_db.Column(the_db.Integer, nullable=False, primary_key=True)
+    uuid = the_db.Column(the_db.String(50), nullable=False, unique=True)
+    userID = the_db.Column(the_db.String(50), nullable=False)
+    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
-    def __init__(self, userID='', sid='', uuid=''):
+    def __init__(self, userID='', sid=0, uuid=''):
         self.sid = sid
         self.uuid = uuid
         self.userID = userID
 
 
-class SidEntry(db_sid.Model):
-    __tablename__ = 'sessions'
-    sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True)
-    uuid = db_sid.Column(db_sid.String(50), nullable=False, unique=True)
-    userID = db_sid.Column(db_sid.String(50), nullable=False)
-    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
-
-    def __init__(self, userID='', sid='', uuid=''):
-        self.sid = sid
-        self.uuid = uuid
-        self.userID = userID
-
-
-class UserEntry(db_sid.Model):
+class UserEntry(the_db.Model):
     __tablename__ = 'users'
     # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
-    player_id = db_sid.Column(db_sid.String(50))
-    balance = db_sid.Column(db_sid.String(50))
-    uuid = db_sid.Column(db_sid.String(50), primary_key=True)
-    # player_update = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_firstName = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_lastName = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_nickname = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_country = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_language = db_sid.Column(db_sid.String(50), nullable=False)
-    # player_currency = db_sid.Column(db_sid.String(50), nullable=False)
-    # game_category = db_sid.Column(db_sid.String(50), nullable=False)
-    # game_interface = db_sid.Column(db_sid.String(50), nullable=False)
-    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
+    player_id = the_db.Column(the_db.String(50))
+    balance = the_db.Column(the_db.String(50))
+    uuid = the_db.Column(the_db.String(50), primary_key=True)
+    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
     def __init__(self, player_id='', balance='', uuid=''):
         self.uuid = uuid
         self.player_id = player_id
         self.balance = balance
-        # self.player_lastName = player_lastName
-        # self.player_nickname = player_nickname
-        # self.player_country = player_country
-        # self.player_language = player_language
-        # self.player_currency = player_currency
-        # self.game_category = game_category
-        # self.game_interface = game_interface
 
 
-# if ENV == 'dev':
-#     db_sid.create_all()
-#     db_sid.session.commit()
+the_db.create_all()
+the_db.session.commit()
 
 
-def casinoCmd(cmd, amount=0):
+def get_user_info(cmd, amount=0):
     payload = {
         'cCode': 'xxx',
         'euID': 'yaoza',
@@ -122,9 +107,20 @@ def casinoCmd(cmd, amount=0):
     return xmlTree.fromstring(x.text)
 
 
-def db_search_sid(userid):
+def db_search_userid(userid):
     dataclass = UserEntry()
     return dataclass.query.filter_by(player_id=userid).all()
+
+
+def db_get_recent_sid(userid):
+    sid_class = SidEntry()
+    # session_list = sid_class.dataclass.query.filter_by(player_id=check['userid'] and SQLAlchemy.func.max(sid_class.sid)).all()
+    return
+
+
+def db_search_transid(transid):
+    dataclass = TransEntry()
+    return dataclass.query.filter_by(trans_id=transid).all()
 
 
 def db_debit_credit(cr_or_db, userid, amount):
@@ -137,20 +133,20 @@ def db_debit_credit(cr_or_db, userid, amount):
 
     if balance >= 0:
         user.balance = balance
-        db_sid.session.commit()
+        the_db.session.commit()
 
     return balance
 
 
-def db_create_sid():
+def db_create_sid(userid):
     dataclass_sid = SidEntry()
-    find_form = OneWalletFindUser()
-    sid = str(len(dataclass_sid.query.all()) + 1)
+    # find_form = OneWalletFindUser()
+    sid = len(dataclass_sid.query.all()) + 1
     # print("sid:" + sid)
     uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-    dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
-    db_sid.session.add(dataclass_sid)
-    db_sid.session.commit()
+    dataclass_sid = SidEntry(userid, sid, uuid)
+    the_db.session.add(dataclass_sid)
+    the_db.session.commit()
     return sid
 
 
@@ -173,7 +169,7 @@ def send_json(status='', sid='', uuid='', balance=''):
     return json.dumps(dump)
 
 
-def valid_tokenID(valid=True):
+def valid_token_id(valid=True):
     if valid:
         if 'authToken' in request.args and request.args['authToken'] == 's3cr3tV4lu3':
             return True
@@ -183,14 +179,34 @@ def valid_tokenID(valid=True):
         return send_json('INVALID_TOKEN_ID')
 
 
-def valid_userID(valid=True):
+def valid_user(valid=True):
     if valid:
         request_data = request.get_json(force=True)
 
-        if 'userId' in request_data and db_search_sid(request_data['userId']):
+        if 'userId' in request_data:
             return request_data['userId']
         else:
             return False
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def match_userid_sid(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        if db_search_userid(request_data['userId']):
+            return request_data['userId']
+        else:
+            return False
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_check_user(userid, sid, uuid):
+    if sid is db_get_recent_sid(userid):
+        return send_json("OK", sid, uuid)
     else:
         return send_json('INVALID_PARAMETER')
 
@@ -259,24 +275,40 @@ def valid_transaction(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
-def valid_amount(valid=True):
-    if valid:
+# def valid_amount(valid=True):
+#     if valid:
+#         request_data = request.get_json(force=True)
+#
+#         return 'amount' in request_data['transaction']
+#
+#     else:
+#         return send_json('INVALID_PARAMETER')
+
+
+def valid_credit(userid='', status={}):
+    if status['valid'] == 0:
         request_data = request.get_json(force=True)
 
-        return 'amount' in request_data['transaction']
+        if 'amount' in request_data['transaction']:
 
+            if db_search_transid(request_data['transaction']['id']):
+                return {'balance': [], 'valid': 2}
+            else:
+                balance = db_debit_credit(True, userid, request_data['transaction']['amount'])
+                return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
+        else:
+            return 1
+    elif status['valid'] == 2:
+        return send_json('BET_ALREADY_EXIST')
     else:
         return send_json('INVALID_PARAMETER')
 
 
-def valid_credit(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
+def credit_balance(userid):
+    request_data = request.get_json(force=True)
+    # search if bet already exists
 
-        return 'amount' in request_data['transaction']
-
-    else:
-        return send_json('INVALID_PARAMETER')
+    balance = db_debit_credit(True, userid, request_data['transaction']['amount'])
 
 
 def valid_debit(userid='', status={}):
@@ -288,7 +320,7 @@ def valid_debit(userid='', status={}):
             if balance >= 0:
                 return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
             else:
-                return {'balance': [], 'validD': 2}
+                return {'balance': [], 'valid': 2}
         else:
             return 1
     elif status['valid'] == 2:
@@ -301,26 +333,21 @@ def valid_debit(userid='', status={}):
 def credit():
     # handle the POST request
     if request.method == 'POST':
-        if valid_tokenID():
+        if valid_token_id():
             if valid_sid():
-                userid = valid_userID()
+                userid = match_userid_sid()
                 if userid:
                     if valid_game():
                         if valid_currency():
                             if valid_transaction():
                                 uuid = valid_uuid()
                                 if uuid:
-                                    if valid_amount():
-                                        if valid_credit():
-                                            balance_status = valid_credit(userid, balance_status)
-                                            if balance_status['valid'] == 0:
-                                                return send_json("OK", False, uuid, balance_status['balance'])
-                                            else:
-                                                return sufficient_funds(userid, balance_status['valid'])
-                                        else:
-                                            return valid_credit(False)
+                                    balance_status = {'balance': 0, 'valid': 0}
+                                    balance_status = valid_credit(userid, balance_status)
+                                    if balance_status['valid'] == 0:
+                                        return send_json("OK", False, uuid, balance_status['balance'])
                                     else:
-                                        return valid_amount(False)
+                                        return valid_credit(userid, balance_status['valid'])
                                 else:
                                     return valid_uuid(False)
                             else:
@@ -330,20 +357,20 @@ def credit():
                     else:
                         return valid_game(False)
                 else:
-                    return valid_userID(False)
+                    return match_userid_sid(False)
             else:
                 return valid_sid(False)
         else:
-            return valid_tokenID(False)
+            return valid_token_id(False)
 
 
 @app.route('/api/debit', methods=['POST'])
 def debit():
     # handle the POST request
     if request.method == 'POST':
-        if valid_tokenID():
+        if valid_token_id():
             if valid_sid():
-                userid = valid_userID()
+                userid = match_userid_sid()
                 if userid:
                     if valid_game():
                         if valid_currency():
@@ -355,7 +382,7 @@ def debit():
                                     if balance_status['valid'] == 0:
                                         return send_json("OK", False, uuid, balance_status['balance'])
                                     else:
-                                        return sufficient_funds(userid, balance_status['valid'])
+                                        return valid_debit(userid, balance_status['valid'])
                                 else:
                                     return valid_uuid(False)
                             else:
@@ -365,20 +392,20 @@ def debit():
                     else:
                         return valid_game(False)
                 else:
-                    return valid_userID(False)
+                    return match_userid_sid(False)
             else:
                 return valid_sid(False)
         else:
-            return valid_tokenID(False)
+            return valid_token_id(False)
 
 
 @app.route('/api/balance', methods=['POST'])
 def get_balance():
     # handle the POST request
     if request.method == 'POST':
-        if valid_tokenID():
+        if valid_token_id():
             if valid_sid():
-                userid = valid_userID()
+                userid = match_userid_sid()
                 if userid:
                     if valid_game():
                         if valid_currency():
@@ -392,36 +419,61 @@ def get_balance():
                     else:
                         return valid_game(False)
                 else:
-                    return valid_userID(False)
+                    return match_userid_sid(False)
             else:
                 return valid_sid(False)
         else:
-            return valid_tokenID(False)
+            return valid_token_id(False)
 
 
 @app.route('/api/sid', methods=['POST'])
-@app.route('/api/check', methods=['POST'])
-def check_user():
+def sid_user():
     # handle the POST request
     if request.method == 'POST':
-        if valid_tokenID():
+        if valid_token_id():
             if valid_sid():
-                sid = db_create_sid()
-                if valid_userID():
+                userid = valid_user()
+                if userid:
                     if valid_channel():
                         uuid = valid_uuid()
                         if uuid:
+                            sid = db_create_sid(userid)
                             return send_json("OK", sid, uuid)
                         else:
                             return valid_uuid(False)
                     else:
                         return valid_channel(False)
                 else:
-                    return valid_userID(False)
+                    return valid_user(False)
             else:
                 return valid_sid(False)
         else:
-            return valid_tokenID(False)
+            return valid_token_id(False)
+
+
+@app.route('/api/check', methods=['POST'])
+def check_user():
+    # handle the POST request
+    if request.method == 'POST':
+        if valid_token_id():
+            sid = valid_sid()
+            if sid:
+                if valid_channel():
+                    uuid = valid_uuid()
+                    if uuid:
+                        userid = valid_user()
+                        if userid:
+                            return valid_check_user(userid, sid, uuid)
+                        else:
+                            return valid_user(False)
+                    else:
+                        return valid_uuid(False)
+                else:
+                    return valid_channel(False)
+            else:
+                return valid_sid(False)
+        else:
+            return valid_token_id(False)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -475,7 +527,7 @@ def ow():
 
     dataclass = UserEntry()
     if find_form.find_userid.data and find_form.validate_on_submit():
-        if not db_search_sid(find_form.userID.data):
+        if not db_search_userid(find_form.userID.data):
             flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
         else:
             dataclass_sid = SidEntry()
@@ -483,20 +535,20 @@ def ow():
             sid = str(len(dataclass_sid.query.all()) + 1)
             print("sid:" + sid)
             dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
-            db_sid.session.add(dataclass_sid)
-            db_sid.session.commit()
+            the_db.session.add(dataclass_sid)
+            the_db.session.commit()
             userid = find_form.userID.data
             flash(Markup('SID Created for:' + userid + '<br><strong>sid:' + sid + '</strong><br>uuid:' + uuid),
                   'success')
 
     if add_form.add_userid.data and add_form.validate_on_submit():
-        if not db_search_sid(find_form.userID.data):
+        if not db_search_userid(find_form.userID.data):
             # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
             # sid = str(len(dataclass.query.all()) + 1)
             dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data, uuid)
-            db_sid.session.add(dataclass)
-            db_sid.session.commit()
+            the_db.session.add(dataclass)
+            the_db.session.commit()
             flash(
                 Markup('<strong>' + add_form.userID_added.data + '</strong> found!' + '<br>balance:'
                        + add_form.balance.data + '<br>uuid:' + uuid), 'success')
