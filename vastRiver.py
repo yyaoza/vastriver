@@ -41,7 +41,19 @@ else:
 db_sid = SQLAlchemy(app)
 
 
-# create sid model
+class TransEntry(db_sid.Model):
+    __tablename__ = 'sessions'
+    sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True)
+    uuid = db_sid.Column(db_sid.String(50), nullable=False, unique=True)
+    userID = db_sid.Column(db_sid.String(50), nullable=False)
+    date_created = db_sid.Column(db_sid.DateTime, default=datetime.now())
+
+    def __init__(self, userID='', sid='', uuid=''):
+        self.sid = sid
+        self.uuid = uuid
+        self.userID = userID
+
+
 class SidEntry(db_sid.Model):
     __tablename__ = 'sessions'
     sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True)
@@ -55,7 +67,6 @@ class SidEntry(db_sid.Model):
         self.userID = userID
 
 
-# create sid model
 class UserEntry(db_sid.Model):
     __tablename__ = 'users'
     # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
@@ -116,9 +127,13 @@ def db_search_sid(userid):
     return dataclass.query.filter_by(player_id=userid).all()
 
 
-def db_debit(userid, amount):
+def db_debit_credit(cr_or_db, userid, amount):
     user = UserEntry().query.filter_by(player_id=userid).all()[0]
-    balance = round(float(user.balance) - amount, 2)
+    if cr_or_db:
+        if UserEntry().query.filter_by(player_id=userid).all()[0]:
+            balance = round(float(user.balance) + amount, 2)
+    else:
+        balance = round(float(user.balance) - amount, 2)
 
     if balance >= 0:
         user.balance = balance
@@ -244,12 +259,32 @@ def valid_transaction(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
-def sufficient_funds(userid='', status={}):
+def valid_amount(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        return 'amount' in request_data['transaction']
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_credit(valid=True):
+    if valid:
+        request_data = request.get_json(force=True)
+
+        return 'amount' in request_data['transaction']
+
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_debit(userid='', status={}):
     if status['valid'] == 0:
         request_data = request.get_json(force=True)
 
         if 'amount' in request_data['transaction']:
-            balance = db_debit(userid, request_data['transaction']['amount'])
+            balance = db_debit_credit(False, userid, request_data['transaction']['amount'])
             if balance >= 0:
                 return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
             else:
@@ -260,6 +295,46 @@ def sufficient_funds(userid='', status={}):
         return send_json('INSUFFICIENT_FUNDS')
     else:
         return send_json('INVALID_PARAMETER')
+
+
+@app.route('/api/credit', methods=['POST'])
+def credit():
+    # handle the POST request
+    if request.method == 'POST':
+        if valid_tokenID():
+            if valid_sid():
+                userid = valid_userID()
+                if userid:
+                    if valid_game():
+                        if valid_currency():
+                            if valid_transaction():
+                                uuid = valid_uuid()
+                                if uuid:
+                                    if valid_amount():
+                                        if valid_credit():
+                                            balance_status = valid_credit(userid, balance_status)
+                                            if balance_status['valid'] == 0:
+                                                return send_json("OK", False, uuid, balance_status['balance'])
+                                            else:
+                                                return sufficient_funds(userid, balance_status['valid'])
+                                        else:
+                                            return valid_credit(False)
+                                    else:
+                                        return valid_amount(False)
+                                else:
+                                    return valid_uuid(False)
+                            else:
+                                return valid_transaction(False)
+                        else:
+                            return valid_currency(False)
+                    else:
+                        return valid_game(False)
+                else:
+                    return valid_userID(False)
+            else:
+                return valid_sid(False)
+        else:
+            return valid_tokenID(False)
 
 
 @app.route('/api/debit', methods=['POST'])
@@ -276,7 +351,7 @@ def debit():
                                 uuid = valid_uuid()
                                 if uuid:
                                     balance_status = {'balance': 0, 'valid': 0}
-                                    balance_status = sufficient_funds(userid, balance_status)
+                                    balance_status = valid_debit(userid, balance_status)
                                     if balance_status['valid'] == 0:
                                         return send_json("OK", False, uuid, balance_status['balance'])
                                     else:
