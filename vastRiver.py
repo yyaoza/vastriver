@@ -8,6 +8,7 @@ import webbrowser
 import xml.etree.ElementTree as xmlTree
 from flask_sqlalchemy import SQLAlchemy
 
+import userAuth
 from flask import Flask, request, render_template, flash, Markup
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 
@@ -486,7 +487,7 @@ def check_user():
 @app.route('/', methods=['GET', 'POST'])
 def start():
     global theSession
-    theSession = Session(request.host_url)
+    theSession = userAuth.UA2(request.host_url)
     global uaform
     uaform = UserAuthenticationForm()
 
@@ -499,7 +500,7 @@ def start():
 
 
 @app.route('/gameLaunch')
-def gameLaunch():
+def launch_game():
     global theSession
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
@@ -512,7 +513,6 @@ def ft():
     global theSession
     theSession.get_user_balance()
     form = FundTransferForm()
-    global userdata
 
     if form.validate_on_submit():
         if form.subtract.data:

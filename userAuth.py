@@ -5,7 +5,7 @@ import requests
 import string
 
 
-class Session:
+class UA2:
     UA_payload = {
         'uuid': 'random',  # assigned, should be uid
         'transaction': {
