@@ -119,7 +119,7 @@ def db_check_userid_with_sid(userid, sid):
     for x in the_list:
         if max_value is None or x.sid > max_value:
             max_value = x.sid
-    if max_value is sid:
+    if max_value is int(sid):
         return True
     else:
         return False
