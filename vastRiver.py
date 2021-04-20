@@ -136,7 +136,53 @@ def db_search_transid(transid):
     return dataclass.query.filter_by(trans_id=transid).all()
 
 
-def db_debit_credit(cr_or_db, userid, request_data):
+def db_trans_db_exist(transaction):
+    # ref if
+    refid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
+    transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
+    # get the last one and see if it's a credit
+    if len(refid_list) > 0:
+        last_settled_refid_debit = refid_list[len(refid_list)-1].settled
+    else:
+        last_settled_refid_debit = True
+    if len(transid_list) > 0:
+        last_settled_transid_debit = transid_list[len(transid_list)-1].settled
+    else:
+        last_settled_transid_debit = True
+
+    return not last_settled_transid_debit or not last_settled_refid_debit
+
+
+def db_trans_settled(cr_or_can, transaction):
+    # write into the settled field for the credit
+    if cr_or_can == 'Credit':
+        trans_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
+    else:
+        trans_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
+
+    # transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
+    # get the last one and see if it's a credit
+    if len(trans_list) > 0:
+        is_last_debit_settled = trans_list[len(trans_list)-1].settled
+    else:
+        is_last_debit_settled = True
+
+    # return whether it's settled or not, it will be settled
+    trans_list[len(trans_list)-1].settled = True
+    the_db.session.commit()
+
+    return is_last_debit_settled
+
+
+def db_trans_dbcr(cr_or_db, userid, request_data, uuid):
+
+    transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'], request_data['transaction']['refId'],
+                             uuid, False)
+    the_db.session.add(transaction)
+    the_db.session.commit()
+
+
+def db_user_dbcr(cr_or_db, userid, request_data):
     user = UserEntry().query.filter_by(player_id=userid).all()[0]
     if cr_or_db:
         balance = round(float(user.balance) + request_data['transaction']['amount'], 2)
@@ -148,10 +194,9 @@ def db_debit_credit(cr_or_db, userid, request_data):
             trans_type = 'Credit'
         else:
             trans_type = 'Debit'
-        transaction = TransEntry(trans_type, userid, request_data['transaction']['id'],
-                                 request_data['transaction']['refId'],  request_data['uuid'], False)
+
+        # write to user db
         user.balance = balance
-        the_db.session.add(transaction)
         the_db.session.commit()
 
     return balance
@@ -294,43 +339,47 @@ def valid_transaction(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
-def valid_credit(userid='', status={}):
-    if status['valid'] == 0:
+def valid_amount(valid=True):
+    if valid:
         request_data = request.get_json(force=True)
 
-        if 'amount' in request_data['transaction']:
+        return 'amount' in request_data['transaction']
 
-            if db_search_transid(request_data['transaction']['id']):
-                return {'balance': [], 'valid': 2}
-            else:
-                balance = db_debit_credit(True, userid, request_data)
-                return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
-        else:
-            return 1
-    elif status['valid'] == 2:
+    else:
+        return send_json('INVALID_PARAMETER')
+
+
+def valid_credit(userid='', uuid=''):
+
+    request_data = request.get_json(force=True)
+    # check if the debit has been settled
+    if db_trans_settled('Credit', request_data['transaction']):
+        return send_json('BET_ALREADY_SETTLED')
+    else:
+        # write to user db
+        balance = db_user_dbcr(True, userid, request_data)
+        # write to transaction db
+        db_trans_dbcr('Credit', userid, request_data, uuid)
+        return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+        # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
+
+
+def valid_debit(userid='', uuid=''):
+
+    request_data = request.get_json(force=True)
+    # check if a debit already exists
+    if db_trans_db_exist(request_data['transaction']):
         return send_json('BET_ALREADY_EXIST')
     else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_debit(userid='', status={}):
-    if status['valid'] == 0:
-        request_data = request.get_json(force=True)
-
-        if 'amount' in request_data['transaction']:
-            # if db_check_debit_exist()
-            balance = db_debit_credit(False, userid, request_data)
-            if balance >= 0:
-                return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
-            else:
-                # insufficient funds
-                return {'balance': [], 'valid': 2}
+        # db cr from user db and check for insufficient funds
+        balance = db_user_dbcr(False, userid, request_data)
+        if balance >= 0:
+            # write to transaction db
+            db_trans_dbcr('Debit', userid, request_data, uuid)
+            return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+            # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
         else:
-            return 1
-    elif status['valid'] == 2:
-        return send_json('INSUFFICIENT_FUNDS')
-    else:
-        return send_json('INVALID_PARAMETER')
+            return send_json('INSUFFICIENT_FUNDS')
 
 
 @app.route('/api/credit', methods=['POST'])
@@ -346,12 +395,15 @@ def credit():
                             if valid_transaction():
                                 uuid = valid_uuid()
                                 if uuid:
-                                    balance_status = {'balance': 0, 'valid': 0}
-                                    balance_status = valid_credit(userid, balance_status)
-                                    if balance_status['valid'] == 0:
-                                        return send_json("OK", False, uuid, balance_status['balance'])
+                                    if valid_amount():
+                                        # balance_status = {'balance': 0, 'valid': 0}
+                                        # balance_status = valid_debit(userid, balance_status)
+                                        # if balance_status['valid'] == 0:
+                                        return valid_credit(userid, uuid)
+                                    # else:
+                                    #     return valid_debit(userid, balance_status['valid'])
                                     else:
-                                        return valid_credit(userid, balance_status)
+                                        return valid_amount(False)
                                 else:
                                     return valid_uuid(False)
                             else:
@@ -381,12 +433,15 @@ def debit():
                             if valid_transaction():
                                 uuid = valid_uuid()
                                 if uuid:
-                                    balance_status = {'balance': 0, 'valid': 0}
-                                    balance_status = valid_debit(userid, balance_status)
-                                    if balance_status['valid'] == 0:
-                                        return send_json("OK", False, uuid, balance_status['balance'])
+                                    if valid_amount():
+                                        # balance_status = {'balance': 0, 'valid': 0}
+                                        # balance_status = valid_debit(userid, balance_status)
+                                        # if balance_status['valid'] == 0:
+                                        return valid_debit(userid, uuid)
+                                    # else:
+                                    #     return valid_debit(userid, balance_status['valid'])
                                     else:
-                                        return valid_debit(userid, balance_status['valid'])
+                                        return valid_amount(False)
                                 else:
                                     return valid_uuid(False)
                             else:
