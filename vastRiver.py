@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flask import Flask, request, render_template, flash, Markup
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
-from theSession import Session
+
 
 url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
 ecID = 'diyft40000000001test123'
@@ -112,10 +112,17 @@ def db_search_userid(userid):
     return dataclass.query.filter_by(player_id=userid).all()
 
 
-def db_get_recent_sid(userid):
+def db_check_userid_with_sid(userid, sid):
     sid_class = SidEntry()
-    # session_list = sid_class.dataclass.query.filter_by(player_id=check['userid'] and SQLAlchemy.func.max(sid_class.sid)).all()
-    return
+    the_list = sid_class.query.filter_by(userID=userid).all()
+    max_value = None
+    for x in the_list:
+        if max_value is None or x.sid > max_value:
+            max_value = x.sid
+    if max_value is sid:
+        return True
+    else:
+        return False
 
 
 def db_search_transid(transid):
@@ -205,7 +212,7 @@ def match_userid_sid(valid=True):
 
 
 def valid_check_user(userid, sid, uuid):
-    if sid is db_get_recent_sid(userid):
+    if db_check_userid_with_sid(userid, sid):
         return send_json("OK", sid, uuid)
     else:
         return send_json('INVALID_PARAMETER')
