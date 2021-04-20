@@ -44,17 +44,22 @@ the_db = SQLAlchemy(app)
 
 class TransEntry(the_db.Model):
     __tablename__ = 'transactions'
-    trans_id = the_db.Column(the_db.String(20), nullable=False, primary_key=True)
-    ref_id = the_db.Column(the_db.String(20), nullable=False, unique=True)
+    id = the_db.Column(the_db.Integer, primary_key=True)
+    type = the_db.Column(the_db.String(20), nullable=False)
+    trans_id = the_db.Column(the_db.String(20), nullable=False)
+    ref_id = the_db.Column(the_db.String(20), nullable=False)
     user_id = the_db.Column(the_db.String(50), nullable=False)
     uuid = the_db.Column(the_db.String(50), nullable=False)
+    settled = the_db.Column(the_db.Boolean, nullable=False)
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
-    def __init__(self, user_id='', trans_id='',  ref_id='', uuid=''):
+    def __init__(self, trans_type='', user_id='', trans_id='',  ref_id='', uuid='', settled=''):
+        self.type = trans_type
         self.ref_id = ref_id
         self.trans_id = trans_id
         self.uuid = uuid
         self.user_id = user_id
+        self.settled = settled
 
 
 class SidEntry(the_db.Model):
@@ -131,16 +136,22 @@ def db_search_transid(transid):
     return dataclass.query.filter_by(trans_id=transid).all()
 
 
-def db_debit_credit(cr_or_db, userid, amount):
+def db_debit_credit(cr_or_db, userid, request_data):
     user = UserEntry().query.filter_by(player_id=userid).all()[0]
     if cr_or_db:
-        if UserEntry().query.filter_by(player_id=userid).all()[0]:
-            balance = round(float(user.balance) + amount, 2)
+        balance = round(float(user.balance) + request_data['transaction']['amount'], 2)
     else:
-        balance = round(float(user.balance) - amount, 2)
+        balance = round(float(user.balance) - request_data['transaction']['amount'], 2)
 
     if balance >= 0:
+        if cr_or_db:
+            trans_type = 'Credit'
+        else:
+            trans_type = 'Debit'
+        transaction = TransEntry(trans_type, userid, request_data['transaction']['id'],
+                                 request_data['transaction']['refId'],  request_data['uuid'], False)
         user.balance = balance
+        the_db.session.add(transaction)
         the_db.session.commit()
 
     return balance
@@ -283,16 +294,6 @@ def valid_transaction(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
-# def valid_amount(valid=True):
-#     if valid:
-#         request_data = request.get_json(force=True)
-#
-#         return 'amount' in request_data['transaction']
-#
-#     else:
-#         return send_json('INVALID_PARAMETER')
-
-
 def valid_credit(userid='', status={}):
     if status['valid'] == 0:
         request_data = request.get_json(force=True)
@@ -302,7 +303,7 @@ def valid_credit(userid='', status={}):
             if db_search_transid(request_data['transaction']['id']):
                 return {'balance': [], 'valid': 2}
             else:
-                balance = db_debit_credit(True, userid, request_data['transaction']['amount'])
+                balance = db_debit_credit(True, userid, request_data)
                 return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
         else:
             return 1
@@ -312,22 +313,17 @@ def valid_credit(userid='', status={}):
         return send_json('INVALID_PARAMETER')
 
 
-def credit_balance(userid):
-    request_data = request.get_json(force=True)
-    # search if bet already exists
-
-    balance = db_debit_credit(True, userid, request_data['transaction']['amount'])
-
-
 def valid_debit(userid='', status={}):
     if status['valid'] == 0:
         request_data = request.get_json(force=True)
 
         if 'amount' in request_data['transaction']:
-            balance = db_debit_credit(False, userid, request_data['transaction']['amount'])
+            # if db_check_debit_exist()
+            balance = db_debit_credit(False, userid, request_data)
             if balance >= 0:
                 return {'balance': '${:,.2f}'.format(balance), 'valid': 0}
             else:
+                # insufficient funds
                 return {'balance': [], 'valid': 2}
         else:
             return 1
@@ -355,7 +351,7 @@ def credit():
                                     if balance_status['valid'] == 0:
                                         return send_json("OK", False, uuid, balance_status['balance'])
                                     else:
-                                        return valid_credit(userid, balance_status['valid'])
+                                        return valid_credit(userid, balance_status)
                                 else:
                                     return valid_uuid(False)
                             else:
