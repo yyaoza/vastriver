@@ -153,25 +153,27 @@ def db_trans_db_exist(transaction):
     return not last_settled_transid_debit or not last_settled_refid_debit
 
 
-def db_trans_settled(cr_or_can, transaction):
+def db_trans_settled(trans_type, id_type):
     # write into the settled field for the credit
-    if cr_or_can == 'Credit':
-        trans_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
-    else:
-        trans_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
+    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_type).all()
 
     # transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
-    # get the last one and see if it's a credit
+    # get the last one and see if it's been settled
     if len(trans_list) > 0:
         is_last_debit_settled = trans_list[len(trans_list)-1].settled
     else:
         is_last_debit_settled = True
 
-    # return whether it's settled or not, it will be settled
+    # return whether it's settled or not, it will be settled now
     trans_list[len(trans_list)-1].settled = True
     the_db.session.commit()
 
-    return is_last_debit_settled
+
+def db_trans_exist(trans_type, id_type):
+    # write into the settled field for the credit
+    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_type).all()
+
+    return len(trans_list) > 0
 
 
 def db_trans_dbcr(cr_or_db, userid, request_data, uuid):
@@ -349,11 +351,29 @@ def valid_amount(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
+def valid_cancel(userid='', uuid=''):
+
+    request_data = request.get_json(force=True)
+    # check if bet exists (match id and if settled = false)
+    if not db_trans_exist('Debit', 'id'):
+        return send_json('BET_DOES_NOT_EXIST')
+
+    # check if the debit has been settled
+    if db_trans_settled('Debit', 'id'):
+        return send_json('BET_ALREADY_SETTLED')
+    else:
+        # write to user db
+        balance = db_user_dbcr(True, userid, request_data)
+        # write to transaction db
+        db_trans_dbcr('Cancel', userid, request_data, uuid)
+        return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+
+
 def valid_credit(userid='', uuid=''):
 
     request_data = request.get_json(force=True)
     # check if the debit has been settled
-    if db_trans_settled('Credit', request_data['transaction']):
+    if db_trans_settled('Debit', 'refId'):
         return send_json('BET_ALREADY_SETTLED')
     else:
         # write to user db
@@ -404,6 +424,37 @@ def credit():
                                     #     return valid_debit(userid, balance_status['valid'])
                                     else:
                                         return valid_amount(False)
+                                else:
+                                    return valid_uuid(False)
+                            else:
+                                return valid_transaction(False)
+                        else:
+                            return valid_currency(False)
+                    else:
+                        return valid_game(False)
+                else:
+                    return match_userid_sid(False)
+            else:
+                return valid_sid(False)
+        else:
+            return valid_token_id(False)
+
+
+@app.route('/api/cancel', methods=['POST'])
+def cancel():
+    # handle the POST request
+    if request.method == 'POST':
+        if valid_token_id():
+            if valid_sid():
+                userid = match_userid_sid()
+                if userid:
+                    if valid_game():
+                        if valid_currency():
+                            if valid_transaction():
+                                uuid = valid_uuid()
+                                if uuid:
+                                    if valid_amount():
+                                        return valid_credit(userid, uuid)
                                 else:
                                     return valid_uuid(False)
                             else:
