@@ -15,8 +15,9 @@ from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, On
 url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
 ecID = 'diyft40000000001test123'
 ow_url = 'http://10.10.88.42:9092/onewallet'
-uaform = ''
-ftform = ''
+uaform = None
+ftform = None
+theSession = None
 
 app = Flask(__name__)
 
