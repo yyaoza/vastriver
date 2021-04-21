@@ -17,7 +17,6 @@ ecID = 'diyft40000000001test123'
 ow_url = 'http://10.10.88.42:9092/onewallet'
 uaform = ''
 ftform = ''
-theSession = ''
 
 app = Flask(__name__)
 
