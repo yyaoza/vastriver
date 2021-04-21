@@ -12,7 +12,6 @@ import userAuth
 from flask import Flask, request, render_template, flash, Markup
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 
-
 url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
 ecID = 'diyft40000000001test123'
 ow_url = 'http://10.10.88.42:9092/onewallet'
@@ -53,7 +52,7 @@ class TransEntry(the_db.Model):
     settled = the_db.Column(the_db.Boolean, nullable=False)
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
-    def __init__(self, trans_type='', user_id='', trans_id='',  ref_id='', uuid='', settled=''):
+    def __init__(self, trans_type='', user_id='', trans_id='', ref_id='', uuid='', settled=''):
         self.type = trans_type
         self.ref_id = ref_id
         self.trans_id = trans_id
@@ -136,55 +135,69 @@ def db_search_transid(transid):
     return dataclass.query.filter_by(trans_id=transid).all()
 
 
+# only for debits
 def db_trans_db_exist(transaction):
-    # ref if
-    refid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
-    transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
-    # get the last one and see if it's a credit
-    if len(refid_list) > 0:
-        last_settled_refid_debit = refid_list[len(refid_list)-1].settled
+    # ref id
+    # the_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
+    # if len(the_list) > 0:
+    #     return not the_list[len(the_list)-1].settled
+    # trans id
+    the_list = TransEntry().query.filter_by(type='Debit', trans_id=transaction['id']).all()
+    if len(the_list) > 0:
+        return not the_list[len(the_list) - 1].settled
+
+    return False
+
+
+def db_trans_settled_by_cancel(id_num):
+    trans_list = TransEntry().query.filter_by(type='Debit', trans_id=id_num).all()
+    if trans_list[len(trans_list) - 1].settled:
+        return True
     else:
-        last_settled_refid_debit = True
-    if len(transid_list) > 0:
-        last_settled_transid_debit = transid_list[len(transid_list)-1].settled
-    else:
-        last_settled_transid_debit = True
-
-    return not last_settled_transid_debit or not last_settled_refid_debit
+        trans_list[len(trans_list) - 1].settled = True
+        the_db.session.commit()
+        return False
 
 
-def db_trans_settled(trans_type, id_type):
-    # write into the settled field for the credit
-    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_type).all()
+def db_trans_settled(trans_type, id_num):
+    # write into the settled field
+    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_num).all()
 
     # transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
     # get the last one and see if it's been settled
     if len(trans_list) > 0:
-        is_last_debit_settled = trans_list[len(trans_list)-1].settled
+        if trans_list[len(trans_list) - 1].settled:
+            return True
+        else:
+            # it will be settled now
+            trans_list[len(trans_list) - 1].settled = True
+            the_db.session.commit()
+            return False
     else:
-        is_last_debit_settled = True
-
-    # return whether it's settled or not, it will be settled now
-    trans_list[len(trans_list)-1].settled = True
-    the_db.session.commit()
+        return False
 
 
-def db_trans_exist(trans_type, id_type):
+def db_trans_exist(trans_type, id_num):
     # write into the settled field for the credit
-    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_type).all()
+    trans_list = TransEntry().query.filter_by(type=trans_type, trans_id=id_num).all()
 
     return len(trans_list) > 0
 
 
-def db_trans_dbcr(cr_or_db, userid, request_data, uuid):
-
-    transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'], request_data['transaction']['refId'],
-                             uuid, False)
+def db_new_trans_dbcr(cr_or_db, userid, request_data, uuid):
+    if cr_or_db == 'Debit':
+        transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'],
+                                 request_data['transaction']['refId'],
+                                 uuid, False)
+    else:
+        transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'],
+                                 request_data['transaction']['refId'],
+                                 uuid, True)
     the_db.session.add(transaction)
     the_db.session.commit()
 
 
-def db_user_dbcr(cr_or_db, userid, request_data):
+def db_new_user_dbcr(cr_or_db, userid, request_data):
     user = UserEntry().query.filter_by(player_id=userid).all()[0]
     if cr_or_db:
         balance = round(float(user.balance) + request_data['transaction']['amount'], 2)
@@ -204,7 +217,7 @@ def db_user_dbcr(cr_or_db, userid, request_data):
     return balance
 
 
-def db_create_sid(userid):
+def db_new_session_sid(userid):
     dataclass_sid = SidEntry()
     # find_form = OneWalletFindUser()
     sid = len(dataclass_sid.query.all()) + 1
@@ -352,50 +365,47 @@ def valid_amount(valid=True):
 
 
 def valid_cancel(userid='', uuid=''):
-
     request_data = request.get_json(force=True)
     # check if bet exists (match id and if settled = false)
-    if not db_trans_exist('Debit', 'id'):
+    if not db_trans_exist('Debit', request_data['transaction']['id']):
         return send_json('BET_DOES_NOT_EXIST')
 
     # check if the debit has been settled
-    if db_trans_settled('Debit', 'id'):
+    if db_trans_settled_by_cancel(request_data['transaction']['id']):
         return send_json('BET_ALREADY_SETTLED')
     else:
         # write to user db
-        balance = db_user_dbcr(True, userid, request_data)
+        balance = db_new_user_dbcr(True, userid, request_data)
         # write to transaction db
-        db_trans_dbcr('Cancel', userid, request_data, uuid)
+        db_new_trans_dbcr('Cancel', userid, request_data, uuid)
         return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
 
 
 def valid_credit(userid='', uuid=''):
-
     request_data = request.get_json(force=True)
     # check if the debit has been settled
-    if db_trans_settled('Debit', 'refId'):
+    if db_trans_settled('Debit', request_data['transaction']['refId']):
         return send_json('BET_ALREADY_SETTLED')
     else:
         # write to user db
-        balance = db_user_dbcr(True, userid, request_data)
+        balance = db_new_user_dbcr(True, userid, request_data)
         # write to transaction db
-        db_trans_dbcr('Credit', userid, request_data, uuid)
+        db_new_trans_dbcr('Credit', userid, request_data, uuid)
         return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
         # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
 
 
 def valid_debit(userid='', uuid=''):
-
     request_data = request.get_json(force=True)
     # check if a debit already exists
     if db_trans_db_exist(request_data['transaction']):
         return send_json('BET_ALREADY_EXIST')
     else:
         # db cr from user db and check for insufficient funds
-        balance = db_user_dbcr(False, userid, request_data)
+        balance = db_new_user_dbcr(False, userid, request_data)
         if balance >= 0:
             # write to transaction db
-            db_trans_dbcr('Debit', userid, request_data, uuid)
+            db_new_trans_dbcr('Debit', userid, request_data, uuid)
             return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
             # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
         else:
@@ -416,12 +426,7 @@ def credit():
                                 uuid = valid_uuid()
                                 if uuid:
                                     if valid_amount():
-                                        # balance_status = {'balance': 0, 'valid': 0}
-                                        # balance_status = valid_debit(userid, balance_status)
-                                        # if balance_status['valid'] == 0:
                                         return valid_credit(userid, uuid)
-                                    # else:
-                                    #     return valid_debit(userid, balance_status['valid'])
                                     else:
                                         return valid_amount(False)
                                 else:
@@ -454,7 +459,7 @@ def cancel():
                                 uuid = valid_uuid()
                                 if uuid:
                                     if valid_amount():
-                                        return valid_credit(userid, uuid)
+                                        return valid_cancel(userid, uuid)
                                 else:
                                     return valid_uuid(False)
                             else:
@@ -547,7 +552,7 @@ def sid_user():
                     if valid_channel():
                         uuid = valid_uuid()
                         if uuid:
-                            sid = db_create_sid(userid)
+                            sid = db_new_session_sid(userid)
                             return send_json("OK", sid, uuid)
                         else:
                             return valid_uuid(False)
