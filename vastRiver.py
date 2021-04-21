@@ -607,7 +607,7 @@ def start():
 
 
 @app.route('/gameLaunch')
-def launch_game():
+def gameLaunch():
     global theSession
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
