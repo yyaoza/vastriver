@@ -64,7 +64,7 @@ class TransEntry(the_db.Model):
 class SidEntry(the_db.Model):
     __tablename__ = 'sessions'
     sid = the_db.Column(the_db.Integer, nullable=False, primary_key=True)
-    uuid = the_db.Column(the_db.String(50), nullable=False, unique=True)
+    uuid = the_db.Column(the_db.String(50), nullable=False)
     userID = the_db.Column(the_db.String(50), nullable=False)
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
@@ -77,9 +77,9 @@ class SidEntry(the_db.Model):
 class UserEntry(the_db.Model):
     __tablename__ = 'users'
     # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
-    player_id = the_db.Column(the_db.String(50))
+    player_id = the_db.Column(the_db.String(50), primary_key=True)
     balance = the_db.Column(the_db.String(50))
-    uuid = the_db.Column(the_db.String(50), primary_key=True)
+    uuid = the_db.Column(the_db.String(50))
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
     def __init__(self, player_id='', balance='', uuid=''):
@@ -217,12 +217,12 @@ def db_new_user_dbcr(cr_or_db, userid, request_data):
     return balance
 
 
-def db_new_session_sid(userid):
+def db_new_session_sid(userid, uuid):
     dataclass_sid = SidEntry()
     # find_form = OneWalletFindUser()
     sid = len(dataclass_sid.query.all()) + 1
     # print("sid:" + sid)
-    uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+    # uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
     dataclass_sid = SidEntry(userid, sid, uuid)
     the_db.session.add(dataclass_sid)
     the_db.session.commit()
@@ -307,10 +307,7 @@ def valid_sid(valid=True):
     if valid:
         request_data = request.get_json(force=True)
 
-        if 'sid' in request_data:
-            return request_data['sid']
-        else:
-            return False
+        return 'sid' in request_data
     else:
         return send_json('INVALID_SID')
 
@@ -546,22 +543,24 @@ def sid_user():
     # handle the POST request
     if request.method == 'POST':
         if valid_token_id():
-            if valid_sid():
-                userid = valid_user()
-                if userid:
-                    if valid_channel():
-                        uuid = valid_uuid()
-                        if uuid:
-                            sid = db_new_session_sid(userid)
+
+            userid = valid_user()
+            if userid:
+                if valid_channel():
+                    uuid = valid_uuid()
+                    if uuid:
+                        if valid_sid():
+                            sid = db_new_session_sid(userid, uuid)
                             return send_json("OK", sid, uuid)
                         else:
-                            return valid_uuid(False)
+                            return valid_sid(False)
                     else:
-                        return valid_channel(False)
+                        return valid_uuid(False)
                 else:
-                    return valid_user(False)
+                    return valid_channel(False)
             else:
-                return valid_sid(False)
+                return valid_user(False)
+
         else:
             return valid_token_id(False)
 
