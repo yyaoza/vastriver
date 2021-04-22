@@ -9,7 +9,7 @@ import xml.etree.ElementTree as xmlTree
 from flask_sqlalchemy import SQLAlchemy
 
 import userAuth
-from flask import Flask, request, render_template, flash, Markup
+from flask import Flask, request, render_template, flash, Markup, jsonify
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 
 url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
@@ -245,7 +245,7 @@ def send_json(status='', sid='', uuid='', balance=''):
         dump["bonus"] = 0.0
     if uuid:
         dump["uuid"] = uuid
-    return json.dumps(dump)
+    return jsonify(dump)
 
 
 def valid_token_id(valid=True):
