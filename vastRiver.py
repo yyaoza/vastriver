@@ -242,7 +242,7 @@ def send_json(status='', sid='', uuid='', balance=''):
     if sid:
         dump["sid"] = sid
     if balance:
-        dump["balance"] = balance
+        dump["balance"] = float(balance)
         dump["bonus"] = 0.0
     if uuid:
         dump["uuid"] = uuid
@@ -378,7 +378,7 @@ def valid_cancel(userid='', uuid=''):
         balance = db_new_user_dbcr(True, userid, request_data)
         # write to transaction db
         db_new_trans_dbcr('Cancel', userid, request_data, uuid)
-        return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+        return send_json("OK", False, uuid, '{:.2f}'.format(balance))
 
 
 def valid_credit(userid='', uuid=''):
@@ -391,7 +391,7 @@ def valid_credit(userid='', uuid=''):
         balance = db_new_user_dbcr(True, userid, request_data)
         # write to transaction db
         db_new_trans_dbcr('Credit', userid, request_data, uuid)
-        return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+        return send_json("OK", False, uuid, '{:.2f}'.format(balance))
         # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
 
 
@@ -406,7 +406,7 @@ def valid_debit(userid='', uuid=''):
         if balance >= 0:
             # write to transaction db
             db_new_trans_dbcr('Debit', userid, request_data, uuid)
-            return send_json("OK", False, uuid, '${:,.2f}'.format(balance))
+            return send_json("OK", False, uuid, '{:.2f}'.format(balance))
             # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
         else:
             return send_json('INSUFFICIENT_FUNDS')
