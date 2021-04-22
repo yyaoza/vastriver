@@ -127,7 +127,6 @@ def db_check_userid_with_sid(userid, sid):
     # if max_value is int(sid):
     #     return True
     # else:
-
     #     return False
 
 
