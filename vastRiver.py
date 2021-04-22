@@ -119,15 +119,15 @@ def db_search_userid(userid):
 
 def db_check_userid_with_sid(userid, sid):
     sid_class = SidEntry()
-    the_list = sid_class.query.filter_by(userID=userid).all()
-    max_value = None
-    for x in the_list:
-        if max_value is None or x.sid > max_value:
-            max_value = x.sid
-    if max_value is int(sid):
-        return True
-    else:
-        return False
+    return sid_class.query.filter_by(userID=userid, sid=sid).all()
+    # max_value = None
+    # for x in the_list:
+    #     if max_value is None or x.sid > max_value:
+    #         max_value = x.sid
+    # if max_value is int(sid):
+    #     return True
+    # else:
+    #     return False
 
 
 def db_search_transid(transid):
@@ -231,7 +231,8 @@ def db_new_session_sid(userid, uuid):
 
 def db_get_balance(userid):
     dataclass = UserEntry()
-    return dataclass.query.filter_by(player_id=userid).all()[0].balance
+    if dataclass.query.filter_by(player_id=userid).all():
+        return dataclass.query.filter_by(player_id=userid).all()[0].balance
 
 
 def send_json(status='', sid='', uuid='', balance=''):
@@ -591,6 +592,19 @@ def check_user():
             return valid_token_id(False)
 
 
+@app.route('/api/rb', methods=['GET', 'POST'])
+def rb():
+    if not UserEntry().query.filter_by(player_id='walt').all():
+        print('test')
+        user = UserEntry('walt', '1000')
+        the_db.session.add(user)
+    if not UserEntry().query.filter_by(player_id='jim').all():
+        user = UserEntry('jim', '1000')
+        the_db.session.add(user)
+    the_db.session.commit()
+    return 'done'
+
+
 @app.route('/', methods=['GET', 'POST'])
 def start():
     global theSession
@@ -674,9 +688,7 @@ def ow():
 
 
 if __name__ == '__main__':
-    # user = UserEntry('walt', '1000')
-    # the_db.session.add(user)
-    # the_db.session.commit()
 
     app.debug = True
     app.run()
+
