@@ -44,9 +44,9 @@ the_db = SQLAlchemy(app)
 class TransEntry(the_db.Model):
     __tablename__ = 'transactions'
     id = the_db.Column(the_db.Integer, primary_key=True)
-    type = the_db.Column(the_db.String(20), nullable=False)
-    trans_id = the_db.Column(the_db.String(20), nullable=False)
-    ref_id = the_db.Column(the_db.String(20), nullable=False)
+    type = the_db.Column(the_db.String(50), nullable=False)
+    trans_id = the_db.Column(the_db.String(50), nullable=False)
+    ref_id = the_db.Column(the_db.String(50), nullable=False)
     user_id = the_db.Column(the_db.String(50), nullable=False)
     uuid = the_db.Column(the_db.String(50), nullable=False)
     settled = the_db.Column(the_db.Boolean, nullable=False)
