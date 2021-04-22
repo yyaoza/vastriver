@@ -16,7 +16,7 @@
         <title>Vast River</title>
     {% endif %}
 </head>
-<body>
+<body style="background:#484646">
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
@@ -24,6 +24,9 @@
             <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="{{ url_for('ft') }}">Fund Transfer</a>
                 <a class="nav-item nav-link" href="{{ url_for('ow') }}">One Wallet</a>
+                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Direct Game Launch</a>
+                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Game Streaming</a>
+                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Game History</a>
             </div>
             <div class="navbar-nav mr-6">
                 <a href="{{ url_for('gameLaunch') }}"><button type="button" class="btn btn-primary">
