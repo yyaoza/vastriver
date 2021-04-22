@@ -79,11 +79,11 @@ class UserEntry(the_db.Model):
     # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
     player_id = the_db.Column(the_db.String(50), primary_key=True)
     balance = the_db.Column(the_db.String(50))
-    uuid = the_db.Column(the_db.String(50))
+    # uuid = the_db.Column(the_db.String(50))
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
-    def __init__(self, player_id='', balance='', uuid=''):
-        self.uuid = uuid
+    def __init__(self, player_id='', balance=''):
+        # self.uuid = uuid
         self.player_id = player_id
         self.balance = balance
 
@@ -283,9 +283,11 @@ def match_userid_sid(valid=True):
         return send_json('INVALID_PARAMETER')
 
 
-def valid_check_user(userid, sid, uuid):
-    if db_check_userid_with_sid(userid, sid):
-        return send_json("OK", sid, uuid)
+def valid_check_user(userid, uuid):
+    request_data = request.get_json(force=True)
+
+    if db_check_userid_with_sid(userid, request_data['sid']):
+        return send_json("OK", request_data['sid'], uuid)
     else:
         return send_json('INVALID_PARAMETER')
 
@@ -570,14 +572,13 @@ def check_user():
     # handle the POST request
     if request.method == 'POST':
         if valid_token_id():
-            sid = valid_sid()
-            if sid:
+            if valid_sid():
                 if valid_channel():
                     uuid = valid_uuid()
                     if uuid:
                         userid = valid_user()
                         if userid:
-                            return valid_check_user(userid, sid, uuid)
+                            return valid_check_user(userid, uuid)
                         else:
                             return valid_user(False)
                     else:
@@ -659,7 +660,7 @@ def ow():
             # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
             # sid = str(len(dataclass.query.all()) + 1)
-            dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data, uuid)
+            dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data)
             the_db.session.add(dataclass)
             the_db.session.commit()
             flash(
@@ -673,5 +674,9 @@ def ow():
 
 
 if __name__ == '__main__':
+    # user = UserEntry('walt', '1000')
+    # the_db.session.add(user)
+    # the_db.session.commit()
+
     app.debug = True
     app.run()
