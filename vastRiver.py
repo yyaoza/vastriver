@@ -1,35 +1,28 @@
-from datetime import datetime
 import os
-import json
 import random
 import string
 import requests
 import webbrowser
-import xml.etree.ElementTree as xmlTree
-from flask_sqlalchemy import SQLAlchemy
 
 import userAuth
-from flask import Flask, request, render_template, flash, Markup, jsonify
+from flask import Flask, request, render_template, flash, Markup
+
+from data import db_get_balance, db_search_userid, db_new_session_sid, the_db, SidEntry, UserEntry, send_json
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 
 # url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
 # ecID = 'diyft40000000001test123'
 # ow_url = 'http://10.10.88.42:9092/onewallet'
+from oneWallet import valid_cancel, valid_credit, valid_debit
+from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, valid_channel, \
+    valid_game, valid_currency, valid_transaction, valid_amount
+
 uaform = None
 ftform = None
 theSession = None
 iframe_game_toggle = False
 
 app = Flask(__name__)
-
-# ENV = 'dev'
-# if ENV == 'dev':
-#     app.debug = True
-# else:
-#     app.debug = False
-
-# production db
-# postgres://rtdjyavocrnvgd:adfc33630f7ec16f6d7a366b0bd90539b0f381415f382a0231fcac1be2d25f52@ec2-54-205-183-19.compute-1.amazonaws.com:5432/d125pokplf1vlb
 
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -38,335 +31,9 @@ if not os.environ.get('DATABASE_URL'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
-# initialize
-the_db = SQLAlchemy(app)
-
-
-class TransEntry(the_db.Model):
-    __tablename__ = 'transactions'
-    id = the_db.Column(the_db.Integer, primary_key=True)
-    type = the_db.Column(the_db.String(50), nullable=False)
-    trans_id = the_db.Column(the_db.String(50), nullable=False)
-    ref_id = the_db.Column(the_db.String(50), nullable=False)
-    user_id = the_db.Column(the_db.String(50), nullable=False)
-    uuid = the_db.Column(the_db.String(50), nullable=False)
-    settled = the_db.Column(the_db.Boolean, nullable=False)
-    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
-
-    def __init__(self, trans_type='', user_id='', trans_id='', ref_id='', uuid='', settled=''):
-        self.type = trans_type
-        self.ref_id = ref_id
-        self.trans_id = trans_id
-        self.uuid = uuid
-        self.user_id = user_id
-        self.settled = settled
-
-
-class SidEntry(the_db.Model):
-    __tablename__ = 'sessions'
-    sid = the_db.Column(the_db.Integer, nullable=False, primary_key=True)
-    uuid = the_db.Column(the_db.String(50), nullable=False)
-    userID = the_db.Column(the_db.String(50), nullable=False)
-    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
-
-    def __init__(self, userID='', sid=0, uuid=''):
-        self.sid = sid
-        self.uuid = uuid
-        self.userID = userID
-
-
-class UserEntry(the_db.Model):
-    __tablename__ = 'users'
-    # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
-    player_id = the_db.Column(the_db.String(50), primary_key=True)
-    balance = the_db.Column(the_db.String(50))
-    # uuid = the_db.Column(the_db.String(50))
-    date_created = the_db.Column(the_db.DateTime, default=datetime.now())
-
-    def __init__(self, player_id='', balance=''):
-        # self.uuid = uuid
-        self.player_id = player_id
-        self.balance = balance
-
 
 the_db.create_all()
 the_db.session.commit()
-
-
-def db_search_userid(userid):
-    dataclass = UserEntry()
-    return dataclass.query.filter_by(player_id=userid).all()
-
-
-def db_check_userid_with_sid(userid, sid):
-    sid_class = SidEntry()
-    return sid_class.query.filter_by(userID=userid, sid=sid).all()
-
-
-def db_search_transid(transid):
-    dataclass = TransEntry()
-    return dataclass.query.filter_by(trans_id=transid).all()
-
-
-# only for debits
-def db_trans_db_exist(transaction):
-    the_list = TransEntry().query.filter_by(type='Debit', trans_id=transaction['id']).all()
-    if len(the_list) > 0:
-        return not the_list[len(the_list) - 1].settled
-
-    return False
-
-
-def db_trans_settled_by_cancel(id_num):
-    trans_list = TransEntry().query.filter_by(type='Debit', trans_id=id_num).all()
-    if trans_list[len(trans_list) - 1].settled:
-        return True
-    else:
-        trans_list[len(trans_list) - 1].settled = True
-        the_db.session.commit()
-        return False
-
-
-def db_trans_settled(trans_type, id_num):
-    # write into the settled field
-    trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_num).all()
-
-    # get the last one and see if it's been settled
-    if len(trans_list) > 0:
-        if trans_list[len(trans_list) - 1].settled:
-            return True
-        else:
-            # it will be settled now
-            trans_list[len(trans_list) - 1].settled = True
-            the_db.session.commit()
-            return False
-    else:
-        return False
-
-
-def db_trans_exist(trans_type, id_num):
-    # write into the settled field for the credit
-    trans_list = TransEntry().query.filter_by(type=trans_type, trans_id=id_num).all()
-
-    return len(trans_list) > 0
-
-
-def db_new_trans_dbcr(cr_or_db, userid, request_data, uuid):
-    if cr_or_db == 'Debit':
-        transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'],
-                                 request_data['transaction']['refId'],
-                                 uuid, False)
-    else:
-        transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'],
-                                 request_data['transaction']['refId'],
-                                 uuid, True)
-    the_db.session.add(transaction)
-    the_db.session.commit()
-
-
-def db_new_user_dbcr(cr_or_db, userid, request_data):
-    user = UserEntry().query.filter_by(player_id=userid).all()[0]
-    if cr_or_db:
-        balance = round(float(user.balance) + request_data['transaction']['amount'], 2)
-    else:
-        balance = round(float(user.balance) - request_data['transaction']['amount'], 2)
-
-    if balance >= 0:
-
-        # write to user db
-        user.balance = balance
-        the_db.session.commit()
-
-    return balance
-
-
-def db_new_session_sid(userid, uuid):
-    dataclass_sid = SidEntry()
-    sid = len(dataclass_sid.query.all()) + 1
-    dataclass_sid = SidEntry(userid, sid, uuid)
-    the_db.session.add(dataclass_sid)
-    the_db.session.commit()
-    return sid
-
-
-def db_get_balance(userid):
-    dataclass = UserEntry()
-    if dataclass.query.filter_by(player_id=userid).all():
-        return dataclass.query.filter_by(player_id=userid).all()[0].balance
-
-
-def send_json(status='', sid='', uuid='', balance=''):
-    dump = {}
-    if status:
-        dump["status"] = status
-    if sid:
-        dump["sid"] = sid
-    if balance:
-        dump["balance"] = float(balance)
-        dump["bonus"] = 0.0
-    if uuid:
-        dump["uuid"] = uuid
-    return jsonify(dump)
-
-
-def valid_token_id(valid=True):
-    if valid:
-        if 'authToken' in request.args and request.args['authToken'] == 's3cr3tV4lu3':
-            return True
-        else:
-            return False
-    else:
-        return send_json('INVALID_TOKEN_ID')
-
-
-def valid_user(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        if 'userId' in request_data:
-            return request_data['userId']
-        else:
-            return False
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def match_userid_sid(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        if db_search_userid(request_data['userId']):
-            return request_data['userId']
-        else:
-            return False
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_check_user(userid, uuid):
-    request_data = request.get_json(force=True)
-
-    if db_check_userid_with_sid(userid, request_data['sid']):
-        return send_json("OK", request_data['sid'], uuid)
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_uuid(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        if 'uuid' in request_data:
-            return request_data['uuid']
-        else:
-            return False
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_sid(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'sid' in request_data
-    else:
-        return send_json('INVALID_SID')
-
-
-def valid_channel(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'channel' in request_data and 'type' in request_data['channel']
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_game(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'game' in request_data
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_currency(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'currency' in request_data
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_transaction(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'transaction' in request_data
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_amount(valid=True):
-    if valid:
-        request_data = request.get_json(force=True)
-
-        return 'amount' in request_data['transaction']
-
-    else:
-        return send_json('INVALID_PARAMETER')
-
-
-def valid_cancel(userid='', uuid=''):
-    request_data = request.get_json(force=True)
-    # check if bet exists (match id and if settled = false)
-    if not db_trans_exist('Debit', request_data['transaction']['id']):
-        return send_json('BET_DOES_NOT_EXIST')
-    # check if the debit has been settled
-    if db_trans_settled_by_cancel(request_data['transaction']['id']):
-        return send_json('BET_ALREADY_SETTLED')
-    else:
-        # write to user db
-        balance = db_new_user_dbcr(True, userid, request_data)
-        # write to transaction db
-        db_new_trans_dbcr('Cancel', userid, request_data, uuid)
-        return send_json("OK", False, uuid, '{:.2f}'.format(balance))
-
-
-def valid_credit(userid='', uuid=''):
-    request_data = request.get_json(force=True)
-    # check if the debit has been settled
-    if db_trans_settled('Debit', request_data['transaction']['refId']):
-        return send_json('BET_ALREADY_SETTLED')
-    else:
-        # write to user db
-        balance = db_new_user_dbcr(True, userid, request_data)
-        # write to transaction db
-        db_new_trans_dbcr('Credit', userid, request_data, uuid)
-        return send_json("OK", False, uuid, '{:.2f}'.format(balance))
-
-
-def valid_debit(userid='', uuid=''):
-    request_data = request.get_json(force=True)
-    # check if a debit already exists
-    if db_trans_db_exist(request_data['transaction']):
-        return send_json('BET_ALREADY_EXIST')
-    else:
-        # db cr from user db and check for insufficient funds
-        balance = db_new_user_dbcr(False, userid, request_data)
-        if balance >= 0:
-            # write to transaction db
-            db_new_trans_dbcr('Debit', userid, request_data, uuid)
-            return send_json("OK", False, uuid, '{:.2f}'.format(balance))
-        else:
-            return send_json('INSUFFICIENT_FUNDS')
 
 
 @app.route('/api/credit', methods=['POST'])
@@ -572,8 +239,8 @@ def start():
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
 
 
-@app.route('/gameLaunch_newWindow')
-def gameLaunch_newWindow():
+@app.route('/game_window')
+def game_window():
     global theSession
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
@@ -581,8 +248,8 @@ def gameLaunch_newWindow():
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
 
 
-@app.route('/gameLaunch_iframe')
-def gameLaunch_iframe():
+@app.route('/game_iframe')
+def game_iframe():
     global theSession
     if theSession.UA_payload['iframe_game']:
         theSession.UA_payload['iframe_game'] = False
@@ -593,7 +260,8 @@ def gameLaunch_iframe():
     theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
     # webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
 
-    return render_template('editUser.html', launch_game=iframe_game_toggle, form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('editUser.html', launch_game=iframe_game_toggle, form=uaform,
+                           UA_payload=theSession.UA_payload)
 
 
 @app.route('/ft', methods=['GET', 'POST'])
@@ -653,7 +321,5 @@ def ow():
 
 
 if __name__ == '__main__':
-
     app.debug = True
     app.run()
-
