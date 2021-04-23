@@ -12,12 +12,13 @@ import userAuth
 from flask import Flask, request, render_template, flash, Markup, jsonify
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 
-url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
-ecID = 'diyft40000000001test123'
-ow_url = 'http://10.10.88.42:9092/onewallet'
+# url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
+# ecID = 'diyft40000000001test123'
+# ow_url = 'http://10.10.88.42:9092/onewallet'
 uaform = None
 ftform = None
 theSession = None
+iframe_game_toggle = False
 
 app = Flask(__name__)
 
@@ -92,26 +93,6 @@ the_db.create_all()
 the_db.session.commit()
 
 
-def get_user_info(cmd, amount=0):
-    payload = {
-        'cCode': 'xxx',
-        'euID': 'yaoza',
-        'ecID': 'diyft40000000001test123',
-        'eTransID': 'fake_eTransID',
-        'output': '1'
-    }
-    if cmd == 'GUI':
-        payload.update({'cCode': cmd})
-
-    else:
-        payload.update({'cCode': cmd,
-                        'amount': amount,
-                        })
-
-    x = requests.get(url, params=payload)
-    return xmlTree.fromstring(x.text)
-
-
 def db_search_userid(userid):
     dataclass = UserEntry()
     return dataclass.query.filter_by(player_id=userid).all()
@@ -120,14 +101,6 @@ def db_search_userid(userid):
 def db_check_userid_with_sid(userid, sid):
     sid_class = SidEntry()
     return sid_class.query.filter_by(userID=userid, sid=sid).all()
-    # max_value = None
-    # for x in the_list:
-    #     if max_value is None or x.sid > max_value:
-    #         max_value = x.sid
-    # if max_value is int(sid):
-    #     return True
-    # else:
-    #     return False
 
 
 def db_search_transid(transid):
@@ -137,11 +110,6 @@ def db_search_transid(transid):
 
 # only for debits
 def db_trans_db_exist(transaction):
-    # ref id
-    # the_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['refId']).all()
-    # if len(the_list) > 0:
-    #     return not the_list[len(the_list)-1].settled
-    # trans id
     the_list = TransEntry().query.filter_by(type='Debit', trans_id=transaction['id']).all()
     if len(the_list) > 0:
         return not the_list[len(the_list) - 1].settled
@@ -163,7 +131,6 @@ def db_trans_settled(trans_type, id_num):
     # write into the settled field
     trans_list = TransEntry().query.filter_by(type=trans_type, ref_id=id_num).all()
 
-    # transid_list = TransEntry().query.filter_by(type='Debit', ref_id=transaction['id']).all()
     # get the last one and see if it's been settled
     if len(trans_list) > 0:
         if trans_list[len(trans_list) - 1].settled:
@@ -205,10 +172,6 @@ def db_new_user_dbcr(cr_or_db, userid, request_data):
         balance = round(float(user.balance) - request_data['transaction']['amount'], 2)
 
     if balance >= 0:
-        if cr_or_db:
-            trans_type = 'Credit'
-        else:
-            trans_type = 'Debit'
 
         # write to user db
         user.balance = balance
@@ -219,10 +182,7 @@ def db_new_user_dbcr(cr_or_db, userid, request_data):
 
 def db_new_session_sid(userid, uuid):
     dataclass_sid = SidEntry()
-    # find_form = OneWalletFindUser()
     sid = len(dataclass_sid.query.all()) + 1
-    # print("sid:" + sid)
-    # uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
     dataclass_sid = SidEntry(userid, sid, uuid)
     the_db.session.add(dataclass_sid)
     the_db.session.commit()
@@ -369,7 +329,6 @@ def valid_cancel(userid='', uuid=''):
     # check if bet exists (match id and if settled = false)
     if not db_trans_exist('Debit', request_data['transaction']['id']):
         return send_json('BET_DOES_NOT_EXIST')
-
     # check if the debit has been settled
     if db_trans_settled_by_cancel(request_data['transaction']['id']):
         return send_json('BET_ALREADY_SETTLED')
@@ -392,7 +351,6 @@ def valid_credit(userid='', uuid=''):
         # write to transaction db
         db_new_trans_dbcr('Credit', userid, request_data, uuid)
         return send_json("OK", False, uuid, '{:.2f}'.format(balance))
-        # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
 
 
 def valid_debit(userid='', uuid=''):
@@ -407,7 +365,6 @@ def valid_debit(userid='', uuid=''):
             # write to transaction db
             db_new_trans_dbcr('Debit', userid, request_data, uuid)
             return send_json("OK", False, uuid, '{:.2f}'.format(balance))
-            # {'balance': '${:,.2f}'.format(balance), 'valid': 0}
         else:
             return send_json('INSUFFICIENT_FUNDS')
 
@@ -490,12 +447,7 @@ def debit():
                                 uuid = valid_uuid()
                                 if uuid:
                                     if valid_amount():
-                                        # balance_status = {'balance': 0, 'valid': 0}
-                                        # balance_status = valid_debit(userid, balance_status)
-                                        # if balance_status['valid'] == 0:
                                         return valid_debit(userid, uuid)
-                                    # else:
-                                    #     return valid_debit(userid, balance_status['valid'])
                                     else:
                                         return valid_amount(False)
                                 else:
@@ -620,13 +572,28 @@ def start():
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
 
 
-@app.route('/gameLaunch')
-def gameLaunch():
+@app.route('/gameLaunch_newWindow')
+def gameLaunch_newWindow():
     global theSession
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
 
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
+
+
+@app.route('/gameLaunch_iframe')
+def gameLaunch_iframe():
+    global theSession
+    if theSession.UA_payload['iframe_game']:
+        theSession.UA_payload['iframe_game'] = False
+    else:
+        theSession.UA_payload['iframe_game'] = True
+    # global theSession
+    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
+    theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+    # webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
+
+    return render_template('editUser.html', launch_game=iframe_game_toggle, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/ft', methods=['GET', 'POST'])
@@ -653,7 +620,7 @@ def ow():
     find_form = OneWalletFindUser()
     add_form = OneWalletAddUser()
 
-    dataclass = UserEntry()
+    # dataclass = UserEntry()
     if find_form.find_userid.data and find_form.validate_on_submit():
         if not db_search_userid(find_form.userID.data):
             flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
@@ -671,9 +638,7 @@ def ow():
 
     if add_form.add_userid.data and add_form.validate_on_submit():
         if not db_search_userid(find_form.userID.data):
-            # db.session.delete(dataclass.query.filter_by(userID=form.userID.data).all()[0])
             uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-            # sid = str(len(dataclass.query.all()) + 1)
             dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data)
             the_db.session.add(dataclass)
             the_db.session.commit()

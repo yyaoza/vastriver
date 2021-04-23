@@ -15,8 +15,9 @@
     {% else %}
         <title>Vast River</title>
     {% endif %}
+
 </head>
-<body style="background:#484646">
+<body style="background-image: url('static/wallpaper.jpeg');">
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
@@ -29,8 +30,18 @@
                 <a class="nav-item nav-link" href="{{ url_for('ow') }}">Game History</a>
             </div>
             <div class="navbar-nav mr-6">
-                <a href="{{ url_for('gameLaunch') }}"><button type="button" class="btn btn-primary">
-                  Launch game lobby
+                <a href="{{ url_for('gameLaunch_newWindow') }}"><button type="button" class="btn btn-primary">
+                    Launch game
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                      <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                    </svg>
+                </button></a>
+                <a href="{{ url_for('gameLaunch_iframe') }}"><button type="button" class="btn btn-primary">
+                    Launch game
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pip" viewBox="0 0 16 16">
+                      <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+                      <path d="M8 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-3z"/>
+                    </svg>
                 </button></a>
 <!--                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
 <!--                  Launch game lobby-->
@@ -48,15 +59,20 @@
         </div>
         <div class="col-md-7">
             {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                </div>
-              {% endfor %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% if UA_payload.iframe_game %}
+
+                <iframe id="myIFrame" src="{{ UA_payload['game_url'] }}" frameborder="0" height="400" width="635"></iframe>
+
             {% endif %}
-          {% endwith %}
           <div class="content-section">
             <h3>User Information</h3>
                 {% block userinfo %}{% endblock %}

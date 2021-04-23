@@ -7,6 +7,8 @@ import string
 
 class UA2:
     UA_payload = {
+        'iframe_game': False,  # state of the iframe game launch
+        'game_url': '',
         'uuid': 'random',  # assigned, should be uid
         'transaction': {
             'etransid': '###',
@@ -145,9 +147,9 @@ class UA2:
 
     def process_UA2(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
-        link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
-        print(link)
-        return link
+        self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        print(self.UA_payload['game_url'])
+        return self.UA_payload['game_url']
 
     def process_ow_check(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
