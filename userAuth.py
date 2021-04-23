@@ -7,7 +7,6 @@ import string
 
 class UA2:
     UA_payload = {
-        'iframe_game': False,  # state of the iframe game launch
         'game_url': '',
         'uuid': 'random',  # assigned, should be uid
         'transaction': {
@@ -36,12 +35,17 @@ class UA2:
             },
             'game': {
                 'category': 'roulette',
-                'interface': 'view1'
-
+                'interface': 'view1',
+                'table': {
+                    'id': 'o3gekheqzwoacalh'
+                }
             },
             'channel': {
                 'wrapped': False,
-                'mobile': False
+                'mobile': False,
+                'table': {
+                    'id': 'o3gekheqzwoacalh'
+                }
             },
             'urls': {
                 'cashier': 'http://www.RGam.ee',  # assigned by licensee

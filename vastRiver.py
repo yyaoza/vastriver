@@ -232,10 +232,11 @@ def game_window():
 @app.route('/game_iframe')
 def game_iframe():
     global theSession
-    if theSession.UA_payload['iframe_game']:
-        theSession.UA_payload['iframe_game'] = False
+    global iframe_game_toggle
+    if iframe_game_toggle:
+        iframe_game_toggle = False
     else:
-        theSession.UA_payload['iframe_game'] = True
+        iframe_game_toggle = True
     # global theSession
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']

@@ -68,7 +68,7 @@
                   {% endfor %}
                 {% endif %}
             {% endwith %}
-            {% if UA_payload.iframe_game %}
+            {% if launch_game %}
 
                 <iframe id="myIFrame" src="{{ UA_payload['game_url'] }}" frameborder="0" height="400" width="635"></iframe>
 
