@@ -17,7 +17,7 @@ class UA2:
         },
         'player': {
             'balance': '0.0',
-            'id': 'yaoza',  # assigned by licensee, should be euid
+            'id': 'walt',  # assigned by licensee, should be euid
             'update': False,
             'firstName': 'firstName',  # assigned
             'lastName': 'lastName',  # assigned

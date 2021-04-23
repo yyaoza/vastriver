@@ -1,9 +1,9 @@
+import os
 from datetime import datetime
 
-from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-from vastRiver import app
+from flask import jsonify, Flask
 
 
 def db_get_balance(userid):
@@ -107,8 +107,18 @@ def db_new_session_sid(userid, uuid):
     return sid
 
 
-the_db = SQLAlchemy(app)
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'shhh its a secret'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+if not os.environ.get('DATABASE_URL'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
 
+
+the_db = SQLAlchemy(app)
+the_db.create_all()
+the_db.session.commit()
 
 class TransEntry(the_db.Model):
     __tablename__ = 'transactions'

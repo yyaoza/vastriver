@@ -1,18 +1,12 @@
-import os
 import random
 import string
 import requests
 import webbrowser
 
 import userAuth
-from flask import Flask, request, render_template, flash, Markup
-
-from data import db_get_balance, db_search_userid, db_new_session_sid, the_db, SidEntry, UserEntry, send_json
+from flask import request, render_template, flash, Markup
+from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
-
-# url = 'https://diyft4.uat1.evo-test.com/api/ecashier'
-# ecID = 'diyft40000000001test123'
-# ow_url = 'http://10.10.88.42:9092/onewallet'
 from oneWallet import valid_cancel, valid_credit, valid_debit
 from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, valid_channel, \
     valid_game, valid_currency, valid_transaction, valid_amount
@@ -21,19 +15,6 @@ uaform = None
 ftform = None
 theSession = None
 iframe_game_toggle = False
-
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'shhh its a secret'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-if not os.environ.get('DATABASE_URL'):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
-
-the_db.create_all()
-the_db.session.commit()
 
 
 @app.route('/api/credit', methods=['POST'])
