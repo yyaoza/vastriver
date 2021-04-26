@@ -8,8 +8,8 @@ from flask import request, render_template, flash, Markup
 from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
-from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, valid_channel, \
-    valid_game, valid_currency, valid_transaction, valid_amount
+from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, \
+    valid_channel, valid_game, valid_currency, valid_transaction, valid_amount
 
 uaform = None
 ftform = None
@@ -226,6 +226,8 @@ def start():
 @app.route('/game_window')
 def game_window():
     global theSession
+    if 'table' in theSession.UA_payload['config']['game']:
+        theSession.UA_payload['config']['game']['table']['id'] = ''
     x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
     webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
 
@@ -270,7 +272,8 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', which_page=which_page, ft_form=form, form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('fundTransfer.html', which_page=which_page, ft_form=form, form=uaform,
+                           UA_payload=theSession.UA_payload)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
@@ -308,8 +311,8 @@ def ow():
         else:
             flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
-    return render_template('oneWallet.html', which_page=which_page,  ow_findUser_form=find_form, ow_addUser_form=add_form, form=uaform,
-                           UA_payload=theSession.UA_payload)
+    return render_template('oneWallet.html', which_page=which_page,  ow_findUser_form=find_form,
+                           ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/daily_report', methods=['GET', 'POST'])
@@ -323,5 +326,6 @@ def daily_report():
 
 
 if __name__ == '__main__':
+
     app.debug = True
     app.run()

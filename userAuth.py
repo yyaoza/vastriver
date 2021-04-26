@@ -3,26 +3,27 @@ import xml.etree.ElementTree as xmlTree
 import random
 import requests
 import string
+import json
 
 
 class UA2:
     UA_payload = {
         'game_url': '',
-        'uuid': '',  # assigned, should be uid
+        'uuid': 'x',  # assigned, should be uid
         'transaction': {
-            'etransid': '',
-            'transid': '',
-            'datetime': '',
+            'etransid': 'x',
+            'transid': 'x',
+            'datetime': 'x',
         },
         'player': {
             'balance': '0.0',
-            'id': '',  # assigned by licensee, should be euid
+            'id': 'x',  # assigned by licensee, should be euid
             'update': False,
-            'firstName': '',  # assigned
-            'lastName': '',  # assigned
-            'nickname': '',  # assigned
-            'country': '',  # assigned
-            'language': '',  # assigned
+            'firstName': 'x',  # assigned
+            'lastName': 'x',  # assigned
+            'nickname': 'x',  # assigned
+            'country': 'x',  # assigned
+            'language': 'EN',  # assigned
             'currency': 'CNY',  # assigned
             'session': {
                 'id': '111ssss3333rrrrr45555',  # assigned by licensee
@@ -79,6 +80,8 @@ class UA2:
     def history_daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
+        json1_data = json.loads(x.text)
+
         return x.text
 
     def casino_cmd(self, cmd, amount=0):
