@@ -8,21 +8,21 @@ import string
 class UA2:
     UA_payload = {
         'game_url': '',
-        'uuid': 'random',  # assigned, should be uid
+        'uuid': '',  # assigned, should be uid
         'transaction': {
-            'etransid': '###',
-            'transid': '###',
-            'datetime': '###',
+            'etransid': '',
+            'transid': '',
+            'datetime': '',
         },
         'player': {
             'balance': '0.0',
-            'id': 'walt',  # assigned by licensee, should be euid
+            'id': '',  # assigned by licensee, should be euid
             'update': False,
-            'firstName': 'firstName',  # assigned
-            'lastName': 'lastName',  # assigned
-            'nickname': 'nickname',  # assigned
-            'country': 'DE',  # assigned
-            'language': 'fr',  # assigned
+            'firstName': '',  # assigned
+            'lastName': '',  # assigned
+            'nickname': '',  # assigned
+            'country': '',  # assigned
+            'language': '',  # assigned
             'currency': 'CNY',  # assigned
             'session': {
                 'id': '111ssss3333rrrrr45555',  # assigned by licensee
@@ -35,17 +35,11 @@ class UA2:
             },
             'game': {
                 'category': 'roulette',
-                'interface': 'view1',
-                'table': {
-                    'id': 'o3gekheqzwoacalh'
-                }
+                'interface': 'view1'
             },
             'channel': {
                 'wrapped': False,
                 'mobile': False,
-                'table': {
-                    'id': 'o3gekheqzwoacalh'
-                }
             },
             'urls': {
                 'cashier': 'http://www.RGam.ee',  # assigned by licensee
@@ -81,6 +75,11 @@ class UA2:
     def __init__(self, hostname):
         self.UA_payload['config']['urls']['cashier'] = hostname
         self.get_user_info()
+
+    def history_daily_report(self):
+        auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
+        x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
+        return x.text
 
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':

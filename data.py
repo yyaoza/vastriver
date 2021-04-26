@@ -120,6 +120,7 @@ the_db = SQLAlchemy(app)
 the_db.create_all()
 the_db.session.commit()
 
+
 class TransEntry(the_db.Model):
     __tablename__ = 'transactions'
     id = the_db.Column(the_db.Integer, primary_key=True)

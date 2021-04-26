@@ -19,35 +19,82 @@
 </head>
 <body style="background-image: url('static/wallpaper.jpeg');">
     <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-6" href="/">Home</a>
-            <div class="navbar-nav mr-auto">
-                <a class="nav-item nav-link" href="{{ url_for('ft') }}">Fund Transfer</a>
-                <a class="nav-item nav-link" href="{{ url_for('ow') }}">One Wallet</a>
-                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Direct Game Launch</a>
-                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Game Streaming</a>
-                <a class="nav-item nav-link" href="{{ url_for('ow') }}">Game History</a>
-            </div>
+
+          <ul class="nav nav-tabs">
+              <li class="nav-item">
+                {% if which_page == "home" %}
+                  <a class="nav-link active" href="/">Home</a>
+                {% else %}
+                  <a class="nav-link" href="/">Home</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_page == "ft" %}
+                  <a class="nav-link active" href="/ft">Fund Transfer</a>
+                {% else %}
+                  <a class="nav-link" href="/ft">Fund Transfer</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_page == "ow" %}
+                  <a class="nav-link active" href="/ow">One Wallet</a>
+                {% else %}
+                  <a class="nav-link" href="/ow">One Wallet</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_page == "ow" %}
+                  <a class="nav-link active" href="/ow">Direct Game Launch</a>
+                {% else %}
+                  <a class="nav-link" href="/ow">Direct Game Launch</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_page == "ow" %}
+                  <a class="nav-link active" href="/ow">Game Stream</a>
+                {% else %}
+                  <a class="nav-link" href="/ow">Game Stream</a>
+                {% endif %}
+              </li>
+              <li class="nav-item dropdown">
+                 {% if which_page == "history" %}
+                    <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
+                 {% else %}
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
+                 {% endif %}
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="/daily_report">Daily Report</a>
+                    <a class="dropdown-item" href="#">Game Details</a>
+                    <a class="dropdown-item" href="#">Game Stream</a>
+                    <a class="dropdown-item" href="#">Player's Game</a>
+                    <a class="dropdown-item" href="#">Daily Player Tips</a>
+                    <a class="dropdown-item" href="#">List of Player Tips</a>
+                    <a class="dropdown-item" href="#">Stream of Player Tips</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a href="{{ url_for('mini_roulette') }}" class="nav-link">
+                        Mini
+                        <img src="static/roulette.png" width="16" height="16">
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+              </li>
+          </ul>
             <div class="navbar-nav mr-6">
-                <a href="{{ url_for('game_window') }}"><button type="button" class="btn btn-primary">
-                    Launch game
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
-                      <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
-                    </svg>
-                </button></a>
-                <a href="{{ url_for('game_iframe') }}"><button type="button" class="btn btn-primary">
-                    Launch game
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pip" viewBox="0 0 16 16">
-                      <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
-                      <path d="M8 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-3z"/>
-                    </svg>
-                </button></a>
-<!--                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
-<!--                  Launch game lobby-->
-<!--                </button>-->
+                    <a href="{{ url_for('game_window') }}"><button type="button" class="btn btn-primary">
+                        Lobby
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                          <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                        </svg>
+                    </button></a>
 
             </div>
+
+
         </div>
       </nav>
     </header>
@@ -68,11 +115,6 @@
                   {% endfor %}
                 {% endif %}
             {% endwith %}
-            {% if launch_game %}
-
-                <iframe id="myIFrame" src="{{ UA_payload['game_url'] }}" frameborder="0" height="400" width="635"></iframe>
-
-            {% endif %}
           <div class="content-section">
             <h3>User Information</h3>
                 {% block userinfo %}{% endblock %}

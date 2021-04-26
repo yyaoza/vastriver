@@ -15,6 +15,7 @@ uaform = None
 ftform = None
 theSession = None
 iframe_game_toggle = False
+which_page = ''
 
 
 @app.route('/api/credit', methods=['POST'])
@@ -207,6 +208,8 @@ def rb():
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
+    global which_page
+    which_page = 'home'
     global theSession
     theSession = userAuth.UA2(request.host_url)
     global uaform
@@ -217,7 +220,7 @@ def start():
             theSession.update_user_info(uaform)
             flash('User Info Updated!', 'success')
 
-    return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('editUser.html', which_page=which_page, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/game_window')
@@ -229,25 +232,30 @@ def game_window():
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
 
 
-@app.route('/game_iframe')
-def game_iframe():
+@app.route('/mini_roulette')
+def mini_roulette():
     global theSession
     global iframe_game_toggle
     if iframe_game_toggle:
         iframe_game_toggle = False
     else:
         iframe_game_toggle = True
-    # global theSession
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
-    theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
-    # webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
 
-    return render_template('editUser.html', launch_game=iframe_game_toggle, form=uaform,
+    mini_roulette_payload = theSession.UA_payload
+
+    mini_roulette_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
+
+    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=mini_roulette_payload)
+    theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+
+    return render_template('game_iframe.html', launch_game=iframe_game_toggle, form=uaform,
                            UA_payload=theSession.UA_payload)
 
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
+    global which_page
+    which_page = 'ft'
     global theSession
     theSession.get_user_balance()
     form = FundTransferForm()
@@ -262,11 +270,13 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', ft_form=form, form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('fundTransfer.html', which_page=which_page, ft_form=form, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
 def ow():
+    global which_page
+    which_page = 'ow'
     find_form = OneWalletFindUser()
     add_form = OneWalletAddUser()
 
@@ -298,8 +308,18 @@ def ow():
         else:
             flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
-    return render_template('oneWallet.html', ow_findUser_form=find_form, ow_addUser_form=add_form, form=uaform,
+    return render_template('oneWallet.html', which_page=which_page,  ow_findUser_form=find_form, ow_addUser_form=add_form, form=uaform,
                            UA_payload=theSession.UA_payload)
+
+
+@app.route('/daily_report', methods=['GET', 'POST'])
+def daily_report():
+    global which_page
+    which_page = 'history'
+
+    report = theSession.history_daily_report()
+
+    print(report)
 
 
 if __name__ == '__main__':
