@@ -21,45 +21,44 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark fixed-top">
         <div class="container">
-
-          <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs">
               <li class="nav-item">
-                {% if which_page == "home" %}
+                {% if which_tab == "home" %}
                   <a class="nav-link active" href="/">Home</a>
                 {% else %}
                   <a class="nav-link" href="/">Home</a>
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_page == "ft" %}
+                {% if which_tab == "ft" %}
                   <a class="nav-link active" href="/ft">Fund Transfer</a>
                 {% else %}
                   <a class="nav-link" href="/ft">Fund Transfer</a>
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_page == "ow" %}
+                {% if which_tab == "ow" %}
                   <a class="nav-link active" href="/ow">One Wallet</a>
                 {% else %}
                   <a class="nav-link" href="/ow">One Wallet</a>
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_page == "ow" %}
+                {% if which_tab == "ow" %}
                   <a class="nav-link active" href="/ow">Direct Game Launch</a>
                 {% else %}
                   <a class="nav-link" href="/ow">Direct Game Launch</a>
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_page == "ow" %}
+                {% if which_tab == "ow" %}
                   <a class="nav-link active" href="/ow">Game Stream</a>
                 {% else %}
                   <a class="nav-link" href="/ow">Game Stream</a>
                 {% endif %}
               </li>
               <li class="nav-item dropdown">
-                 {% if which_page == "history" %}
+                 {% if which_tab == "history_daily_report" %}
                     <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
                  {% else %}
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
@@ -83,43 +82,46 @@
               <li class="nav-item">
                 <a class="nav-link disabled" href="#">Disabled</a>
               </li>
-          </ul>
+            </ul>
             <div class="navbar-nav mr-6">
-                    <a href="{{ url_for('game_window') }}"><button type="button" class="btn btn-primary">
+                <a href="{{ url_for('game_window') }}">
+                    <button type="button" class="btn btn-primary">
                         Lobby
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
                           <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
                         </svg>
-                    </button></a>
-
+                    </button>
+                </a>
             </div>
-
-
         </div>
       </nav>
     </header>
     <main role="main" class="container">
       <div class="row">
-        <div class="col-md-5">
-        {% block content %}{% endblock %}
+          {% if which_tab == "history_daily_report" %}
+            {% block daily %}{% endblock %}
+          {% else %}
+            <div class="col-md-5">
+            {% block content %}{% endblock %}
 
-        </div>
-        <div class="col-md-7">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                  {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    </div>
-                  {% endfor %}
-                {% endif %}
-            {% endwith %}
-          <div class="content-section">
-            <h3>User Information</h3>
-                {% block userinfo %}{% endblock %}
-          </div>
-        </div>
+            </div>
+            <div class="col-md-7">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                      {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                {% endwith %}
+              <div class="content-section">
+                <h3>User Information</h3>
+                    {% block userinfo %}{% endblock %}
+              </div>
+            </div>
+          {% endif %}
       </div>
     </main>
 

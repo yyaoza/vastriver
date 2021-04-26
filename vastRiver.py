@@ -15,7 +15,7 @@ uaform = None
 ftform = None
 theSession = None
 iframe_game_toggle = False
-which_page = ''
+which_tab = ''
 
 
 @app.route('/api/credit', methods=['POST'])
@@ -208,8 +208,8 @@ def rb():
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
-    global which_page
-    which_page = 'home'
+    global which_tab
+    which_tab = 'home'
     global theSession
     theSession = userAuth.UA2(request.host_url)
     global uaform
@@ -220,7 +220,7 @@ def start():
             theSession.update_user_info(uaform)
             flash('User Info Updated!', 'success')
 
-    return render_template('editUser.html', which_page=which_page, form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/game_window')
@@ -256,8 +256,8 @@ def mini_roulette():
 
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
-    global which_page
-    which_page = 'ft'
+    global which_tab
+    which_tab = 'ft'
     global theSession
     theSession.get_user_balance()
     form = FundTransferForm()
@@ -272,14 +272,14 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', which_page=which_page, ft_form=form, form=uaform,
+    return render_template('fundTransfer.html', which_tab=which_tab, ft_form=form, form=uaform,
                            UA_payload=theSession.UA_payload)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
 def ow():
-    global which_page
-    which_page = 'ow'
+    global which_tab
+    which_tab = 'ow'
     find_form = OneWalletFindUser()
     add_form = OneWalletAddUser()
 
@@ -311,18 +311,18 @@ def ow():
         else:
             flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
-    return render_template('oneWallet.html', which_page=which_page,  ow_findUser_form=find_form,
+    return render_template('oneWallet.html', which_tab=which_tab,  ow_findUser_form=find_form,
                            ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/daily_report', methods=['GET', 'POST'])
 def daily_report():
-    global which_page
-    which_page = 'history'
+    global which_tab
+    which_tab = 'history_daily_report'
 
     report = theSession.history_daily_report()
 
-    print(report)
+    return render_template('daily_report.html', len=len(report), daily_report=report, which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
 
 if __name__ == '__main__':

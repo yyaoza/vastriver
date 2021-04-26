@@ -80,17 +80,14 @@ class UA2:
     def history_daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
-        json1_data = json.loads(x.text)
 
-        return x.text
+        return json.loads(x.text)['data']
 
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':
             self.cashier_payload.update({'cCode': cmd})
         else:
-            self.cashier_payload.update({'cCode': cmd,
-                                         'amount': amount,
-                                         })
+            self.cashier_payload.update({'cCode': cmd, 'amount': amount})
 
         x = requests.get(self.url + 'api/ecashier', params=self.cashier_payload)
         return xmlTree.fromstring(x.text)
