@@ -18,6 +18,67 @@ iframe_game_toggle = False
 which_tab = ''
 
 
+@app.route('/ft', methods=['GET', 'POST'])
+def ft():
+    global which_tab
+    which_tab = 'ft'
+    global theSession
+    theSession.get_user_balance()
+    form = FundTransferForm()
+
+    if form.validate_on_submit():
+        if form.subtract.data:
+            flash(form.amount.data + ' funds subtracted', 'warning')
+            theSession.ft_subtract(form.amount.data)
+        elif form.add.data:
+            flash(form.amount.data + ' funds added', 'success')
+            theSession.ft_add(form.amount.data)
+        else:
+            flash('Error:' + form.amount.errors, 'error')
+
+    return render_template('fundTransfer.html', which_tab=which_tab, ft_form=form, form=uaform,
+                           UA_payload=theSession.UA_payload)
+
+
+@app.route('/ow', methods=['GET', 'POST'])
+def ow():
+    global which_tab
+    which_tab = 'ow'
+    find_form = OneWalletFindUser()
+    add_form = OneWalletAddUser()
+
+    # dataclass = UserEntry()
+    if find_form.find_userid.data and find_form.validate_on_submit():
+        if not db_search_userid(find_form.userID.data):
+            flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
+        else:
+            dataclass_sid = SidEntry()
+            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+            sid = str(len(dataclass_sid.query.all()) + 1)
+            print("sid:" + sid)
+            dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
+            the_db.session.add(dataclass_sid)
+            the_db.session.commit()
+            userid = find_form.userID.data
+            flash(Markup('SID Created for:' + userid + '<br><strong>sid:' + sid + '</strong><br>uuid:' + uuid),
+                  'success')
+
+    if add_form.add_userid.data and add_form.validate_on_submit():
+        if not db_search_userid(find_form.userID.data):
+            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+            dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data)
+            the_db.session.add(dataclass)
+            the_db.session.commit()
+            flash(
+                Markup('<strong>' + add_form.userID_added.data + '</strong> found!' + '<br>balance:'
+                       + add_form.balance.data + '<br>uuid:' + uuid), 'success')
+        else:
+            flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
+
+    return render_template('oneWallet.html', which_tab=which_tab,  ow_findUser_form=find_form,
+                           ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
+
+
 @app.route('/api/credit', methods=['POST'])
 def credit():
     # handle the POST request
@@ -214,6 +275,7 @@ def start():
     theSession = userAuth.UA2(request.host_url)
     global uaform
     uaform = UserAuthenticationForm()
+    # requests.close()
 
     if uaform.validate_on_submit():
         if uaform.update.data:
@@ -254,75 +316,24 @@ def mini_roulette():
                            UA_payload=theSession.UA_payload)
 
 
-@app.route('/ft', methods=['GET', 'POST'])
-def ft():
-    global which_tab
-    which_tab = 'ft'
-    global theSession
-    theSession.get_user_balance()
-    form = FundTransferForm()
-
-    if form.validate_on_submit():
-        if form.subtract.data:
-            flash(form.amount.data + ' funds subtracted', 'warning')
-            theSession.ft_subtract(form.amount.data)
-        elif form.add.data:
-            flash(form.amount.data + ' funds added', 'success')
-            theSession.ft_add(form.amount.data)
-        else:
-            flash('Error:' + form.amount.errors, 'error')
-
-    return render_template('fundTransfer.html', which_tab=which_tab, ft_form=form, form=uaform,
-                           UA_payload=theSession.UA_payload)
-
-
-@app.route('/ow', methods=['GET', 'POST'])
-def ow():
-    global which_tab
-    which_tab = 'ow'
-    find_form = OneWalletFindUser()
-    add_form = OneWalletAddUser()
-
-    # dataclass = UserEntry()
-    if find_form.find_userid.data and find_form.validate_on_submit():
-        if not db_search_userid(find_form.userID.data):
-            flash(Markup('<strong>' + find_form.userID.data + '</strong> not found!'), 'danger')
-        else:
-            dataclass_sid = SidEntry()
-            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-            sid = str(len(dataclass_sid.query.all()) + 1)
-            print("sid:" + sid)
-            dataclass_sid = SidEntry(find_form.userID.data, sid, uuid)
-            the_db.session.add(dataclass_sid)
-            the_db.session.commit()
-            userid = find_form.userID.data
-            flash(Markup('SID Created for:' + userid + '<br><strong>sid:' + sid + '</strong><br>uuid:' + uuid),
-                  'success')
-
-    if add_form.add_userid.data and add_form.validate_on_submit():
-        if not db_search_userid(find_form.userID.data):
-            uuid = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-            dataclass = UserEntry(add_form.userID_added.data, add_form.balance.data)
-            the_db.session.add(dataclass)
-            the_db.session.commit()
-            flash(
-                Markup('<strong>' + add_form.userID_added.data + '</strong> found!' + '<br>balance:'
-                       + add_form.balance.data + '<br>uuid:' + uuid), 'success')
-        else:
-            flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
-
-    return render_template('oneWallet.html', which_tab=which_tab,  ow_findUser_form=find_form,
-                           ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
-
-
 @app.route('/daily_report', methods=['GET', 'POST'])
 def daily_report():
     global which_tab
-    which_tab = 'history_daily_report'
+    which_tab = 'daily_report'
 
-    report = theSession.history_daily_report()
+    report = theSession.daily_report()
 
     return render_template('daily_report.html', len=len(report), daily_report=report, which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
+
+
+@app.route('/game_stream', methods=['GET', 'POST'])
+def game_stream():
+    global which_tab
+    which_tab = 'game_stream'
+
+    theSession.game_stream()
+
+    return render_template('game_stream.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
 
 if __name__ == '__main__':

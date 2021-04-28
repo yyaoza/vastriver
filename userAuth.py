@@ -77,11 +77,22 @@ class UA2:
         self.UA_payload['config']['urls']['cashier'] = hostname
         self.get_user_info()
 
-    def history_daily_report(self):
+    def daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
 
         return json.loads(x.text)['data']
+
+    def game_stream(self):
+        auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
+        x = requests.get(self.url + 'api/streaming/game/v1/', stream=True, headers=auth_payload)
+        with open('new.txt', 'wb') as f:
+            for chunk in x.iter_content(chunk_size=1024):
+                if b'message' in chunk:
+                    f.write(chunk)
+                    break
+
+        return chunk
 
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':

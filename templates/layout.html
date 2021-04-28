@@ -51,26 +51,21 @@
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_tab == "ow" %}
-                  <a class="nav-link active" href="/ow">Game Stream</a>
+                {% if which_tab == "game_stream" %}
+                  <a class="nav-link active" href="/game_stream">Game Stream</a>
                 {% else %}
-                  <a class="nav-link" href="/ow">Game Stream</a>
+                  <a class="nav-link" href="/game_stream">Game Stream</a>
                 {% endif %}
               </li>
               <li class="nav-item dropdown">
-                 {% if which_tab == "history_daily_report" %}
+                 {% if which_tab == "daily_report" or which_tab == "game_stream" %}
                     <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
                  {% else %}
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
                  {% endif %}
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="/daily_report">Daily Report</a>
-                    <a class="dropdown-item" href="#">Game Details</a>
-                    <a class="dropdown-item" href="#">Game Stream</a>
-                    <a class="dropdown-item" href="#">Player's Game</a>
-                    <a class="dropdown-item" href="#">Daily Player Tips</a>
-                    <a class="dropdown-item" href="#">List of Player Tips</a>
-                    <a class="dropdown-item" href="#">Stream of Player Tips</a>
+                    <a class="dropdown-item" href="/game_stream">Game Stream</a>
                 </div>
               </li>
               <li class="nav-item">
@@ -98,8 +93,10 @@
     </header>
     <main role="main" class="container">
       <div class="row">
-          {% if which_tab == "history_daily_report" %}
+          {% if which_tab == "daily_report" %}
             {% block daily %}{% endblock %}
+          {% elif which_tab == "game_stream" %}
+            {% block stream %}{% endblock %}
           {% else %}
             <div class="col-md-5">
             {% block content %}{% endblock %}
