@@ -4,7 +4,7 @@ import requests
 import webbrowser
 
 import userAuth
-from flask import request, render_template, flash, Markup
+from flask import request, render_template, flash, Markup, jsonify
 from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
@@ -75,7 +75,7 @@ def ow():
         else:
             flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
-    return render_template('oneWallet.html', which_tab=which_tab,  ow_findUser_form=find_form,
+    return render_template('oneWallet.html', which_tab=which_tab, ow_findUser_form=find_form,
                            ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
 
 
@@ -323,20 +323,32 @@ def daily_report():
 
     report = theSession.daily_report()
 
-    return render_template('daily_report.html', len=len(report), daily_report=report, which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
+    return render_template('daily_report.html', len=len(report), daily_report=report, which_tab=which_tab, form=uaform,
+                           UA_payload=theSession.UA_payload)
+
+
+stream = ''
 
 
 @app.route('/game_stream', methods=['GET', 'POST'])
 def game_stream():
     global which_tab
     which_tab = 'game_stream'
+    global stream
+    stream = 'start'
 
-    theSession.game_stream()
+    return render_template('game_stream.html', datastream=stream, which_tab=which_tab, form=uaform,
+                           UA_payload=theSession.UA_payload)
 
-    return render_template('game_stream.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
+
+@app.route('/update_stream', methods=['POST'])
+def update_stream():
+    # stream = theSession.game_stream()
+    walt = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
+    return jsonify("", render_template('input_stream.html', datastream=walt))
 
 
 if __name__ == '__main__':
-
     app.debug = True
     app.run()

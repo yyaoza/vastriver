@@ -92,7 +92,7 @@ class UA2:
                     f.write(chunk)
                     break
 
-        return chunk
+        return chunk.decode('ascii')
 
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':
