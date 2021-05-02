@@ -86,7 +86,7 @@ class UA2:
     def game_stream(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/streaming/game/v1/', stream=True, headers=auth_payload)
-        with open('new.txt', 'wb') as f:
+        with open('game_stream.txt', 'wb') as f:
             for chunk in x.iter_content(chunk_size=1024):
                 if b'message' in chunk:
                     f.write(chunk)
