@@ -92,7 +92,7 @@ class UA2:
                     f.write(chunk)
                     break
 
-        return chunk.decode('ascii')
+        return json.loads(chunk.decode('ascii'))['data']
 
     def casino_cmd(self, cmd, amount=0):
         if cmd == 'GUI':
