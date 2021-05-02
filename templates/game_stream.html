@@ -8,9 +8,9 @@
 <script>
 
 $(function($){
-    window.setInterval(function(){
+
         loadNewStream()
-    }, 1000)
+
 
 function loadNewStream(){
     $.ajax({
@@ -19,6 +19,7 @@ function loadNewStream(){
         dataType: 'json',
         success: function(data){
             $(test).replaceWith(data);
+            loadNewStream();
         }
     });
 }
@@ -47,7 +48,7 @@ function loadNewStream(){
     </tbody>
   </table>
 
-<div id="test">
+<div class="content-section" id="test">
     {{ datastream }}
 </div>
 

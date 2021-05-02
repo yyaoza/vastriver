@@ -335,7 +335,7 @@ def game_stream():
     global which_tab
     which_tab = 'game_stream'
     global stream
-    stream = 'start'
+    stream = 'Loading data...'
 
     return render_template('game_stream.html', datastream=stream, which_tab=which_tab, form=uaform,
                            UA_payload=theSession.UA_payload)
@@ -343,10 +343,10 @@ def game_stream():
 
 @app.route('/update_stream', methods=['POST'])
 def update_stream():
-    # stream = theSession.game_stream()
-    walt = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+    datastream = theSession.game_stream()
+    # walt = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
-    return jsonify("", render_template('input_stream.html', datastream=walt))
+    return jsonify("", render_template('input_stream.html', datastream=datastream))
 
 
 if __name__ == '__main__':
