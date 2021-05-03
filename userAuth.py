@@ -165,8 +165,8 @@ class UA2:
 
     def process_UA2(self):
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
+        print(x)
         self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
-        print(self.UA_payload['game_url'])
         return self.UA_payload['game_url']
 
     def process_ow_check(self):
