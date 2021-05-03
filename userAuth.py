@@ -134,7 +134,6 @@ class UA2:
         self.UA_payload['player']['update'] = True
         self.UA_payload['player']['session']['id'] = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         self.UA_payload['config']['game']['category'] = form.game.data
-        print("*Writing payload", self.UA_payload, sep="---->")
         self.process_UA2()
 
     def ft_add(self, amount):
@@ -164,9 +163,10 @@ class UA2:
         })
 
     def process_UA2(self):
-        print("*My URL", self.url, sep="---->")
+        print("*******My URL", self.url, sep="---->")
+        print("*******My payload", self.UA_payload, sep="---->")
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
-        print("*Writing POST response", x, sep="---->")
+        # print("*Writing POST response", x, sep="---->")
         self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
         return self.UA_payload['game_url']
 
