@@ -74,7 +74,7 @@ class UA2:
     }
 
     def __init__(self, hostname):
-        self.UA_payload['config']['urls']['cashier'] = hostname
+        # self.UA_payload['config']['urls']['cashier'] = hostname
         self.get_user_info()
 
     def daily_report(self):
@@ -164,6 +164,7 @@ class UA2:
         })
 
     def process_UA2(self):
+        print("*My URL", self.url, sep="---->")
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
         print("*Writing POST response", x, sep="---->")
         self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
