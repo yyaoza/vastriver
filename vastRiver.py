@@ -16,6 +16,7 @@ ftform = None
 theSession = None
 iframe_game_toggle = False
 which_tab = ''
+stream = ''
 
 
 @app.route('/ft', methods=['GET', 'POST'])
@@ -327,7 +328,15 @@ def daily_report():
                            UA_payload=theSession.UA_payload)
 
 
-stream = ''
+@app.route('/direct_game_launch', methods=['GET', 'POST'])
+def direct_game_launch():
+    global which_tab
+    which_tab = 'direct_game_launch'
+
+    game_launch_info = theSession.direct_game_launch()
+
+    return render_template('direct_game_launch.html', len=len(game_launch_info), game_launch_info=game_launch_info, which_tab=which_tab, form=uaform,
+                           UA_payload=theSession.UA_payload)
 
 
 @app.route('/game_stream', methods=['GET', 'POST'])

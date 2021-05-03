@@ -44,10 +44,10 @@
                 {% endif %}
               </li>
               <li class="nav-item">
-                {% if which_tab == "ow" %}
-                  <a class="nav-link active" href="/ow">Direct Game Launch</a>
+                {% if which_tab == "direct_game_launch" %}
+                  <a class="nav-link active" href="/direct_game_launch">Direct Game Launch</a>
                 {% else %}
-                  <a class="nav-link" href="/ow">Direct Game Launch</a>
+                  <a class="nav-link" href="/direct_game_launch">Direct Game Launch</a>
                 {% endif %}
               </li>
               <li class="nav-item">
@@ -57,25 +57,29 @@
                   <a class="nav-link" href="/game_stream">Game Stream</a>
                 {% endif %}
               </li>
-              <li class="nav-item dropdown">
-                 {% if which_tab == "daily_report" or which_tab == "game_stream" %}
-                    <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
-                 {% else %}
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>
-                 {% endif %}
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/daily_report">Daily Report</a>
-                    <a class="dropdown-item" href="/game_stream">Game Stream</a>
-                </div>
+              <li class="nav-item">
+                {% if which_tab == "daily_report" %}
+                  <a class="nav-link active" href="/daily_report">Daily Report</a>
+                {% else %}
+                  <a class="nav-link" href="/daily_report">Daily Report</a>
+                {% endif %}
               </li>
+<!--              <li class="nav-item dropdown">-->
+<!--                 {% if which_tab == "daily_report" or which_tab == "game_stream" %}-->
+<!--                    <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>-->
+<!--                 {% else %}-->
+<!--                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>-->
+<!--                 {% endif %}-->
+<!--                <div class="dropdown-menu">-->
+<!--                  <a class="dropdown-item" href="/daily_report">Daily Report</a>-->
+<!--                    <a class="dropdown-item" href="/game_stream">Game Stream</a>-->
+<!--                </div>-->
+<!--              </li>-->
               <li class="nav-item">
                 <a href="{{ url_for('mini_roulette') }}" class="nav-link">
                         Mini
                         <img src="static/roulette.png" width="16" height="16">
                 </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" href="#">Disabled</a>
               </li>
             </ul>
             <div class="navbar-nav mr-6">
@@ -95,6 +99,8 @@
       <div class="row">
           {% if which_tab == "daily_report" %}
             {% block daily %}{% endblock %}
+          {% elif which_tab == "direct_game_launch" %}
+            {% block direct_game %}{% endblock %}
           {% elif which_tab == "game_stream" %}
             {% block stream %}{% endblock %}
           {% else %}

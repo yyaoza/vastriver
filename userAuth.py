@@ -80,8 +80,12 @@ class UA2:
     def daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
-
         return json.loads(x.text)['data']
+
+    def direct_game_launch(self):
+        auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
+        x = requests.get(self.url + 'api/lobby/v1/diyft40000000001/state', headers=auth_payload)
+        return json.loads(x.text)
 
     def game_stream(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
