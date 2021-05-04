@@ -306,12 +306,13 @@ def mini_roulette():
     else:
         iframe_game_toggle = True
 
-    mini_roulette_payload = theSession.UA_payload
-
-    mini_roulette_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
-
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=mini_roulette_payload)
-    theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+    theSession.mini_roulette()
+    # mini_roulette_payload = theSession.UA_payload
+    #
+    # mini_roulette_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
+    #
+    # x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=mini_roulette_payload)
+    # theSession.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
 
     return render_template('game_iframe.html', launch_game=iframe_game_toggle, form=uaform,
                            UA_payload=theSession.UA_payload)

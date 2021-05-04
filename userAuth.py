@@ -88,6 +88,14 @@ class UA2:
         x = requests.get(self.url + 'api/lobby/v1/diyft40000000001/state', headers=auth_payload)
         return json.loads(x.text)
 
+    def mini_roulette(self):
+        self.UA_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
+        x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=self.UA_payload)
+        self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+
+        self.UA_payload['config']['game']['table'] = ''
+        return
+
     def game_stream(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
         x = requests.get(self.url + 'api/streaming/game/v1/', stream=True, headers=auth_payload)
