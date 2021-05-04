@@ -119,8 +119,8 @@ else:
     proxies = {
         "http": os.environ['QUOTAGUARDSTATIC_URL']
     }
-    res = requests.get("http://ip.jsontest.com/", proxies=proxies)
-    print("!!!!!!!!!!res.text--->", res.text)
+    # res = requests.get("http://ip.jsontest.com/", proxies=proxies)
+    # print("!!!!!!!!!!res.text--->", res.text)
 
 
 the_db = SQLAlchemy(app)
