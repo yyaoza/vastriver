@@ -94,6 +94,7 @@ class UA2:
         print("*******My URL", self.url + 'ua/v1/diyft40000000001/test123', sep="---->")
         print("*******My payload", self.UA_payload, sep="---->")
         print("*******My proxy", proxies, sep="---->")
+        print("*******My x", x, sep="---->")
         self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
 
         self.UA_payload['config']['game']['table'] = ''
