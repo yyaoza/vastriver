@@ -90,7 +90,8 @@ class UA2:
 
     def mini_roulette(self):
         self.UA_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
-        x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=self.UA_payload, proxies=proxies)
+        x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=self.UA_payload,
+                          proxies=proxies)
         print("*******My URL", self.url + 'ua/v1/diyft40000000001/test123', sep="---->")
         print("*******My payload", self.UA_payload, sep="---->")
         print("*******My proxy", proxies, sep="---->")
