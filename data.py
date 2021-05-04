@@ -112,8 +112,12 @@ app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 if not os.environ.get('DATABASE_URL'):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://waltyao@localhost/vastriver'
+    proxies = ''
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
+    proxies = {
+        "http": os.environ['QUOTAGUARDSTATIC_URL']
+    }
 
 
 the_db = SQLAlchemy(app)

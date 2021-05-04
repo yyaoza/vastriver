@@ -4,11 +4,7 @@ import random
 import requests
 import string
 import json
-import os
-
-proxies = {
-  "http": os.environ['QUOTAGUARDSTATIC_URL']
-}
+from data import proxies
 
 
 class UA2:
@@ -171,7 +167,7 @@ class UA2:
         print("*******My URL", self.url + 'ua/v1/diyft40000000001/test123', sep="---->")
         print("*******My payload", self.UA_payload, sep="---->")
         x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload, proxies=proxies)
-        #  print("*Writing POST response", x, sep="---->")
+        print("*******My proxy", proxies, sep="---->")
         self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
         return self.UA_payload['game_url']
 
