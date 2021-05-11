@@ -21,6 +21,8 @@ function loadNewStream(){
 
 </script>
 
+{% for key, value in datastream.items() %}
 <div class="content-section" id="test">
-    {{ datastream }}
+    {{ value }}
 </div>
+{% endfor %}

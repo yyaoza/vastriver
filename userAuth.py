@@ -65,7 +65,9 @@ class UA2:
         'euid': 'x',
         'uid': 'x',
     }
-    url = 'https://diyft4.uat1.evo-test.com/'
+    url = 'https://diyft4.uat1.evo-test.com'
+    casino_id = 'diyft40000000001'
+    auth_key = 'test123'
     cashier_payload = {
         'cCode': 'xxx',
         'euID': 'yaoza',
@@ -80,30 +82,30 @@ class UA2:
 
     def daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
-        x = requests.get(self.url + 'api/gamehistory/v1/casino/daily-report', headers=auth_payload)
+        x = requests.get(self.url + '/api/gamehistory/v1/casino/daily-report', headers=auth_payload, proxies=proxies)
         return json.loads(x.text)['data']
 
     def direct_game_launch(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
-        x = requests.get(self.url + 'api/lobby/v1/diyft40000000001/state', headers=auth_payload)
+        x = requests.get(self.url + '/api/lobby/v1/' + self.casino_id + '/state', headers=auth_payload, proxies=proxies)
         return json.loads(x.text)
 
     def mini_roulette(self):
         self.UA_payload['config']['game']['table'] = {'id': 'pegck3qfanmqbgbh'}
-        x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=self.UA_payload,
-                          proxies=proxies)
-        print("*******My URL", self.url + 'ua/v1/diyft40000000001/test123', sep="---->")
-        print("*******My payload", self.UA_payload, sep="---->")
-        print("*******My proxy", proxies, sep="---->")
-        print("*******My x", x, sep="---->")
-        self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        ua_url = self.url + '/ua/v1/' + self.casino_id + '/' + self.auth_key
+        x = requests.post(ua_url, json=self.UA_payload, proxies=proxies)
+        # print("*******My URL", self.url + '/ua/v1/diyft40000000001/test123', sep="---->")
+        # print("*******My payload", self.UA_payload, sep="---->")
+        # print("*******My proxy", proxies, sep="---->")
+        # print("*******My x", x, sep="---->")
+        self.UA_payload['game_url'] = self.url + x.json()['entry']
 
         self.UA_payload['config']['game']['table'] = ''
         return
 
     def game_stream(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
-        x = requests.get(self.url + 'api/streaming/game/v1/', stream=True, headers=auth_payload)
+        x = requests.get(self.url + '/api/streaming/game/v1/', stream=True, headers=auth_payload, proxies=proxies)
         with open('game_stream.txt', 'wb') as f:
             for chunk in x.iter_content(chunk_size=1024):
                 if b'message' in chunk:
@@ -118,7 +120,7 @@ class UA2:
         else:
             self.cashier_payload.update({'cCode': cmd, 'amount': amount})
 
-        x = requests.get(self.url + 'api/ecashier', params=self.cashier_payload)
+        x = requests.get(self.url + '/api/ecashier', params=self.cashier_payload, proxies=proxies)
         return xmlTree.fromstring(x.text)
 
     def set_lang_game(self, form):
@@ -177,14 +179,15 @@ class UA2:
         })
 
     def process_UA2(self):
+        ua_url = self.url + '/ua/v1/' + self.casino_id + '/' + self.auth_key
+        x = requests.post(ua_url, json=self.UA_payload, proxies=proxies)
 
-        x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload, proxies=proxies)
-
-        self.UA_payload['game_url'] = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        self.UA_payload['game_url'] = self.url + x.json()['entry']
         return self.UA_payload['game_url']
 
     def process_ow_check(self):
-        x = requests.post(self.url + 'ua/v1/diyft40000000001/test123', json=self.UA_payload)
-        link = 'https://diyft4.uat1.evo-test.com' + x.json()['entry']
+        ua_url = self.url + '/ua/v1/' + self.casino_id + '/' + self.auth_key
+        x = requests.post(ua_url, json=self.UA_payload, proxies=proxies)
+        link = self.url + x.json()['entry']
         print(link)
         return link

@@ -5,7 +5,7 @@
     {% for key, value in game_launch_info.items() %}
         {% if key == "tables" %}
             <tr>
-                <th style="width: 15%;"> {{ key }} </th>
+                <th style="width: 15%;"> {{ key }}: </th>
                 <td>  </td>
             </tr>
             {% for key, value in game_launch_info.tables.items() %}
@@ -20,7 +20,7 @@
                     </th>
                     <td>
                     {% for key2, value2 in value.betLimits.items() %}
-                    <table style="display: inline-block; border: 1px solid grey;">
+                    <table style="display: inline-block; border: 1px solid grey; ">
                             <tr>
                                 <td colspan="3"> {{ key2 }} </td>
                             </tr>

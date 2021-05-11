@@ -17,6 +17,7 @@ theSession = None
 iframe_game_toggle = False
 which_tab = ''
 stream = ''
+datastream = {}
 
 
 @app.route('/ft', methods=['GET', 'POST'])
@@ -291,8 +292,23 @@ def game_window():
     global theSession
     if 'table' in theSession.UA_payload['config']['game']:
         theSession.UA_payload['config']['game']['table']['id'] = ''
-    x = requests.post('https://diyft4.uat1.evo-test.com/ua/v1/diyft40000000001/test123', json=theSession.UA_payload)
-    webbrowser.open('https://diyft4.uat1.evo-test.com' + x.json()['entry'])
+    ua_url = theSession.url + '/ua/v1/' + theSession.casino_id + '/' + theSession.auth_key
+    x = requests.post(ua_url, json=theSession.UA_payload)
+    webbrowser.open(theSession.url + x.json()['entry'])
+
+    return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
+
+
+@app.route('/game_window_slots')
+def game_window_slots():
+    global theSession
+    if 'table' in theSession.UA_payload['config']['game']:
+        theSession.UA_payload['config']['game']['table']['id'] = 'streetfighter200'
+
+    theSession.UA_payload['config']['game']['category'] = 'slots'
+    ua_url = theSession.url + '/ua/v1/' + theSession.casino_id + '/' + theSession.auth_key
+    x = requests.post(ua_url, json=theSession.UA_payload)
+    webbrowser.open(theSession.url + x.json()['entry'])
 
     return render_template('editUser.html', form=uaform, UA_payload=theSession.UA_payload)
 
@@ -336,7 +352,8 @@ def direct_game_launch():
 
     game_launch_info = theSession.direct_game_launch()
 
-    return render_template('direct_game_launch.html', len=len(game_launch_info), game_launch_info=game_launch_info, which_tab=which_tab, form=uaform,
+    return render_template('direct_game_launch.html', len=len(game_launch_info), game_launch_info=game_launch_info,
+                           which_tab=which_tab, form=uaform,
                            UA_payload=theSession.UA_payload)
 
 
@@ -344,8 +361,10 @@ def direct_game_launch():
 def game_stream():
     global which_tab
     which_tab = 'game_stream'
-    global stream
-    stream = 'Loading data...'
+    global datastream
+    datastream.clear()
+    stream = 'Waiting for game data...'
+    waiting = 'Waiting for game data...'
 
     return render_template('game_stream.html', datastream=stream, which_tab=which_tab, form=uaform,
                            UA_payload=theSession.UA_payload)
@@ -353,10 +372,11 @@ def game_stream():
 
 @app.route('/update_stream', methods=['POST'])
 def update_stream():
-    datastream = theSession.game_stream()
+    global datastream
+    datastream[theSession.game_stream()['id']] = theSession.game_stream()
     # walt = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
-    return jsonify("", render_template('input_stream.html', datastream=datastream))
+    return jsonify("", render_template('input_stream.html', datastream=datastream, count=len(datastream)))
 
 
 if __name__ == '__main__':
