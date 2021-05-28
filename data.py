@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import requests
 from flask_sqlalchemy import SQLAlchemy
 
 from flask import jsonify, Flask
@@ -76,9 +75,9 @@ def db_new_trans_dbcr(cr_or_db, userid, request_data, uuid):
                                  request_data['transaction']['refId'],
                                  uuid, False)
     else:
-        transaction = TransEntry(cr_or_db, userid, request_data['transaction']['id'],
-                                 request_data['transaction']['refId'],
-                                 uuid, True)
+        entry = TransEntry(cr_or_db, userid, request_data['transaction']['id'], request_data['transaction']['refId'],
+                           uuid, True)
+        transaction = entry
     the_db.session.add(transaction)
     the_db.session.commit()
 
@@ -117,7 +116,7 @@ if not os.environ.get('DATABASE_URL'):
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("://", "ql://", 1)
     proxies = {
-        "http": os.environ['QUOTAGUARDSTATIC_URL']
+        "https": os.environ['QUOTAGUARDSTATIC_URL']
     }
     # res = requests.get("http://ip.jsontest.com/", proxies=proxies)
     # print("!!!!!!!!!!res.text--->", res.text)
