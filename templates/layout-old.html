@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    {% if title %}
+        <title>Vast River - {{ title }}</title>
+    {% else %}
+        <title>Vast River</title>
+    {% endif %}
+
+</head>
+<body style="background-image: url('static/wallpaper.jpeg');">
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                {% if which_tab == "home" %}
+                  <a class="nav-link active" href="/">Home</a>
+                {% else %}
+                  <a class="nav-link" href="/">Home</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_tab == "ft" %}
+                  <a class="nav-link active" href="/ft">Fund Transfer</a>
+                {% else %}
+                  <a class="nav-link" href="/ft">Fund Transfer</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_tab == "ow" %}
+                  <a class="nav-link active" href="/ow">One Wallet</a>
+                {% else %}
+                  <a class="nav-link" href="/ow">One Wallet</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_tab == "direct_game_launch" %}
+                  <a class="nav-link active" href="/direct_game_launch">Direct Game Launch</a>
+                {% else %}
+                  <a class="nav-link" href="/direct_game_launch">Direct Game Launch</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_tab == "game_stream" %}
+                  <a class="nav-link active" href="/game_stream">Game Stream</a>
+                {% else %}
+                  <a class="nav-link" href="/game_stream">Game Stream</a>
+                {% endif %}
+              </li>
+              <li class="nav-item">
+                {% if which_tab == "daily_report" %}
+                  <a class="nav-link active" href="/daily_report">Daily Report</a>
+                {% else %}
+                  <a class="nav-link" href="/daily_report">Daily Report</a>
+                {% endif %}
+              </li>
+<!--              <li class="nav-item dropdown">-->
+<!--                 {% if which_tab == "daily_report" or which_tab == "game_stream" %}-->
+<!--                    <a class="nav-link active dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>-->
+<!--                 {% else %}-->
+<!--                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">History</a>-->
+<!--                 {% endif %}-->
+<!--                <div class="dropdown-menu">-->
+<!--                  <a class="dropdown-item" href="/daily_report">Daily Report</a>-->
+<!--                    <a class="dropdown-item" href="/game_stream">Game Stream</a>-->
+<!--                </div>-->
+<!--              </li>-->
+              <li class="nav-item">
+                <a href="{{ url_for('mini_roulette') }}" class="nav-link">
+                        Mini
+                        <img src="static/roulette.png" width="16" height="16">
+                </a>
+              </li>
+            </ul>
+            <div class="navbar-nav mr-6">
+                <a href="{{ url_for('game_window') }}">
+                    <button type="button" class="btn btn-primary">
+                        Login
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                          <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                        </svg>
+                    </button>
+                </a>
+                <a href="{{ url_for('game_window_slots') }}">
+                    <button type="button" class="btn btn-primary">
+                        Sign up
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                          <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                        </svg>
+                    </button>
+                </a>
+                <a href="{{ url_for('game_window') }}">
+                    <button type="button" class="btn btn-primary">
+                        Live
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                          <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                        </svg>
+                    </button>
+                </a>
+                <a href="{{ url_for('game_window_slots') }}">
+                    <button type="button" class="btn btn-primary">
+                        Slots
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-back" viewBox="0 0 16 16">
+                          <path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/>
+                        </svg>
+                    </button>
+                </a>
+            </div>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+          {% if which_tab == "daily_report" %}
+            {% block daily %}{% endblock %}
+          {% elif which_tab == "direct_game_launch" %}
+            {% block direct_game %}{% endblock %}
+          {% elif which_tab == "game_stream" %}
+            {% block stream %}{% endblock %}
+          {% else %}
+            <div class="col-md-5">
+            {% block content %}{% endblock %}
+
+            </div>
+            <div class="col-md-7">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                      {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                {% endwith %}
+              <div class="content-section">
+                <h3>User Information</h3>
+                    {% block userinfo %}{% endblock %}
+              </div>
+            </div>
+          {% endif %}
+      </div>
+    </main>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
