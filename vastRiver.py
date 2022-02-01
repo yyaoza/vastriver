@@ -2,6 +2,9 @@ import random
 import string
 import requests
 import webbrowser
+from os import listdir
+from os.path import isfile, join
+import pathlib
 
 import userAuth
 from flask import request, render_template, flash, Markup, jsonify
@@ -15,15 +18,36 @@ uaform = None
 ftform = None
 theSession = None
 iframe_game_toggle = False
-which_tab = ''
 stream = ''
 datastream = {}
 
 
+@app.route('/', methods=['GET', 'POST'])
+def casino():
+    current_path = 'static/icons/'
+    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f))]
+
+    return render_template('layout.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/sports', methods=['GET', 'POST'])
+def sports():
+    # which_tabs = request.url.rsplit('/', 1)[1]
+
+    return render_template('sports.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
+
+
+@app.route('/slots', methods=['GET', 'POST'])
+def slots():
+    # which_tabs = request.url.rsplit('/', 1)[1]
+
+    return render_template('slots.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
+
+
 @app.route('/ft', methods=['GET', 'POST'])
 def ft():
-    global which_tab
-    which_tab = 'ft'
+    # which_tabs = request.url.rsplit('/', 1)[1]
     global theSession
     theSession.get_user_balance()
     form = FundTransferForm()
@@ -38,14 +62,14 @@ def ft():
         else:
             flash('Error:' + form.amount.errors, 'error')
 
-    return render_template('fundTransfer.html', which_tab=which_tab, ft_form=form, form=uaform,
+    return render_template('fundTransfer.html', which_tab=request.url.rsplit('/', 1)[1], ft_form=form, form=uaform,
                            UA_payload=theSession.UA_payload)
 
 
 @app.route('/ow', methods=['GET', 'POST'])
 def ow():
-    global which_tab
-    which_tab = 'ow'
+    # global which_tab
+    # which_tab =
     find_form = OneWalletFindUser()
     add_form = OneWalletAddUser()
 
@@ -77,7 +101,7 @@ def ow():
         else:
             flash(Markup('<strong>' + add_form.userID_added.data + '</strong> already exists!'), 'danger')
 
-    return render_template('oneWallet.html', which_tab=which_tab, ow_findUser_form=find_form,
+    return render_template('oneWallet.html', which_tab=request.url.rsplit('/', 1)[1], ow_findUser_form=find_form,
                            ow_addUser_form=add_form, form=uaform, UA_payload=theSession.UA_payload)
 
 
@@ -269,7 +293,7 @@ def rb():
     return 'done'
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/settings', methods=['GET', 'POST'])
 def start():
     global which_tab
     which_tab = 'home'
@@ -336,37 +360,28 @@ def mini_roulette():
 
 @app.route('/daily_report', methods=['GET', 'POST'])
 def daily_report():
-    global which_tab
-    which_tab = 'daily_report'
-
     report = theSession.daily_report()
 
-    return render_template('daily_report.html', len=len(report), daily_report=report, which_tab=which_tab, form=uaform,
-                           UA_payload=theSession.UA_payload)
+    return render_template('daily_report.html', len=len(report), daily_report=report,
+                           which_tab=request.url.rsplit('/', 1)[1], form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/direct_game_launch', methods=['GET', 'POST'])
 def direct_game_launch():
-    global which_tab
-    which_tab = 'direct_game_launch'
-
     game_launch_info = theSession.direct_game_launch()
 
     return render_template('direct_game_launch.html', len=len(game_launch_info), game_launch_info=game_launch_info,
-                           which_tab=which_tab, form=uaform,
-                           UA_payload=theSession.UA_payload)
+                           which_tab=request.url.rsplit('/', 1)[1], form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/game_stream', methods=['GET', 'POST'])
 def game_stream():
-    global which_tab
-    which_tab = 'game_stream'
     global datastream
     datastream.clear()
     stream = 'Waiting for game data...'
     waiting = 'Waiting for game data...'
 
-    return render_template('game_stream.html', datastream=stream, which_tab=which_tab, form=uaform,
+    return render_template('game_stream.html', datastream=stream, which_tab=request.url.rsplit('/', 1)[1], form=uaform,
                            UA_payload=theSession.UA_payload)
 
 
