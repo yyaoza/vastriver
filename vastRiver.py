@@ -30,9 +30,11 @@ def home():
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     icon_files = [current_path + sub for sub in icon_files]
 
+    # myColours = request.form.get('login', type=object)
     # connect to wallet
     if request.method == 'POST':
         if 'login' in request.form:
+            myColours = request.form.get('login', type=object())
             http_client = Client("https://api.devnet.solana.com")
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
