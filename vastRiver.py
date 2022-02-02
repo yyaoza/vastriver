@@ -23,9 +23,10 @@ datastream = {}
 
 
 @app.route('/', methods=['GET', 'POST'])
-def casino():
-    current_path = 'static/icons/'
-    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f))]
+def home():
+    current_path = 'static/icons/top_games/'
+    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    icon_files = [current_path + sub for sub in icon_files]
 
     return render_template('layout.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            num_icons=len(icon_files)-1)
@@ -40,9 +41,22 @@ def sports():
 
 @app.route('/slots', methods=['GET', 'POST'])
 def slots():
-    # which_tabs = request.url.rsplit('/', 1)[1]
+    current_path = 'static/icons/slots/'
+    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    icon_files = [current_path + sub for sub in icon_files]
 
-    return render_template('slots.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
+    return render_template('slots.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/live', methods=['GET', 'POST'])
+def live():
+    current_path = 'static/icons/live/'
+    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    icon_files = [current_path + sub for sub in icon_files]
+
+    return render_template('live.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
 
 
 @app.route('/ft', methods=['GET', 'POST'])

@@ -8,6 +8,10 @@ body {
   color: #5a5a5a;
 }
 
+.nav-link {
+  color: #28a745;
+}
+
 
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
@@ -128,6 +132,11 @@ body {
     height: 120px;
 }
 
+.gallery-thumb{
+    height: 120px;
+}
+
+
 .btn-outline-dark {
     color: #343a4000;
 }
@@ -139,4 +148,22 @@ body {
 .top-bar-right-side {
     margin-left: auto;
     margin-right: 0;
+}
+
+.navbar-dark .navbar-brand {
+  color: #28a745;
+}
+
+.navbar-dark:hover .navbar-brand:hover {
+  color: #c8ed07;
+}
+
+.nav-link:hover {
+  color: #c8ed07;
+}
+
+.btn-outline-success:hover {
+    color: #28a745;
+    background-color: #c8ed07;
+    border-color: #c8ed07;
 }
