@@ -338,6 +338,11 @@ class FundTransferForm(FlaskForm):
     subtract = SubmitField('-')
 
 
+class ConnectWallet(FlaskForm):
+    # amount = StringField('Amount', validators=[InputRequired()])
+    connectButton = SubmitField('Log in')
+
+
 class UserAuthenticationForm(FlaskForm):
     firstName = StringField('First Name', validators=[InputRequired()])
     lastName = StringField('Last Name', validators=[InputRequired()])

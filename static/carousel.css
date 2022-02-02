@@ -118,7 +118,8 @@ body {
 }
 
 .card {
-    width: 121px;
+    width: 170px;
+    height: 170px;
     margin-bottom: 50px;
 }
 
@@ -127,15 +128,10 @@ body {
 }
 
 .gallery-btn {
-    margin-top: -120px;
+    margin-top: -168px;
     font-weight: 300;
-    height: 120px;
+    height: 100%;
 }
-
-.gallery-thumb{
-    height: 120px;
-}
-
 
 .btn-outline-dark {
     color: #343a4000;
@@ -143,6 +139,9 @@ body {
 
 .btn-outline-dark:hover {
     background-color: #00000080;
+    color: #28a745;
+    font-weight: 400;
+
 }
 
 .top-bar-right-side {
@@ -160,6 +159,10 @@ body {
 
 .nav-link:hover {
   color: #c8ed07;
+}
+
+.green-text {
+  color: #28a745;
 }
 
 .btn-outline-success:hover {
