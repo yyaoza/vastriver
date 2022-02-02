@@ -32,7 +32,7 @@ def home():
 
     # connect to wallet
     if request.method == 'POST':
-        if 'connect_wallet_button' in request.form:
+        if 'login' in request.form:
             http_client = Client("https://api.devnet.solana.com")
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,

@@ -1,4 +1,4 @@
-//document.getElementById("login").addEventListener("click", myFunction);
+document.getElementById("login").addEventListener("click", myFunction);
 function myFunction() {
 console.log("yes")
     const getProvider = async () => {
@@ -13,12 +13,12 @@ console.log("yes")
         document.write('Install https://www.phantom.app/');
       }
     };
-    window.onload = () => {
+//    window.onload = () => {
       getProvider().then(provider => {
         console.log('key', provider.publicKey.toString())
       })
       .catch(function(error){
         console.log(error)
       });
-    }
-}
+//    }
+};
