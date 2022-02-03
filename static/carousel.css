@@ -152,19 +152,29 @@ body {
     margin-top: -168px;
     font-weight: 300;
     height: 100%;
+    background-color: #00000000;
+    color: #00000000;
+}
+
+.gallery-btn:hover {
+    background-color: #00000080;
+    color: #28a745;
+    font-weight: 400;
 }
 
 .btn-outline-dark {
     color: #343a4000;
 }
 
+.btn-outline:active {
+    background-color: #000000D0;
+}
+
 .btn-outline-dark:hover {
     background-color: #00000080;
     color: #28a745;
     font-weight: 400;
-
 }
-
 .top-bar-right-side {
     margin-left: auto;
     margin-right: 0;
