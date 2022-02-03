@@ -38,12 +38,12 @@
       }
     </style>
 
-    
+
     <!-- Custom styles for this template -->
     <link  type="text/css" href="{{ url_for('static', filename='carousel.css') }}" rel="stylesheet">
   </head>
   <body>
-    
+
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid" id="top_bar">
@@ -92,21 +92,20 @@
     $('#myCarousel').carousel('next');
   });
 </script>
-<main style="background-color: #495057;">
+<main class="gallery-bg">
   <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
+<!--    <div class="carousel-indicators">-->
+<!--      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>-->
+<!--      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>-->
+<!--      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>-->
+<!--    </div>-->
     <div class="carousel-inner">
       <div class="carousel-item active">
         <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
           <img src="/static/banner/streetfighter.jpg" class="d-block w-100">
           <div class="carousel-caption">
-            <h1>Win Cypto.</h1>
-            <p>Go big or go home.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
+            <h1>Fuck the rugs.</h1>Let's go to the moon.
+<!--            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>-->
           </div>
 
       </div>
@@ -115,9 +114,7 @@
           <img src="/static/banner/golden_wealth_baccarat_banner_1980x800_2021_08_06_branded.png" class="d-block w-100">
         <div class="container">
           <div class="carousel-caption">
-            <h1>Win Cypto.</h1>
-            <p>Go big or go home.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
+            <h1>Win Cypto.</h1>Go big or go home.
           </div>
         </div>
       </div>
@@ -125,30 +122,19 @@
         <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"/></svg>
           <img src="/static/banner/NFTMegaWays_RedTiger.jpg" class="d-block w-100">
         <div class="container">
-          <div class="carousel-caption text-end">
-            <h1>LFG.</h1>
-            <p>Because it's the only way WAGMI.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
+          <div class="carousel-caption">
+            <h1>LFG.</h1>It's the only way WAGMI.
+<!--            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>-->
           </div>
         </div>
       </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-
-
   </div>
 
 
   <!-- Main menu bar -->
-  <div class="navbar navbar-expand-md navbar-dark bg-dark">
-    <a class="nav-link active" aria-current="page" href="/sports">
+  <div class="navbar navbar-expand-md navbar-dark bg-dark nav-bar-selector">
+    <a class="nav-link" aria-current="page" href="/sports">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                    class="bi bi-bicycle" viewBox="0 0 16 16">
                   <path d="M4 4.5a.5.5 0 0 1 .5-.5H6a.5.5 0 0 1 0 1v.5h4.14l.386-1.158A.5.5 0 0 1 11 4h1a.5.5 0 0 1 0 1h-.64l-.311.935.807 1.29a3 3 0 1 1-.848.53l-.508-.812-2.076 3.322A.5.5 0 0 1 8 10.5H5.959a3 3 0 1 1-1.815-3.274L5 5.856V5h-.5a.5.5 0 0 1-.5-.5zm1.5 2.443-.508.814c.5.444.85 1.054.967 1.743h1.139L5.5 6.943zM8 9.057 9.598 6.5H6.402L8 9.057zM4.937 9.5a1.997 1.997 0 0 0-.487-.877l-.548.877h1.035zM3.603 8.092A2 2 0 1 0 4.937 10.5H3a.5.5 0 0 1-.424-.765l1.027-1.643zm7.947.53a2 2 0 1 0 .848-.53l1.026 1.643a.5.5 0 1 1-.848.53L11.55 8.623z"/>

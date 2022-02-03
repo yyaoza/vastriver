@@ -28,14 +28,14 @@ datastream = {}
 def home():
     current_path = 'static/icons/top_games/'
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = [current_path + sub for sub in icon_files]
+    icon_files = sorted([current_path + sub for sub in icon_files])
 
-    # myColours = request.form.get('login', type=object)
-    # connect to wallet
-    if request.method == 'POST':
-        if 'login' in request.form:
-            myColours = request.form.get('login')
-            http_client = Client("https://api.devnet.solana.com")
+    # # myColours = request.form.get('login', type=object)
+    # # connect to wallet
+    # if request.method == 'POST':
+    #     if 'login' in request.form:
+    #         myColours = request.form.get('login')
+    #         http_client = Client("https://api.devnet.solana.com")
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
                            num_icons=len(icon_files)-1)
@@ -54,7 +54,7 @@ def sports():
 def slots():
     current_path = 'static/icons/slots/'
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = [current_path + sub for sub in icon_files]
+    icon_files = sorted(current_path + sub for sub in icon_files)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            num_icons=len(icon_files)-1)
@@ -64,7 +64,7 @@ def slots():
 def live():
     current_path = 'static/icons/live/'
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = [current_path + sub for sub in icon_files]
+    icon_files = sorted(current_path + sub for sub in icon_files)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            num_icons=len(icon_files)-1)

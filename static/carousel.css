@@ -3,13 +3,15 @@
 /* Padding below the footer and lighter body text */
 
 body {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
   color: #5a5a5a;
 }
 
 .nav-link {
   color: #28a745;
+}
+
+.bg-dark {
+  background: #3e3440!important;
 }
 
 
@@ -18,9 +20,9 @@ body {
 
 /* Carousel base class */
 .carousel {
-  margin-bottom: 1rem;
   bottom: 50px;
   height: 300px;
+  margin: 0% 15%;
 }
 
 .carousel-inner {
@@ -38,8 +40,12 @@ body {
 
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
-  bottom: 3rem;
+  bottom: -130px;
   z-index: 10;
+  background: #00000080;
+  width: 100%;
+  left: 0%;
+  padding-top: 10px;
 }
 
 .carousel-indicators     {
@@ -48,9 +54,19 @@ body {
 
 /* Declare heights because of positioning of img element */
 .carousel-item {
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0%;
+  margin-right: 0%;
+  width: 100%
 }
+
+.active {
+  margin-left: 0%;
+  margin-right: 0%;
+  width: 100%
+}
+
+
+
 .carousel-item > img {
   position: absolute;
   top: 0;
@@ -117,6 +133,11 @@ body {
   }
 }
 
+/* GALLERY STUFF */
+.gallery-bg {
+    background: #332a34;
+}
+
 .card {
     width: 170px;
     height: 170px;
@@ -149,12 +170,24 @@ body {
     margin-right: 0;
 }
 
+/* NAV BAR STUFF */
+
+.nav-bar-selector {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+
 .navbar-dark .navbar-brand {
   color: #28a745;
 }
 
 .navbar-dark:hover .navbar-brand:hover {
   color: #c8ed07;
+}
+
+.nav-link {
+    display: inline-block;
 }
 
 .nav-link:hover {
