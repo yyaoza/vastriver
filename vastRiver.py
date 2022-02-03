@@ -8,7 +8,7 @@ from os import listdir
 from os.path import isfile, join
 import pathlib
 
-import userAuth
+from userAuth import UA2
 from flask import request, render_template, flash, Markup, jsonify
 from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser, ConnectWallet
@@ -29,13 +29,6 @@ def home():
     current_path = 'static/icons/top_games/'
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     icon_files = sorted([current_path + sub for sub in icon_files])
-
-    # # myColours = request.form.get('login', type=object)
-    # # connect to wallet
-    # if request.method == 'POST':
-    #     if 'login' in request.form:
-    #         myColours = request.form.get('login')
-    #         http_client = Client("https://api.devnet.solana.com")
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
                            num_icons=len(icon_files)-1)
@@ -65,6 +58,11 @@ def live():
     current_path = 'static/icons/live/'
     icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     icon_files = sorted(current_path + sub for sub in icon_files)
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            num_icons=len(icon_files)-1)

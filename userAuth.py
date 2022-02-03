@@ -4,6 +4,7 @@ import random
 import requests
 import string
 import json
+import webbrowser
 from data import proxies
 
 
@@ -37,7 +38,10 @@ class UA2:
             },
             'game': {
                 'category': 'roulette',
-                'interface': 'view1'
+                'interface': 'view1',
+                'table': {
+                    'id': ''
+                }
             },
             'channel': {
                 'wrapped': False,
@@ -76,9 +80,16 @@ class UA2:
         'output': '1'
     }
 
-    def __init__(self, hostname):
+    def __init__(self):
         # self.UA_payload['config']['urls']['cashier'] = hostname
         self.get_user_info()
+
+    def launch_game(self, game_id):
+        self.UA_payload['config']['game']['table']['id'] = game_id
+        ua_url = self.url + '/ua/v1/' + self.casino_id + '/' + self.auth_key
+        x = requests.post(ua_url, json=self.UA_payload)
+        # x_json = json.loads(x.text)
+        webbrowser.open(self.url + json.loads(x.text)['entry'])
 
     def daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
