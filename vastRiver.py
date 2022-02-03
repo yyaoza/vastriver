@@ -34,7 +34,7 @@ def home():
     # connect to wallet
     if request.method == 'POST':
         if 'login' in request.form:
-            myColours = request.form.get('login', type=object())
+            myColours = request.form.get('login')
             http_client = Client("https://api.devnet.solana.com")
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
