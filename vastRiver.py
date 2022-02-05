@@ -43,6 +43,13 @@ def sports():
     return render_template('sports.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
 
 
+@app.route('/deposit', methods=['GET', 'POST'])
+def deposit():
+
+
+    return render_template('deposit.html')
+
+
 @app.route('/slots', methods=['GET', 'POST'])
 def slots():
     current_path = 'static/icons/slots/'

@@ -5,6 +5,7 @@ function disconnect() {
     window.solana.disconnect();
     document.getElementById("login").innerHTML = '<i class="bi bi-wallet2"></i> Connect';
     document.getElementById("disconnect").style.display = "none";
+    document.getElementById("balance").style.display = "none";
 };
 
 function login() {
@@ -34,11 +35,14 @@ function login() {
 
                 const balance = await connection.getBalance(provider.publicKey);
 
+                const reader = new FileReader();
 
 
-                balance_int = balance.toFixed(2);
+//                balance_int = balance.toFixed(2);
 
-                document.getElementById("balance").innerHTML = 'Balance: ' + balance + ''
+                document.getElementById("balance").innerHTML = '<div style="margin-top: 10px;">Balance: ' + (balance / 1000000000).toFixed(9) + '' + '</div>' + reader.readAsText("static/deposit_balance.html");
+                document.getElementById("balance").style.display = 'inline-block';
+//                document.getElementById("balance").style.marginTop = '8px';
                 console.log(balance);
 
             }
@@ -51,13 +55,14 @@ function login() {
       }
     };
 
-//    window.onload = () => {
-      getProvider().then(provider => {
-        console.log('key', provider.publicKey.toString())
-      })
-      .catch(function(error){
-        console.log(error)
-      });
+    console.log("Logging in...");
+    //    window.onload = () => {
+    getProvider().then(provider => {
+    console.log('key', provider.publicKey.toString())
+    })
+    .catch(function(error){
+    console.log(error)
+    });
 
 //      phantom_balance().then(balance => {
 //        console.log('key', balance)
