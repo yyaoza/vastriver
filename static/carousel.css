@@ -214,6 +214,6 @@ body {
     border-color: #c8ed07;
 }
 
-#login {
-    width: 110px;
+#disconnect {
+    display: none;
 }
