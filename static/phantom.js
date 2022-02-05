@@ -8,6 +8,11 @@ function disconnect() {
     document.getElementById("balance").style.display = "none";
 };
 
+async function fetchHtmlAsText(url) {
+    return await (await fetch(url)).text();
+}
+
+
 function login() {
 
     const getProvider = async () => {
@@ -40,8 +45,8 @@ function login() {
 
 //                balance_int = balance.toFixed(2);
 
-                document.getElementById("balance").innerHTML = '<div style="margin-top: 10px;">Balance: ' + (balance / 1000000000).toFixed(9) + '' + '</div>' + reader.readAsText("static/deposit_balance.html");
-                document.getElementById("balance").style.display = 'inline-block';
+                document.getElementById("balance").innerHTML = 'Balance: ' + (balance / 1000000000).toFixed(9) + " " + await fetchHtmlAsText("static/deposit_balance.html");
+//                document.getElementById("balance").style.display = 'inline-block';
 //                document.getElementById("balance").style.marginTop = '8px';
                 console.log(balance);
 

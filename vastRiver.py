@@ -45,7 +45,7 @@ def sports():
 
 @app.route('/deposit', methods=['GET', 'POST'])
 def deposit():
-
+    current_path = 'static/icons/sports/'
 
     return render_template('deposit.html')
 
