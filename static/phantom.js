@@ -18,10 +18,10 @@ function login() {
             publicKey_string = provider.publicKey.toString()
             publicKey_short = publicKey_string.substring(0, 3) + "..." + publicKey_string.slice(publicKey_string.length - 3)
             document.getElementById("login").innerHTML = '<i class="bi bi-wallet2"> ' + publicKey_short + "  </i></button>";
-            document.getElementById("disconnect").style.display = "block";
+            document.getElementById("disconnect").style.display = "inline-block";
 
             console.log("Wallet Connected: " + provider.isConnected);
-            if (phantom.isConnected !== false) {
+            if (provider.isConnected !== false) {
 
                 const wallet = new solanaWeb3.PublicKey(provider.publicKey.toString());
 
@@ -31,10 +31,14 @@ function login() {
 
                 // remember, do not use base 58 encoded key with getBalance();
                 console.log("Getting Balance: " + publicKey_string);
-                // After Connecting
-//                connection.getBalance(wallet).then(function(value) { console.log(value); });
 
-                const balance = await connection.getBalance(provider.publicKey)
+                const balance = await connection.getBalance(provider.publicKey);
+
+
+
+                balance_int = balance.toFixed(2);
+
+                document.getElementById("balance").innerHTML = 'Balance: ' + balance + ''
                 console.log(balance);
 
             }

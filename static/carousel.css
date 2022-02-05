@@ -217,3 +217,8 @@ body {
 #disconnect {
     display: none;
 }
+
+.deposit-div {
+    padding-right: 6px;
+    padding-left: 6px;
+}
