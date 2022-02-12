@@ -32,7 +32,7 @@ requests==2.26.0
 rfc3986==1.5.0
 six==1.16.0
 sniffio==1.2.0
-solana==0.21.0
+solana
 SQLAlchemy==1.4.22
 types-cachetools==4.2.9
 typing-extensions==3.10.0.2
