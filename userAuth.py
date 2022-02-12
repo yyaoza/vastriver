@@ -88,8 +88,10 @@ class UA2:
         self.UA_payload['config']['game']['table']['id'] = game_id
         ua_url = self.url + '/ua/v1/' + self.casino_id + '/' + self.auth_key
         x = requests.post(ua_url, json=self.UA_payload)
-        # x_json = json.loads(x.text)
-        webbrowser.open(self.url + json.loads(x.text)['entry'])
+        x_json = json.loads(x.text)
+        if 'entry' in x_json:
+            webbrowser.open(self.url + x_json['entry'])
+        # elif x_json
 
     def daily_report(self):
         auth_payload = {'Authorization': 'Basic ZGl5ZnQ0MDAwMDAwMDAwMTp0ZXN0MTIz'}
