@@ -14,6 +14,7 @@ Flask-Psycopg2==1.0
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==0.15.1
 greenlet==1.1.0
+gunicorn==20.0.4
 h11==0.12.0
 httpcore==0.13.7
 httpx==0.18.2
