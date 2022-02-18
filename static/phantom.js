@@ -42,12 +42,8 @@ function login() {
 
                 const reader = new FileReader();
 
-
-//                balance_int = balance.toFixed(2);
-
-                document.getElementById("balance").innerHTML = 'Balance: ' + (balance / 1000000000).toFixed(9) + " " + await fetchHtmlAsText("static/deposit_balance.html");
+                document.getElementById("balance").innerHTML = 'Balance: ' + (balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
                 document.getElementById("balance").style.display = 'inline-block';
-//                document.getElementById("balance").style.marginTop = '8px';
                 console.log(balance);
 
             }

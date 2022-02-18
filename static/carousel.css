@@ -11,7 +11,8 @@ body {
 }
 
 .nav-link {
-  color: #28a745;
+    color: #28a745;
+    width: 15%;
     -moz-transition: all .2s ease-in;
     -o-transition: all .2s ease-in;
     -webkit-transition: all .2s ease-in;
@@ -151,9 +152,10 @@ body {
 }
 
 .card {
-    width: 170px;
-    height: 170px;
+    width: 200px;
+    height: 200px;
     margin-bottom: 50px;
+    background: #736988;
 }
 
 .card-img-top {
@@ -161,7 +163,7 @@ body {
 }
 
 .gallery-btn {
-    margin-top: -168px;
+    margin-top: -198px;
     font-weight: 300;
     height: 100%;
     background-color: #00000000;
@@ -198,6 +200,15 @@ body {
     display: inline-block;
     text-align: center;
     width: 100%;
+    padding-bottom: 0px;
+}
+
+.nav-link-selector a.active-link {
+  color: #28a745;
+}
+
+.nav-link-selector a.active-link {
+  color: #28a745;
 }
 
 .navbar-dark .navbar-brand {
@@ -215,6 +226,7 @@ body {
 .nav-link:hover {
   color: #c8ed07;
 }
+
 
 .green-text {
   color: #28a745;
@@ -251,9 +263,4 @@ body {
     width: 300px;
     margin: 0 auto;
     padding-top: 30px;
-}
-
-.thumb {
-    width: 170px;
-    height: 170px;
 }

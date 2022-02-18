@@ -338,6 +338,10 @@ class FundTransferForm(FlaskForm):
     subtract = SubmitField('-')
 
 
+class ReloadPlacement(FlaskForm):
+    reload = SubmitField('Reload CSV')
+
+
 class ConnectWallet(FlaskForm):
     # amount = StringField('Amount', validators=[InputRequired()])
     connectButton = SubmitField('Log in')

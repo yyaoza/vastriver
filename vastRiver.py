@@ -6,12 +6,12 @@ import solana
 from solana.rpc.api import Client
 from os import listdir
 from os.path import isfile, join
-import pathlib
+import csv
 
 from userAuth import UA2
 from flask import request, render_template, flash, Markup, jsonify
 from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
-from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser, ConnectWallet
+from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser, ReloadPlacement
 from oneWallet import valid_cancel, valid_credit, valid_debit
 from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, \
     valid_channel, valid_game, valid_currency, valid_transaction, valid_amount
@@ -22,49 +22,182 @@ theSession = None
 iframe_game_toggle = False
 stream = ''
 datastream = {}
+icon_placement = {}
+icon_path_evo = 'static/icons/games/evo/'
+icon_path_slots = 'static/icons/games/slots/'
+
+
+def reload_icon_placement(icon_path):
+    global icon_placement
+    print('reloading csv:' + icon_path)
+    icon_files = [f for f in listdir(icon_path) if isfile(join(icon_path, f)) and not f.endswith('.DS_Store')]
+    reader = csv.DictReader(open('static/icon_placement.csv', mode='r', encoding='utf-8-sig'))
+    icon_placement = {name: [] for name in reader.fieldnames}
+    for row in reader:
+        for name in reader.fieldnames:
+            if len(row[name]) > 0:
+                icon_filename = [string for string in icon_files if row[name] in string]
+                if len(icon_filename) > 0:
+                    icon_placement[name].append(icon_path + icon_filename[0])
 
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    current_path = 'static/icons/top_games/'
-    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = sorted([current_path + sub for sub in icon_files])
 
-    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted([current_path + sub for sub in icon_files])
+    # reload_icon_placement()
+
+    icon_files = icon_placement['top_games']
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files)
+
+
+@app.route('/xyz', methods=['GET', 'POST'])
+def xyz():
+    # reloadForm = ReloadPlacement()
+    reload_icon_placement(icon_path_evo)
+    reload_icon_placement(icon_path_slots)
+
+    return render_template('loadPlacement.html')
 
 
 @app.route('/sports', methods=['GET', 'POST'])
 def sports():
-    current_path = 'static/icons/sports/'
-    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = [current_path + sub for sub in icon_files]
+    # current_path = 'static/icons/games/sports/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = [current_path + sub for sub in icon_files]
+
+    return render_template('sports.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
+
+
+@app.route('/favorites', methods=['GET', 'POST'])
+def favorites():
+    # current_path = 'static/icons/games/sports/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = [current_path + sub for sub in icon_files]
 
     return render_template('sports.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
 
 
 @app.route('/deposit', methods=['GET', 'POST'])
 def deposit():
-    current_path = 'static/icons/sports/'
 
     return render_template('deposit.html')
 
 
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+
+    return render_template('settings.html')
+
+
 @app.route('/slots', methods=['GET', 'POST'])
 def slots():
-    current_path = 'static/icons/slots/'
-    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = sorted(current_path + sub for sub in icon_files)
+    # current_path = 'static/icons/games/slots/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['slots']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            num_icons=len(icon_files)-1)
 
 
-@app.route('/live', methods=['GET', 'POST'])
-def live():
-    current_path = 'static/icons/live/'
-    icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
-    icon_files = sorted(current_path + sub for sub in icon_files)
+@app.route('/baccarat', methods=['GET', 'POST'])
+def baccarat():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['baccarat']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/blackjack', methods=['GET', 'POST'])
+def blackjack():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['blackjack']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/roulette', methods=['GET', 'POST'])
+def roulette():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['roulette']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/dice', methods=['GET', 'POST'])
+def dice():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['dice']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/poker', methods=['GET', 'POST'])
+def poker():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['poker']
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
+            UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/game_shows', methods=['GET', 'POST'])
+def game_shows():
+    # current_path = 'static/icons/games/live/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['game_shows']
 
     if request.method == 'POST':
         if 'launch' in request.form:
@@ -426,4 +559,6 @@ def update_stream():
 
 if __name__ == '__main__':
     app.debug = True
+    reload_icon_placement(icon_path_evo)
+    reload_icon_placement(icon_path_slots)
     app.run()

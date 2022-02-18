@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="input-group mb-3 money-transfer">
+    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon2">
+    <button class="btn btn-outline-success" id="deposit" name="withdraw" href="/settings" style="border-radius: 0px;">
+        Set
+    </button>
+
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        Dropdown button
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" href="#">Action</a></li>
+        <li><a class="dropdown-item" href="#">Another action</a></li>
+        <li><a class="dropdown-item" href="#">Something else here</a></li>
+      </ul>
+    </div>
+</div>
+
+
+{% endblock content %}
+

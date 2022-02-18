@@ -37,7 +37,7 @@ class UA2:
                 'skin': '1'
             },
             'game': {
-                'category': 'roulette',
+                # 'category': 'roulette',
                 'interface': 'view1',
                 'table': {
                     'id': ''
