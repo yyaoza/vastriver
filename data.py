@@ -12,7 +12,7 @@ def db_get_balance(userid):
         return dataclass.query.filter_by(player_id=userid).all()[0].balance
 
 
-def xdb_search_userid(playerID):
+def db_search_userid(playerID):
     dataclass = UserEntry()
     return dataclass.query.filter_by(player_id=playerID).all()
 

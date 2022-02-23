@@ -23,8 +23,7 @@ iframe_game_toggle = False
 stream = ''
 datastream = {}
 icon_placement = {}
-icon_path_evo = 'static/icons/games/evo/'
-icon_path_slots = 'static/icons/games/slots/'
+icon_path = 'static/icons/thumbnails/'
 
 
 def reload_icon_placement(icon_path):
@@ -52,7 +51,7 @@ def home():
     if request.method == 'POST':
         if 'launch' in request.form:
             game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
-            UA2().launch_game(game_id)
+            # UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files)
 
@@ -81,7 +80,7 @@ def favorites():
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = [current_path + sub for sub in icon_files]
 
-    return render_template('sports.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
+    return render_template('favorites.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform)
 
 
 @app.route('/deposit', methods=['GET', 'POST'])
@@ -99,7 +98,7 @@ def settings():
     #     global uaform
     #     uaform = UserAuthenticationForm()
     #     # requests.close()
-    db_search_userid()
+    # db_search_userid()
     #
     if user_settings.validate_on_submit():
         if user_settings.update.data:
@@ -574,6 +573,5 @@ def update_stream():
 
 if __name__ == '__main__':
     app.debug = True
-    reload_icon_placement(icon_path_evo)
-    reload_icon_placement(icon_path_slots)
+    reload_icon_placement(icon_path)
     app.run()
