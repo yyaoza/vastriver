@@ -11,7 +11,7 @@ language_choices = [('al', 'Albanian'),
                     ('cf', 'Canadian French'),
                     ('ca', 'Catalan, Valencian'),
                     ('cn', 'Chinese (Simplified)'),
-                    ('zh', 'Chinese (Simplified)'),
+                    # ('zh', 'Chinese (Simplified)'),
                     ('b5', 'Chinese (Traditional)'),
                     ('hr', 'Croatian'),
                     ('cs', 'Czech'),
@@ -25,7 +25,7 @@ language_choices = [('al', 'Albanian'),
                     ('fr', 'French'),
                     ('ka', 'Georgian'),
                     ('de', 'German'),
-                    ('el', 'Greek (modern)'),
+                    ('el', 'Greek'),
                     ('he', 'Hebrew'),
                     ('hi', 'Hindi'),
                     ('hu', 'Hungarian'),
@@ -40,12 +40,12 @@ language_choices = [('al', 'Albanian'),
                     ('no', 'Norwegian'),
                     ('pl', 'Polish'),
                     ('pt', 'Portuguese'),
-                    ('ro', 'Romanian, Moldavian, Moldovan'),
+                    ('ro', 'Romanian/Moldavian/Moldovan'),
                     ('ru', 'Russian'),
                     ('sr', 'Serbian'),
                     ('sk', 'Slovak'),
                     ('sl', 'Slovenian'),
-                    ('es', 'Spanish, Castilian'),
+                    ('es', 'Spanish/Castilian'),
                     ('sv', 'Swedish'),
                     ('th', 'Thai'),
                     ('tr', 'Turkish'),
@@ -347,11 +347,11 @@ class ConnectWallet(FlaskForm):
     connectButton = SubmitField('Log in')
 
 
-class UserAuthenticationForm(FlaskForm):
-    firstName = StringField('First Name', validators=[InputRequired()])
-    lastName = StringField('Last Name', validators=[InputRequired()])
-    nickname = StringField('Nickname', validators=[InputRequired()])
-    country = SelectField('Country', choices=country_choices)
+class UserSettingsForm(FlaskForm):
+    # firstName = StringField('First Name', validators=[InputRequired()])
+    # lastName = StringField('Last Name', validators=[InputRequired()])
+    username = StringField('Username')  # , validators=[InputRequired()])
+    # country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
-    game = SelectField('Game Category', choices=game_choices)
+    # game = SelectField('Game Category', choices=game_choices)
     update = SubmitField('Update')

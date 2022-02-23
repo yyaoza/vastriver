@@ -8,10 +8,10 @@ from os import listdir
 from os.path import isfile, join
 import csv
 
-from userAuth import UA2
+from userAuth import UAT
 from flask import request, render_template, flash, Markup, jsonify
 from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
-from forms import FundTransferForm, UserAuthenticationForm, OneWalletAddUser, OneWalletFindUser, ReloadPlacement
+from forms import FundTransferForm, UserSettingsForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
 from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, \
     valid_channel, valid_game, valid_currency, valid_transaction, valid_amount
@@ -92,8 +92,23 @@ def deposit():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    user_settings = UserSettingsForm()
+    the_users = UserEntry()
+    #     global theSession
+    #     theSession = userAuth.UA2(request.host_url)
+    #     global uaform
+    #     uaform = UserAuthenticationForm()
+    #     # requests.close()
+    db_search_userid()
+    #
+    if user_settings.validate_on_submit():
+        if user_settings.update.data:
+            theSession.update_user_info(user_settings)
+            flash('User Info Updated!', 'success')
+    #
+    #     return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
-    return render_template('settings.html')
+    return render_template('settings.html', form=user_settings)
 
 
 @app.route('/slots', methods=['GET', 'POST'])
@@ -456,22 +471,22 @@ def rb():
     return 'done'
 
 
-@app.route('/settings', methods=['GET', 'POST'])
-def start():
-    global which_tab
-    which_tab = 'home'
-    global theSession
-    theSession = userAuth.UA2(request.host_url)
-    global uaform
-    uaform = UserAuthenticationForm()
-    # requests.close()
-
-    if uaform.validate_on_submit():
-        if uaform.update.data:
-            theSession.update_user_info(uaform)
-            flash('User Info Updated!', 'success')
-
-    return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
+# @app.route('/settings', methods=['GET', 'POST'])
+# def start():
+#     global which_tab
+#     which_tab = 'home'
+#     global theSession
+#     theSession = userAuth.UA2(request.host_url)
+#     global uaform
+#     uaform = UserAuthenticationForm()
+#     # requests.close()
+#
+#     if uaform.validate_on_submit():
+#         if uaform.update.data:
+#             theSession.update_user_info(uaform)
+#             flash('User Info Updated!', 'success')
+#
+#     return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
 
 @app.route('/game_window')

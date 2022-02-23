@@ -8,7 +8,7 @@ import webbrowser
 from data import proxies
 
 
-class UA2:
+class UAT:
     UA_payload = {
         'game_url': '',
         'uuid': 'x',  # assigned, should be uid

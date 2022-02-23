@@ -12,9 +12,9 @@ def db_get_balance(userid):
         return dataclass.query.filter_by(player_id=userid).all()[0].balance
 
 
-def db_search_userid(userid):
+def xdb_search_userid(playerID):
     dataclass = UserEntry()
-    return dataclass.query.filter_by(player_id=userid).all()
+    return dataclass.query.filter_by(player_id=playerID).all()
 
 
 def db_check_userid_with_sid(userid, sid):
@@ -163,14 +163,16 @@ class SidEntry(the_db.Model):
 class UserEntry(the_db.Model):
     __tablename__ = 'users'
     # sid = db_sid.Column(db_sid.String(50), nullable=False, primary_key=True, unique=True)
-    player_id = the_db.Column(the_db.String(50), primary_key=True)
+    wallet_id = the_db.Column(the_db.String(50), primary_key=True)
+    player_id = the_db.Column(the_db.String(50))
     balance = the_db.Column(the_db.String(50))
     # uuid = the_db.Column(the_db.String(50))
     date_created = the_db.Column(the_db.DateTime, default=datetime.now())
 
-    def __init__(self, player_id='', balance=''):
+    def __init__(self, wallet_id='', player_id='', balance=''):
         # self.uuid = uuid
         self.player_id = player_id
+        self.wallet_id = wallet_id
         self.balance = balance
 
 
