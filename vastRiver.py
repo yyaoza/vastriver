@@ -45,9 +45,11 @@ def home():
 
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = sorted([current_path + sub for sub in icon_files])
-    reload_icon_placement()
+    reload_icon_placement(icon_path)
 
     icon_files = icon_placement['top_games']
+    print(icon_files)
+
     if request.method == 'POST':
         if 'launch' in request.form:
             game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
