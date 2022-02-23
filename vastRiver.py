@@ -59,8 +59,7 @@ def home():
 @app.route('/xyz', methods=['GET', 'POST'])
 def xyz():
     # reloadForm = ReloadPlacement()
-    reload_icon_placement(icon_path_evo)
-    reload_icon_placement(icon_path_slots)
+    reload_icon_placement(icon_path)
 
     return render_template('loadPlacement.html')
 
