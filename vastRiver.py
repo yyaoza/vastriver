@@ -8,6 +8,7 @@ import webbrowser
 from os import listdir
 from os.path import isfile, join
 import csv
+import json
 
 # from userAuth import UAT
 from flask import request, render_template, flash, Markup, jsonify
@@ -25,6 +26,7 @@ stream = ''
 datastream = {}
 icon_placement = {}
 icon_path = 'static/icons/thumbnails/'
+price_array = []
 
 
 def reload_icon_placement(icon_path):
@@ -41,12 +43,27 @@ def reload_icon_placement(icon_path):
                     icon_placement[name].append(icon_path + icon_filename[0])
 
 
+def load_crypto_prices():
+    URL = "https://api.binance.com/api/v3/ticker/price?symbol="
+    keys = ['BTCUSDT', 'SOLUSDT', 'ETHUSDT', 'ADAUSDT']
+
+    for key in keys:
+        API_URL = URL + key
+        # requesting data from url
+        data = requests.get(API_URL)
+        global price_array
+        price_array.append(json.loads(data.text))
+
+    return price_array
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
 
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = sorted([current_path + sub for sub in icon_files])
     reload_icon_placement(icon_path)
+    crypto_prices = load_crypto_prices()
 
     icon_files = icon_placement['top_games']
     # print(icon_files)
@@ -103,6 +120,7 @@ def settings():
 def xyz():
     # reloadForm = ReloadPlacement()
     reload_icon_placement(icon_path)
+    load_crypto_prices()
 
     return render_template('loadPlacement.html')
 
