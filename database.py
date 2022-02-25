@@ -1,4 +1,5 @@
 import os
+import pytz
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
@@ -98,11 +99,32 @@ def db_new_user_dbcr(cr_or_db, userid, request_data):
     return balance
 
 
-def db_new_session_sid(userid, uuid):
+def db_new_sid(userid, uuid):
     dataclass_sid = SidEntry()
     sid = len(dataclass_sid.query.all()) + 1
     dataclass_sid = SidEntry(userid, sid, uuid)
     the_db.session.add(dataclass_sid)
+    the_db.session.commit()
+    return sid
+
+
+def db_search_wallet_id(wallet_ID, NFT_ID):
+    # wallet = the_db.session.query(LoginEntry('{x}', wallet_ID, 0))
+    found_wallet = WalletEntry(0, wallet_ID, NFT_ID).query.filter_by(wallet_ID=wallet_ID).all()
+
+    if len(found_wallet) == 0:
+        dataclass_wallets = WalletEntry(0, wallet_ID, NFT_ID)
+        the_db.session.add(dataclass_wallets)
+        the_db.session.commit()
+
+
+def db_new_login(wallet_ID, NFT_ID):
+    # dataclass_sid = SidEntry()
+    dataclass_login = LoginEntry()
+    sid = str(dataclass_login.query.count() + 1).zfill(8)
+    sid = '-'.join([sid[:4], sid[4:]])
+    dataclass_login = LoginEntry('{' + str(sid) + '}', wallet_ID, NFT_ID)
+    the_db.session.add(dataclass_login)
     the_db.session.commit()
     return sid
 
@@ -158,6 +180,43 @@ class SidEntry(the_db.Model):
         self.sid = sid
         self.uuid = uuid
         self.userID = userID
+
+
+class LoginEntry(the_db.Model):
+    __tablename__ = 'login'
+    time = the_db.Column(the_db.DateTime, default=datetime.now(tz=pytz.utc))
+    sid = the_db.Column(the_db.String(50), nullable=False, primary_key=True)
+    wallet_ID = the_db.Column(the_db.String(50), nullable=False)
+    NFT_ID = the_db.Column(the_db.String(50), nullable=False)
+    language = the_db.Column(the_db.Integer, nullable=False)
+
+    def __init__(self, sid='', wallet_ID='', NFT_ID='', language=0):
+        self.sid = sid
+        self.NFT_ID = NFT_ID
+        self.wallet_ID = wallet_ID
+        self.language = language
+
+
+class WalletEntry(the_db.Model):
+    __tablename__ = 'wallets'
+    login_time = the_db.Column(the_db.DateTime, default=datetime.now(tz=pytz.utc))
+    wallet_ID = the_db.Column(the_db.String(50), nullable=False, primary_key=True)
+    NFT_ID = the_db.Column(the_db.String(50), nullable=False)
+    solana = the_db.Column(the_db.Integer, nullable=False)
+    ethereum = the_db.Column(the_db.Integer, nullable=False)
+    cardano = the_db.Column(the_db.Integer, nullable=False)
+    bitcoin = the_db.Column(the_db.Integer, nullable=False)
+    tether = the_db.Column(the_db.Integer, nullable=False)
+
+    def __init__(self, sid='', wallet_ID='', NFT_ID='', solana=0, ethereum=0, cardano=0, bitcoin=0, tether=0):
+        self.sid = sid
+        self.NFT_ID = NFT_ID
+        self.wallet_ID = wallet_ID
+        self.solana = solana
+        self.ethereum = ethereum
+        self.cardano = cardano
+        self.bitcoin = bitcoin
+        self.tether = tether
 
 
 class UserEntry(the_db.Model):

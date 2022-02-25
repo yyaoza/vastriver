@@ -2,15 +2,16 @@ import random
 import string
 import requests
 import webbrowser
-import solana
-from solana.rpc.api import Client
+# import database
+# import solana
+# from solana.rpc.api import Client
 from os import listdir
 from os.path import isfile, join
 import csv
 
-from userAuth import UAT
+# from userAuth import UAT
 from flask import request, render_template, flash, Markup, jsonify
-from data import db_get_balance, db_search_userid, db_new_session_sid, SidEntry, UserEntry, send_json, the_db, app
+from database import db_search_wallet_id, db_get_balance, db_search_userid, db_new_sid, db_new_login, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserSettingsForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
 from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, \
@@ -48,14 +49,54 @@ def home():
     reload_icon_placement(icon_path)
 
     icon_files = icon_placement['top_games']
-    print(icon_files)
+    # print(icon_files)
+
+    if request.method == 'POST':
+        if 'launch' in request.form:
+            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0]
+            # UA2().launch_game(game_id)
+
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # current_path = 'static/icons/games/slots/'
+    # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
+    # icon_files = sorted(current_path + sub for sub in icon_files)
+    icon_files = icon_placement['top_games']
+    db_new_login('{' + request.form['walletID'] + '}', '{No NFT}')
 
     if request.method == 'POST':
         if 'launch' in request.form:
             game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
-            # UA2().launch_game(game_id)
+            UA2().launch_game(game_id)
 
-    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files)
+    return render_template('favorites.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
+                           num_icons=len(icon_files)-1)
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    db_search_wallet_id('{' + request.form['walletID'] + '}', '{No NFT}')
+    user_settings = UserSettingsForm()
+    the_users = UserEntry()
+    #     global theSession
+    #     theSession = userAuth.UA2(request.host_url)
+    #     global uaform
+    #     uaform = UserAuthenticationForm()
+    #     # requests.close()
+    # db_search_userid()
+
+    #
+    if user_settings.validate_on_submit():
+        if user_settings.update.data:
+            theSession.update_user_info(user_settings)
+            flash('User Info Updated!', 'success')
+    #
+    #     return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
+
+    return render_template('settings.html', form=user_settings)
 
 
 @app.route('/xyz', methods=['GET', 'POST'])
@@ -88,27 +129,6 @@ def favorites():
 def deposit():
 
     return render_template('deposit.html')
-
-
-@app.route('/settings', methods=['GET', 'POST'])
-def settings():
-    user_settings = UserSettingsForm()
-    the_users = UserEntry()
-    #     global theSession
-    #     theSession = userAuth.UA2(request.host_url)
-    #     global uaform
-    #     uaform = UserAuthenticationForm()
-    #     # requests.close()
-    # db_search_userid()
-    #
-    if user_settings.validate_on_submit():
-        if user_settings.update.data:
-            theSession.update_user_info(user_settings)
-            flash('User Info Updated!', 'success')
-    #
-    #     return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
-
-    return render_template('settings.html', form=user_settings)
 
 
 @app.route('/slots', methods=['GET', 'POST'])
@@ -419,7 +439,7 @@ def sid_user():
                     uuid = valid_uuid()
                     if uuid:
                         if valid_sid():
-                            sid = db_new_session_sid(userid, uuid)
+                            sid = db_new_sid(userid, uuid)
                             return send_json("OK", sid, uuid)
                         else:
                             return valid_sid(False)

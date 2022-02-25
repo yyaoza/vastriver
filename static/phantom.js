@@ -15,6 +15,9 @@ async function fetchHtmlAsText(url) {
 
 function login() {
 
+
+
+
     const getProvider = async () => {
       if ("solana" in window) {
         await window.solana.connect(); // opens wallet to connect to
@@ -28,6 +31,7 @@ function login() {
 
             console.log("Wallet Connected: " + provider.isConnected);
             if (provider.isConnected !== false) {
+                document.getElementById("balance").innerHTML = 'Getting balance...'
 
                 const wallet = new solanaWeb3.PublicKey(provider.publicKey.toString());
 
@@ -46,6 +50,31 @@ function login() {
                 document.getElementById("balance").style.display = 'inline-block';
                 console.log(balance);
 
+                var http = new XMLHttpRequest();
+                var url = 'login';
+                var params = 'balance=' + balance + '&walletID=' + publicKey_string;
+                http.open('POST', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                        alert(http.responseText);
+                    }
+                }
+                http.send(params);
+
+//                let data = {element: "barium"};
+//
+//                fetch("/ow", {
+//                  method: "POST",
+//                  headers: {'Content-Type': 'application/json'},
+//                  body: JSON.stringify(data)
+//                }).then(res => {
+//                  console.log("Request complete! response:", res);
+//                });
+
             }
 
           return provider;
@@ -57,19 +86,14 @@ function login() {
     };
 
     console.log("Logging in...");
-    //    window.onload = () => {
+
     getProvider().then(provider => {
-    console.log('key', provider.publicKey.toString())
+        console.log('key', provider.publicKey.toString())
     })
     .catch(function(error){
     console.log(error)
     });
 
-//      phantom_balance().then(balance => {
-//        console.log('key', balance)
-//      })
-//      .catch(function(error){
-//        console.log(error)
-//      });
-//    }
+
+
 };
