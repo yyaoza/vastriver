@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         middle_bar.style.top = "42px"
         middle_bar.style.position = "fixed"
 //        main_section.style.position = "fixed"
-        main_section.style.marginTop = "86px"
+        main_section.style.marginTop = "70px"
       } else {
         middle_bar.classList.remove("stickyMiddle");
         middle_bar.style.top = "42px"
