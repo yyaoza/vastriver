@@ -8,9 +8,20 @@
             {% for k in icon_files %}
             <div class="col">
               <div class="card shadow-sm thumb">
-                    <img src="{{ k }}">
-                  {% for k in game_titles %}
-                  <button type="submit" name="launch" value="{{ icon_path }}{{ k }}" class="btn-outline btn gallery-btn">Play now</button>
+                    <img src="{{ icon_path }}{{ k }}">
+                    {% for game_title in game_titles %}
+                        {% if game_title == k.split(".")[0] %}
+                               <button type="submit" name="launch" value="{{ k }}" class="btn-outline btn gallery-btn">
+                                    Play now<br><br><br>
+                                    {{ game_titles[game_title]['ja'] }}
+                               </button>
+
+
+                        {% endif %}
+                    {% endfor %}
+
+
+
               </div>
             </div>
             {% endfor %}

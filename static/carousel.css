@@ -152,6 +152,7 @@ body {
     height: 100%;
     background-color: #00000000;
     color: #00000000;
+    white-space: normal;
 }
 
 .gallery-btn:hover {

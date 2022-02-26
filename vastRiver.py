@@ -43,8 +43,7 @@ def reload_evo_game_titles():
                 if row['table_ID'].lower() == game_placed.split('.')[0].lower():
                     evo_game_titles[row['table_ID']] = row
                     break
-
-    print('done')
+    print('done: reload_evo_game_titles')
 
 
 def reload_icon_placement():
@@ -59,6 +58,7 @@ def reload_icon_placement():
                 icon_filename = [string for string in icon_files if row[name] in string]
                 if len(icon_filename) > 0:
                     icon_placement[name].append(icon_filename[0])
+    print('done: reload_icon_placement')
 
 
 def load_crypto_prices():
@@ -72,6 +72,7 @@ def load_crypto_prices():
         global price_array
         price_array.append(json.loads(data.text))
 
+    print('done: load_crypto_prices')
     return price_array
 
 
@@ -80,7 +81,7 @@ def home():
 
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = sorted([current_path + sub for sub in icon_files])
-    reload_icon_placement(icon_path)
+    reload_icon_placement()
     crypto_prices = load_crypto_prices()
 
     icon_files = icon_placement['top_games']
@@ -181,7 +182,7 @@ def slots():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/baccarat', methods=['GET', 'POST'])
@@ -197,7 +198,7 @@ def baccarat():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/blackjack', methods=['GET', 'POST'])
@@ -213,7 +214,7 @@ def blackjack():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/roulette', methods=['GET', 'POST'])
@@ -229,7 +230,7 @@ def roulette():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/dice', methods=['GET', 'POST'])
@@ -245,7 +246,7 @@ def dice():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/poker', methods=['GET', 'POST'])
@@ -261,7 +262,7 @@ def poker():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/game_shows', methods=['GET', 'POST'])
@@ -277,7 +278,7 @@ def game_shows():
             UA2().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/ft', methods=['GET', 'POST'])
