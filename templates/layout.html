@@ -8,6 +8,9 @@
     <meta name="generator" content="Hugo 0.88.1">
     <title>Gambit's - WAGMI</title>
 
+    <!--   UI -->
+    <script language="JavaScript" type="text/javascript" src="/static/navbar_sticky.js"></script>
+
     <!--   Icons -->
     <link rel="icon" type="image/x-icon" href="static/icons/ui/favicon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
@@ -50,13 +53,21 @@
   </head>
 
   <body style="font-family: Futura;">
+
     <header>
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <div class="container-fluid" id="top_bar">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="top_bar">
+        <div class="container-fluid">
           <a class="navbar-brand" href="/">
             <img src="static/icons/ui/favicon.png" style="height: 25px;">
             <img src="static/icons/ui/main_title.png" style="height: 30px;">
           </a>
+          <a class="navbar-brand" href="https://discord.gg/ebjsys6h">
+            <i class="bi bi-discord"></i>
+          </a>
+          <a class="navbar-brand" href="https://twitter.com/cryptoraiderio">
+            <i class="bi bi-twitter"></i>
+          </a>
+
 
           <div class="navbar-dark navbar-brand top-bar-right-side" id="top_bar_right" style="display: inline-block;padding-right: 0px;">
             <div class="btn top-bar-right-side deposit-div" id="balance" style="display: inline-block;padding-right: 0px;"></div>
@@ -81,7 +92,7 @@
     <script language="JavaScript" type="text/javascript">
       $(document).ready(function(){
         $('.carousel').carousel({
-          interval: 3000
+          interval: 0
         })
       });
       $('.carousel-control.left').click(function() {
@@ -92,8 +103,8 @@
         $('#myCarousel').carousel('next');
       });
     </script>
-    <main class="gallery-bg">
-      <i class="bi bi-discord"></i>
+    <main class="main-bg">
+
 
         <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
         <!--    <div class="carousel-indicators">-->
@@ -135,53 +146,53 @@
 
 
       <!-- Main menu bar -->
-      <div class="navbar navbar-expand-md navbar-dark bg-dark nav-bar-selector">
+      <div class="navbar navbar-expand-md navbar-dark bg-dark nav-bar-selector fixed-top fixed-middle" id="middle_bar">
         <a class="nav-link active-link" aria-current="page" href="/sports">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/heart.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/heart.png"><br>
           Favorites
         </a>
         <a class="nav-link" aria-current="page" href="/">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/medal.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/medal.png"><br>
           Top Games
         </a>
         <a class="nav-link" aria-current="page" href="/sports">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/sports.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/sports.png"><br>
           Sports
         </a>
         <a class="nav-link" aris-current="page" href="/slots">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/007-gambler.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/007-gambler.png"><br>
           Slots
         </a>
         <a class="nav-link" aris-current="page" href="/baccarat">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/baccarat.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/baccarat.png"><br>
           Baccarat
         </a><br>
         <a class="nav-link" aris-current="page" href="/roulette">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/005-casino-roulette.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/005-casino-roulette.png"><br>
           Roulette
         </a>
         <a class="nav-link" aris-current="page" href="/blackjack">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/003-poker-cards.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/003-poker-cards.png"><br>
           Blackjack
         </a>
         <a class="nav-link" aris-current="page" href="/dice">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/004-dice.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/004-dice.png"><br>
           Dice
         </a>
         <a class="nav-link" aris-current="page" href="/poker">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/002-poker.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/002-poker.png"><br>
           Poker
         </a>
         <a class="nav-link" aris-current="page" href="/game_shows">
-          <img style="height:32px;" src="static/icons/ui/category_select/png/game_shows.png">
+          <img style="height:32px;" src="static/icons/ui/category_select/png/game_shows.png"><br>
           Game Shows
         </a>
 
       </div>
 
-
-    {% block content %}{% endblock %}
-
+      <div id="main_section">
+          {% block content %}{% endblock %}
+      </div>
 
       <!-- FOOTER -->
       <footer class="container green-text">

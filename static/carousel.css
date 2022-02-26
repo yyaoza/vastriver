@@ -34,12 +34,10 @@ body {
 /* Carousel base class */
 .carousel {
   bottom: 50px;
-  height: 300px;
-  margin: 0% 15%;
+  position: unset;
 }
 
 .carousel-inner {
-  height: 365px;
 }
 
 .carousel-control-next{
@@ -53,12 +51,10 @@ body {
 
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
-  bottom: -130px;
   z-index: 10;
   background: #00000080;
   width: 100%;
   left: 0%;
-  padding-top: 10px;
 }
 
 .carousel-indicators     {
@@ -69,13 +65,15 @@ body {
 .carousel-item {
   margin-left: 0%;
   margin-right: 0%;
-  width: 100%
+  width: 100%;
 }
 
 .active {
   margin-left: 0%;
   margin-right: 0%;
-  width: 100%
+  width: 100%;
+    height: auto;
+  max-width: 100%
 }
 
 
@@ -147,8 +145,9 @@ body {
 }
 
 /* GALLERY STUFF */
-.gallery-bg {
+.main-bg {
     background: #332a34;
+    margin-top: 42px;
 }
 
 .card {
@@ -197,10 +196,10 @@ body {
 /* NAV BAR STUFF */
 
 .nav-bar-selector {
-    display: inline-block;
     text-align: center;
     width: 100%;
-    padding-bottom: 0px;
+    padding: 0px;
+    font-size: .75rem;
 }
 
 .nav-link-selector a.active-link {
@@ -263,4 +262,54 @@ body {
     width: 300px;
     margin: 0 auto;
     padding-top: 30px;
+}
+
+/* Style the navbar */
+#navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+/* Navbar links */
+#navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+/* Page content */
+.content {
+  padding: 16px;
+}
+
+/* The sticky class is added to the navbar with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.stickyMiddle {
+  position: fixed;
+  top: 100px;
+  width: 100%;
+
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.stickyMiddle + .content {
+  padding-top: 60px;
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-top: 60px;
+}
+
+.fixed-middle {
+    top: 198px;
+    position: absolute;
 }

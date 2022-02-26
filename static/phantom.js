@@ -15,9 +15,6 @@ async function fetchHtmlAsText(url) {
 
 function login() {
 
-
-
-
     const getProvider = async () => {
       if ("solana" in window) {
         await window.solana.connect(); // opens wallet to connect to
@@ -30,7 +27,7 @@ function login() {
             document.getElementById("disconnect").style.display = "inline-block";
 
             console.log("Wallet Connected: " + provider.isConnected);
-            if (provider.isConnected !== false) {
+            if (provider.isConnected) {
                 document.getElementById("balance").innerHTML = 'Getting balance...'
 
                 const wallet = new solanaWeb3.PublicKey(provider.publicKey.toString());
@@ -56,11 +53,11 @@ function login() {
                 http.open('POST', url, true);
 
                 //Send the proper header information along with the request
-                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.setRequestHeader('Content-type', 'application/json');
 
                 http.onreadystatechange = function() {//Call a function when the state changes.
                     if(http.readyState == 4 && http.status == 200) {
-                        alert(http.responseText);
+                        alert("helloooooo world");
                     }
                 }
                 http.send(params);
