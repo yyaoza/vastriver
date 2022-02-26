@@ -50,16 +50,17 @@
 
     <!-- Custom styles for this template -->
     <link  type="text/css" href="{{ url_for('static', filename='carousel.css') }}" rel="stylesheet">
+    <link  type="text/css" href="{{ url_for('static', filename='responsive.css') }}" rel="stylesheet">
   </head>
 
   <body style="font-family: Futura;">
 
     <header>
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="top_bar">
         <div class="container-fluid">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="top_bar">
           <a class="navbar-brand" href="/">
             <img src="static/icons/ui/favicon.png" style="height: 25px;">
-            <img src="static/icons/ui/main_title.png" style="height: 30px;">
+            <img src="static/icons/ui/main_title.png" class="main-logo">
           </a>
           <a class="navbar-brand" href="https://discord.gg/ebjsys6h">
             <i class="bi bi-discord"></i>
@@ -86,8 +87,8 @@
           <!--      open phantom-->
           <script language="JavaScript" type="text/javascript" src="/static/phantom.js"></script>
     <!--      -->
-        </div>
-      </nav>
+
+      </nav></div>
     </header>
     <script language="JavaScript" type="text/javascript">
       $(document).ready(function(){

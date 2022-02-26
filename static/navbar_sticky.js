@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var middle_sticky = $("#myCarousel").height()
       if (window.pageYOffset >= middle_sticky) {
         middle_bar.classList.add("stickyMiddle")
-        middle_bar.style.top = "42px"
+        middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "fixed"
 //        main_section.style.position = "fixed"
         main_section.style.marginTop = "70px"
