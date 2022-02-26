@@ -11,13 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var main_section = document.getElementById("main_section");
 
         // Get the offset position of the navbar
-        var middle_sticky = $("#myCarousel").height()
-      if (window.pageYOffset >= middle_sticky) {
+      if (window.pageYOffset >= ) {
         middle_bar.classList.add("stickyMiddle")
         middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "fixed"
+        if (top_bar.clientWidth > 768){
+            main_section.style.marginTop = "130px"
+        } else {
+            main_section.style.marginTop = "70px"
+        }
 //        main_section.style.position = "fixed"
-        main_section.style.marginTop = "70px"
       } else {
         middle_bar.classList.remove("stickyMiddle");
         middle_bar.style.top = "42px"

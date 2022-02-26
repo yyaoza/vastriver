@@ -25,22 +25,40 @@ iframe_game_toggle = False
 stream = ''
 datastream = {}
 icon_placement = {}
+evo_game_titles = {}
 icon_path = 'static/icons/thumbnails/'
 price_array = []
 
 
-def reload_icon_placement(icon_path):
+def reload_evo_game_titles():
+    global evo_game_titles
+    # print('reloading csv:' + path)
+    # icon_files = [f for f in listdir(path) if isfile(join(path, f)) and not f.endswith('.DS_Store')]
+    reader = csv.DictReader(open('static/csv/evo_game_list.csv', mode='r', encoding='utf-8-sig'))
+
+    for row in reader:
+        for category in icon_placement:
+            for game_placed in icon_placement[category]:
+
+                if row['table_ID'].lower() == game_placed.split('.')[0].lower():
+                    evo_game_titles[row['table_ID']] = row
+                    break
+
+    print('done')
+
+
+def reload_icon_placement():
     global icon_placement
     print('reloading csv:' + icon_path)
     icon_files = [f for f in listdir(icon_path) if isfile(join(icon_path, f)) and not f.endswith('.DS_Store')]
-    reader = csv.DictReader(open('static/icon_placement.csv', mode='r', encoding='utf-8-sig'))
+    reader = csv.DictReader(open('static/csv/icon_placement.csv', mode='r', encoding='utf-8-sig'))
     icon_placement = {name: [] for name in reader.fieldnames}
     for row in reader:
         for name in reader.fieldnames:
             if len(row[name]) > 0:
                 icon_filename = [string for string in icon_files if row[name] in string]
                 if len(icon_filename) > 0:
-                    icon_placement[name].append(icon_path + icon_filename[0])
+                    icon_placement[name].append(icon_filename[0])
 
 
 def load_crypto_prices():
@@ -73,7 +91,8 @@ def home():
             game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0]
             # UA2().launch_game(game_id)
 
-    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files)
+    return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], icon_files=icon_files,
+                           game_titles=evo_game_titles, icon_path=icon_path)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -612,5 +631,6 @@ def update_stream():
 
 if __name__ == '__main__':
     app.debug = True
-    reload_icon_placement(icon_path)
+    reload_icon_placement()
+    reload_evo_game_titles()
     app.run()

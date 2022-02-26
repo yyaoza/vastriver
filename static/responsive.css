@@ -1,11 +1,44 @@
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 /* Mobile devices */
+@media (max-width : 414px) {
+    #main_section {
+        margin-top: 135px;
+    }
+}
+
+@media (max-width : 460px) {
+    .card {
+        width: 130px;
+        height: 130px;
+    }
+}
+
 @media (max-width : 488px) {
+
     #top_bar {height:98px;}
 
-    .main-bg {
-    margin-top: 98px;
+    #main_section {margin-top: 150px;}
+
+    .main-bg {margin-top: 98px;}
+
+    .fixed-middle {top: 254px;}
+
+    .card {
+        width: 100px;
+        height: 100px;
+    }
+
+
+}
+
+@media (min-width : 488px) {
+    .card {
+        width: 130px;
+        height: 130px;
+    }
+    #main_section {
+        margin-top: 120px;
     }
 }
 
@@ -21,15 +54,24 @@
     font-size: 50px;
   }
 
+}
 
-  .card {
-    width: 145px;
-  }
-
+@media (min-width: 768px) {
+     #main_section {
+        margin-top: 40px;
+    }
 }
 
 @media (min-width: 62em) {
   .featurette-heading {
     margin-top: 7rem;
   }
+}
+
+@media (min-width : 992px) {
+
+    .card {
+        width: 160px;
+        height: 160px;
+    }
 }

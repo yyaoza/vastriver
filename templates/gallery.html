@@ -9,7 +9,8 @@
             <div class="col">
               <div class="card shadow-sm thumb">
                     <img src="{{ k }}">
-                  <button type="submit" name="launch" value="{{ k }}" class="btn-outline btn gallery-btn">Play now</button>
+                  {% for k in game_titles %}
+                  <button type="submit" name="launch" value="{{ icon_path }}{{ k }}" class="btn-outline btn gallery-btn">Play now</button>
               </div>
             </div>
             {% endfor %}

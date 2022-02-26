@@ -13,6 +13,7 @@ body {
 .nav-link {
     color: #28a745;
     width: 15%;
+
     -moz-transition: all .2s ease-in;
     -o-transition: all .2s ease-in;
     -webkit-transition: all .2s ease-in;
@@ -35,6 +36,7 @@ body {
 .carousel {
   bottom: 50px;
   position: unset;
+  margin-top: 64px;
 }
 
 .carousel-inner {
@@ -144,7 +146,8 @@ body {
 }
 
 .gallery-btn {
-    margin-top: -198px;
+    position: absolute;
+    width: 100%;
     font-weight: 300;
     height: 100%;
     background-color: #00000000;
