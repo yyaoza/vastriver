@@ -9,14 +9,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var top_bar = document.getElementById("top_bar");
         var middle_bar = document.getElementById("middle_bar");
         var main_section = document.getElementById("main_section");
+        var myCarousel = document.getElementById("myCarousel");
 
         // Get the offset position of the navbar
-      if (window.pageYOffset >= ) {
+      if (window.pageYOffset >= myCarousel.clientHeight) {
         middle_bar.classList.add("stickyMiddle")
         middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "fixed"
         if (top_bar.clientWidth > 768){
-            main_section.style.marginTop = "130px"
+            main_section.style.marginTop = middle_bar.clientHeight + "px"
         } else {
             main_section.style.marginTop = "70px"
         }
