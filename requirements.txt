@@ -30,6 +30,7 @@ psycopg2-binary==2.9.1
 pycparser==2.21
 PyNaCl==1.5.0
 pyrsistent
+pytz==2021.3
 requests==2.26.0
 rfc3986==1.5.0
 six==1.16.0
