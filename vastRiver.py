@@ -104,13 +104,14 @@ def login():
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = sorted(current_path + sub for sub in icon_files)
     icon_files = icon_placement['top_games']
-
+    wallet = ''
     # first check if their wallet exists in our DB
-    wallet = db_login_get_wallet(request.values['walletID'])
-    db_new_login(request.values['walletID'], 'No NFT')
-    if len(wallet) == 0:
-        wallet = db_create_user_wallet(request.values['walletID'])
-        return render_template('settings.html', wallet=wallet, icon_files=icon_files)
+    if len(request.values) > 0:
+        wallet = db_login_get_wallet(request.values['walletID'])
+        db_new_login(request.values['walletID'], 'No NFT')
+        if len(wallet) == 0:
+            wallet = db_create_user_wallet(request.values['walletID'])
+            return render_template('settings.html', wallet=wallet, icon_files=icon_files)
 
     return render_template('settings.html', wallet=wallet, icon_files=icon_files)
 

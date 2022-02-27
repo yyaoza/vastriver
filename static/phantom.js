@@ -58,7 +58,7 @@ function login() {
                 if (document.getElementById("top_bar").clientWidth < 768) {
                     document.getElementById("top_bar").style.height = '110px';
                     document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
-                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + document.getElementById("top_bar").clientHeight + 'px';
+                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + 'px';
                 }
                 console.log(logged_in_wallet_balance);
 
@@ -69,16 +69,17 @@ function login() {
                 //Send the proper header information along with the request
                 http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-//                http.onreadystatechange = function() {//Call a function when the state changes.
-//                    if(http.readyState == 4 && http.status == 200) {
-//                        alert("helloooooo world");
-//                    }
-//                }
-
                 document.getElementById("login").disabled = true;
-                http.send('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string);
+//                http.send('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string);
 
-
+                const response = await fetch(url, {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+//                      'Content-Type': 'application/json'
+                       'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: JSON.stringify('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string) // body data type must match "Content-Type" header
+                  });
             }
 
           return provider;
