@@ -10,6 +10,13 @@
     }
 }
 
+@media (min-width : 900px) {
+
+    .carousel-item > img {
+        top: -64px;
+    }
+}
+
 @media (min-width: 768px) {
      #main_section {
         margin-top: 40px;
@@ -38,6 +45,10 @@
     font-size: 50px;
   }
 
+    .carousel-item > img {
+        top: 10px;
+    }
+
 }
 
 @media (min-width : 488px) {
@@ -45,8 +56,13 @@
         width: 130px;
         height: 130px;
     }
+
     #main_section {
         margin-top: 130px;
+    }
+
+    .carousel-item > img {
+        top: -26px;
     }
 }
 
@@ -60,6 +76,11 @@
     .main-bg {margin-top: 98px;}
 
     .fixed-middle {top: 254px; height: 154px;}
+
+
+    .carousel-item > img {
+        top: 16px;
+    }
 
 }
 

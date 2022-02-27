@@ -108,25 +108,33 @@ def db_new_sid(userid, uuid):
     return sid
 
 
-def db_search_wallet_id(wallet_ID, NFT_ID):
-    # wallet = the_db.session.query(LoginEntry('{x}', wallet_ID, 0))
-    found_wallet = WalletEntry(0, wallet_ID, NFT_ID).query.filter_by(wallet_ID=wallet_ID).all()
-
-    if len(found_wallet) == 0:
-        dataclass_wallets = WalletEntry(0, wallet_ID, NFT_ID)
-        the_db.session.add(dataclass_wallets)
-        the_db.session.commit()
-
-
 def db_new_login(wallet_ID, NFT_ID):
     # dataclass_sid = SidEntry()
     dataclass_login = LoginEntry()
     sid = str(dataclass_login.query.count() + 1).zfill(8)
     sid = '-'.join([sid[:4], sid[4:]])
-    dataclass_login = LoginEntry('{' + str(sid) + '}', wallet_ID, NFT_ID)
+    dataclass_login = LoginEntry('{' + str(sid) + '}', '{' + wallet_ID + '}', '{' + NFT_ID + '}')
     the_db.session.add(dataclass_login)
     the_db.session.commit()
+
     return sid
+
+
+def db_login_get_wallet(wallet_ID):
+    wallet_entry = '{' + wallet_ID + '}'
+    wallet = WalletEntry().query.filter_by(wallet_ID=wallet_entry).all()
+
+    return wallet
+
+
+def db_create_user_wallet(wallet_ID):
+    # dataclass_sid = SidEntry()
+    # sid = str(WalletEntry().query.count() + 1).zfill(8)
+    # sid = '-'.join([sid[:4], sid[4:]])
+    dataclass_wallet = WalletEntry(0, wallet_ID, 'No NFT', solana=0, ethereum=0, cardano=0, bitcoin=0, tether=0)
+    the_db.session.add(dataclass_wallet)
+    the_db.session.commit()
+    return dataclass_wallet
 
 
 app = Flask(__name__)

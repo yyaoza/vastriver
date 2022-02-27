@@ -13,7 +13,8 @@ import json
 # from userAuth import UAT
 from flask import request, render_template, flash, Markup, jsonify
 from userAuth import UAT
-from database import db_search_wallet_id, db_get_balance, db_search_userid, db_new_sid, db_new_login, SidEntry, UserEntry, send_json, the_db, app
+from database import db_login_get_wallet, db_get_balance, db_search_userid, db_new_sid, db_new_login, db_create_user_wallet, \
+    SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserSettingsForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
 from valid import valid_token_id, valid_user, match_userid_sid, valid_check_user, valid_uuid, valid_sid, \
@@ -103,38 +104,30 @@ def login():
     # icon_files = [f for f in listdir(current_path) if isfile(join(current_path, f)) and not f.endswith('.DS_Store')]
     # icon_files = sorted(current_path + sub for sub in icon_files)
     icon_files = icon_placement['top_games']
-    db_new_login('{' + request.form['walletID'] + '}', '{No NFT}')
 
-    if request.method == 'POST':
-        if 'launch' in request.form:
-            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
-            UA2().launch_game(game_id)
+    # first check if their wallet exists in our DB
+    wallet = db_login_get_wallet(request.values['walletID'])
+    db_new_login(request.values['walletID'], 'No NFT')
+    if len(wallet) == 0:
+        wallet = db_create_user_wallet(request.values['walletID'])
+        return render_template('settings.html', wallet=wallet, icon_files=icon_files)
 
-    return render_template('favorites.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
-                           num_icons=len(icon_files)-1)
+    return render_template('settings.html', wallet=wallet, icon_files=icon_files)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    db_search_wallet_id('{' + request.form['walletID'] + '}', '{No NFT}')
     user_settings = UserSettingsForm()
-    the_users = UserEntry()
-    #     global theSession
-    #     theSession = userAuth.UA2(request.host_url)
-    #     global uaform
-    #     uaform = UserAuthenticationForm()
-    #     # requests.close()
-    # db_search_userid()
 
-    #
+    db_new_login(request.values['walletID'], 'No NFT')
+    wallet = db_login_get_wallet(request.values['walletID'])
+
     if user_settings.validate_on_submit():
         if user_settings.update.data:
             theSession.update_user_info(user_settings)
             flash('User Info Updated!', 'success')
-    #
-    #     return render_template('editUser.html', which_tab=which_tab, form=uaform, UA_payload=theSession.UA_payload)
 
-    return render_template('settings.html', form=user_settings)
+    return render_template('settings.html', wallet=wallet[0], form=user_settings)
 
 
 @app.route('/xyz', methods=['GET', 'POST'])

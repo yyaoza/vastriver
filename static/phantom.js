@@ -1,6 +1,11 @@
 document.getElementById("login").addEventListener("click", login);
 document.getElementById("disconnect").addEventListener("click", disconnect);
 
+// Setting up POST trigger
+var params = ''
+var publicKey_string = ''
+var logged_in_wallet_balance = 0
+
 
 function disconnect() {
     window.solana.disconnect();
@@ -8,6 +13,12 @@ function disconnect() {
     document.getElementById("disconnect").style.display = "none";
     document.getElementById("balance").style.display = "none";
     document.getElementById("login").disabled = false;
+
+    if (document.getElementById("top_bar").clientWidth < 768) {
+        document.getElementById("top_bar").style.height = '64px';
+        document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
+        document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + document.getElementById("top_bar").clientHeight + 'px';
+    }
 };
 
 async function fetchHtmlAsText(url) {
@@ -40,39 +51,33 @@ function login() {
 
                 // remember, do not use base 58 encoded key with getBalance();
                 console.log("Getting Balance: " + publicKey_string);
+                logged_in_wallet_balance = await connection.getBalance(provider.publicKey);
 
-                const balance = await connection.getBalance(provider.publicKey);
-
-                document.getElementById("balance").innerHTML = 'Balance: ' + (balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
+                document.getElementById("balance").innerHTML = 'Balance: ' + (logged_in_wallet_balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
                 document.getElementById("balance").style.display = 'inline-block';
-                console.log(balance);
-
-                document.getElementById("login").disabled = true;
+                if (document.getElementById("top_bar").clientWidth < 768) {
+                    document.getElementById("top_bar").style.height = '110px';
+                    document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
+                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + document.getElementById("top_bar").clientHeight + 'px';
+                }
+                console.log(logged_in_wallet_balance);
 
                 var http = new XMLHttpRequest();
                 var url = 'login';
-                var params = 'balance=' + balance + '&walletID=' + publicKey_string;
                 http.open('POST', url, true);
 
                 //Send the proper header information along with the request
-                http.setRequestHeader('Content-type', 'application/json');
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-                http.onreadystatechange = function() {//Call a function when the state changes.
-                    if(http.readyState == 4 && http.status == 200) {
-                        alert("helloooooo world");
-                    }
-                }
-                http.send(params);
+//                http.onreadystatechange = function() {//Call a function when the state changes.
+//                    if(http.readyState == 4 && http.status == 200) {
+//                        alert("helloooooo world");
+//                    }
+//                }
 
-//                let data = {element: "barium"};
-//
-//                fetch("/ow", {
-//                  method: "POST",
-//                  headers: {'Content-Type': 'application/json'},
-//                  body: JSON.stringify(data)
-//                }).then(res => {
-//                  console.log("Request complete! response:", res);
-//                });
+                document.getElementById("login").disabled = true;
+                http.send('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string);
+
 
             }
 

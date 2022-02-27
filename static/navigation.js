@@ -1,5 +1,5 @@
-document.getElementById("middle_bar").addEventListener("click", myFunction);
+window.onload=function(){
 
-function myFunction() {
-    console.log("Middle bar clicked on");
+    document.getElementById("middle_bar").addEventListener("click", login);
+
 }
