@@ -5,7 +5,7 @@ import requests
 import string
 import json
 import webbrowser
-from data import proxies
+from database import proxies
 
 
 class UAT:

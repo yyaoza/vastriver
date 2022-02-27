@@ -14,17 +14,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the offset position of the navbar
       if (window.pageYOffset >= myCarousel.clientHeight) {
         middle_bar.classList.add("stickyMiddle")
-        middle_bar.style.top = top_bar.clientHeight + "px"
+//        middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "fixed"
         if (top_bar.clientWidth > 768){
             main_section.style.marginTop = middle_bar.clientHeight + "px"
         } else {
-            main_section.style.marginTop = "70px"
+            main_section.style.marginTop = middle_bar.clientHeight + "px"
         }
 //        main_section.style.position = "fixed"
       } else {
         middle_bar.classList.remove("stickyMiddle");
-        middle_bar.style.top = "42px"
+        middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "unset"
         main_section.style.marginTop = "0px"
 //        main_section.style.paddingTop = "0px"

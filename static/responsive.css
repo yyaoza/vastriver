@@ -14,6 +14,16 @@
      #main_section {
         margin-top: 40px;
     }
+
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .fixed-middle {
+        height: 133px;
+    }
 }
 
 @media (min-width: 600px) {
@@ -36,7 +46,7 @@
         height: 130px;
     }
     #main_section {
-        margin-top: 120px;
+        margin-top: 130px;
     }
 }
 
@@ -49,7 +59,7 @@
 
     .main-bg {margin-top: 98px;}
 
-    .fixed-middle {top: 254px;}
+    .fixed-middle {top: 254px; height: 154px;}
 
 }
 

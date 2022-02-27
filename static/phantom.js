@@ -1,11 +1,13 @@
 document.getElementById("login").addEventListener("click", login);
 document.getElementById("disconnect").addEventListener("click", disconnect);
 
+
 function disconnect() {
     window.solana.disconnect();
     document.getElementById("login").innerHTML = '<i class="bi bi-wallet2"></i> Connect';
     document.getElementById("disconnect").style.display = "none";
     document.getElementById("balance").style.display = "none";
+    document.getElementById("login").disabled = false;
 };
 
 async function fetchHtmlAsText(url) {
@@ -41,11 +43,11 @@ function login() {
 
                 const balance = await connection.getBalance(provider.publicKey);
 
-                const reader = new FileReader();
-
                 document.getElementById("balance").innerHTML = 'Balance: ' + (balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
                 document.getElementById("balance").style.display = 'inline-block';
                 console.log(balance);
+
+                document.getElementById("login").disabled = true;
 
                 var http = new XMLHttpRequest();
                 var url = 'login';

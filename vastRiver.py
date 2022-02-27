@@ -12,6 +12,7 @@ import json
 
 # from userAuth import UAT
 from flask import request, render_template, flash, Markup, jsonify
+from userAuth import UAT
 from database import db_search_wallet_id, db_get_balance, db_search_userid, db_new_sid, db_new_login, SidEntry, UserEntry, send_json, the_db, app
 from forms import FundTransferForm, UserSettingsForm, OneWalletAddUser, OneWalletFindUser
 from oneWallet import valid_cancel, valid_credit, valid_debit
@@ -194,8 +195,10 @@ def baccarat():
 
     if request.method == 'POST':
         if 'launch' in request.form:
-            game_id = request.form['launch'].rsplit('/', 1)[1].split('.')[0].split('_')[1]
-            UA2().launch_game(game_id)
+            game_id = request.form['launch'].split('.')[0]
+
+            # requests.close()
+            UAT().launch_game(game_id)
 
     return render_template('gallery.html', which_tab=request.url.rsplit('/', 1)[1], form=uaform, icon_files=icon_files,
                            game_titles=evo_game_titles, icon_path=icon_path)
