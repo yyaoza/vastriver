@@ -18,7 +18,8 @@
 
     #middle_bar {
         display: inline-flex;
-        height: 75px;
+        height: 61px;
+        padding: 0px 2% 0px 3%;
     }
 }
 
@@ -34,7 +35,7 @@
 
 @media (max-width: 768px) {
     .fixed-middle {
-
+        height: 133px;
     }
     .gallery-btn{
         background-color: #49505787;
