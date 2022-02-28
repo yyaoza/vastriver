@@ -120,8 +120,12 @@ def login():
 def settings():
     user_settings = UserSettingsForm()
 
-    db_new_login(request.values['walletID'], 'No NFT')
-    wallet = db_login_get_wallet(request.values['walletID'])
+    if 'walletID' in request.values:
+        db_new_login(request.values['walletID'], 'No NFT')
+        wallet = db_login_get_wallet(request.values['walletID'])
+    else:
+        # manually selected
+        print("no request from post")
 
     if user_settings.validate_on_submit():
         if user_settings.update.data:

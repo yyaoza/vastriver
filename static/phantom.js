@@ -5,6 +5,7 @@ document.getElementById("disconnect").addEventListener("click", disconnect);
 var params = ''
 var publicKey_string = ''
 var logged_in_wallet_balance = 0
+var snap_mode = False
 
 
 function disconnect() {
@@ -17,7 +18,13 @@ function disconnect() {
     if (document.getElementById("top_bar").clientWidth < 768) {
         document.getElementById("top_bar").style.height = '64px';
         document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
-        document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + document.getElementById("top_bar").clientHeight + 'px';
+//        document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + document.getElementById("top_bar").clientHeight + 'px';
+
+        if (window.pageYOffset >= document.getElementById("myCarousel").clientHeight) {
+            document.getElementById("middle_bar").style.marginTop = '-46px';
+        } else {
+            document.getElementById("middle_bar").style.marginTop = '42px';
+        }
     }
 };
 
@@ -72,12 +79,20 @@ function login() {
                     body: JSON.stringify('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string) // body data type must match "Content-Type" header
                   });
 
+                myCarousel_window = document.getElementById("myCarousel")
+
                 document.getElementById("balance").innerHTML = 'Balance: ' + (logged_in_wallet_balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
                 document.getElementById("balance").style.display = 'inline-block';
                 if (document.getElementById("top_bar").clientWidth < 768) {
                     document.getElementById("top_bar").style.height = '110px';
-                    document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
-                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + 'px';
+                    myCarousel_window.style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
+                    if (snap_mode) {
+                        document.getElementById("middle_bar").style.marginTop = '-8px';
+                        document.getElementById("main_section").style.marginTop = '62px';
+                    } else {
+                        document.getElementById("middle_bar").style.marginTop = '-8px';
+                        document.getElementById("main_section").style.marginTop = '62px';
+                    }
                 }
                 console.log(logged_in_wallet_balance);
 

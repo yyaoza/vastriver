@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // When the user scrolls the page, execute myFunction
     window.addEventListener('scroll', myFunction);
@@ -13,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get the offset position of the navbar
       if (window.pageYOffset >= myCarousel.clientHeight) {
+        snap_mode = true;
+
         middle_bar.classList.add("stickyMiddle")
 //        middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "fixed"
@@ -20,9 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
             main_section.style.marginTop = middle_bar.clientHeight + "px"
         } else {
             main_section.style.marginTop = middle_bar.clientHeight + "px"
+            middle_bar.style.marginTop = "-10px"
         }
 //        main_section.style.position = "fixed"
       } else {
+        snap_mode = false;
         middle_bar.classList.remove("stickyMiddle");
         middle_bar.style.top = top_bar.clientHeight + "px"
         middle_bar.style.position = "unset"
