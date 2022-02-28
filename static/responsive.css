@@ -6,7 +6,7 @@
 
     .card {
         width: 160px;
-        height: 160px;
+        height: auto;
     }
 }
 
@@ -31,6 +31,11 @@
     .fixed-middle {
         height: 133px;
     }
+    .gallery-btn{
+        background-color: #49505787;
+        color: #d0ffdb;
+        font-size: 0.7rem;
+    }
 }
 
 @media (min-width: 600px) {
@@ -51,10 +56,20 @@
 
 }
 
+@media (max-width : 494px) {
+    #main_section {
+        margin-top: 120px;
+    }
+       .card {
+        width: 99px;
+        height: auto;
+    }
+}
+
 @media (min-width : 488px) {
     .card {
         width: 130px;
-        height: 130px;
+        height: auto;
     }
 
     #main_section {
@@ -75,7 +90,7 @@
 
     .main-bg {margin-top: 98px;}
 
-    .fixed-middle {top: 254px; height: 154px;}
+    .fixed-middle {top: 254px; height: 150px; font-size: 0.75rem;}
 
 
     .carousel-item > img {
@@ -84,29 +99,17 @@
 
 }
 
-
-
-@media (max-width : 494px) {
-    #main_section {
-        margin-top: 135px;
-    }
-       .card {
-        width: 130px;
-        height: 130px;
-    }
-}
-
 @media (max-width : 388px) {
     .card {
         width: 92px;
-        height: 92px;
+        height: auto;
     }
 }
 
 @media (max-width : 388px) {
     .card {
         width: 74px;
-        height: 74px;
+        height: auto;
     }
 }
 

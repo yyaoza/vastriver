@@ -7,12 +7,12 @@
         <div class="row">
             {% for k in icon_files %}
             <div class="col">
-              <div class="card shadow-sm thumb">
+              <div class="card shadow-sm">
                     <img src="{{ icon_path }}{{ k }}">
                     {% for game_title in game_titles %}
                         {% if game_title.lower() == k.split(".")[0].lower() %}
                             <button type="submit" name="launch" value="{{ k }}" class="btn-outline btn gallery-btn">
-                                Play now<br><br><br>
+                                Play now<br><br>
                                 {% if game_titles[game_title]['ja']|length > 0 %}
                                     {{ game_titles[game_title]['ja'] }}
                                 {% else %}
