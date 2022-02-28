@@ -53,15 +53,6 @@ function login() {
                 console.log("Getting Balance: " + publicKey_string);
                 logged_in_wallet_balance = await connection.getBalance(provider.publicKey);
 
-                document.getElementById("balance").innerHTML = 'Balance: ' + (logged_in_wallet_balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
-                document.getElementById("balance").style.display = 'inline-block';
-                if (document.getElementById("top_bar").clientWidth < 768) {
-                    document.getElementById("top_bar").style.height = '110px';
-                    document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
-                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + 'px';
-                }
-                console.log(logged_in_wallet_balance);
-
                 var http = new XMLHttpRequest();
                 var url = 'login';
                 http.open('POST', url, true);
@@ -80,6 +71,17 @@ function login() {
                     },
                     body: JSON.stringify('balance=' + logged_in_wallet_balance + '&walletID=' + publicKey_string) // body data type must match "Content-Type" header
                   });
+
+                document.getElementById("balance").innerHTML = 'Balance: ' + (logged_in_wallet_balance / 1000000000).toFixed(4) + " " + await fetchHtmlAsText("static/deposit_balance.html");
+                document.getElementById("balance").style.display = 'inline-block';
+                if (document.getElementById("top_bar").clientWidth < 768) {
+                    document.getElementById("top_bar").style.height = '110px';
+                    document.getElementById("myCarousel").style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
+                    document.getElementById("middle_bar").style.marginTop = document.getElementById("myCarousel").clientHeight + 'px';
+                }
+                console.log(logged_in_wallet_balance);
+
+
             }
 
           return provider;
@@ -102,3 +104,5 @@ function login() {
 
 
 };
+
+login()

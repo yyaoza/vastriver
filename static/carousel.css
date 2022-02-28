@@ -148,7 +148,7 @@ body {
     position: absolute;
     width: 100%;
     font-weight: 300;
-    height: 100%;
+    height: auto;
     background-color: #00000000;
     color: #00000000;
     white-space: normal;
