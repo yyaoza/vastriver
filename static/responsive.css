@@ -6,7 +6,7 @@
 
     .card {
         width: 160px;
-        height: auto;
+        height: 160px;
     }
 }
 
@@ -62,14 +62,14 @@
     }
        .card {
         width: 99px;
-        height: auto;
+        height: 99px;
     }
 }
 
 @media (min-width : 488px) {
     .card {
         width: 130px;
-        height: auto;
+        height: 130px;
     }
 
     #main_section {
@@ -102,14 +102,14 @@
 @media (max-width : 388px) {
     .card {
         width: 92px;
-        height: auto;
+        height: 92px;
     }
 }
 
 @media (max-width : 388px) {
     .card {
         width: 74px;
-        height: auto;
+        height: 74px;
     }
 }
 
