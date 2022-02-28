@@ -15,6 +15,11 @@
     .carousel-item > img {
         top: -64px;
     }
+
+    #middle_bar {
+        display: inline-flex;
+        height: 75px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -29,7 +34,7 @@
 
 @media (max-width: 768px) {
     .fixed-middle {
-        height: 133px;
+
     }
     .gallery-btn{
         background-color: #49505787;
