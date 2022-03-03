@@ -5,7 +5,7 @@ document.getElementById("disconnect").addEventListener("click", disconnect);
 var params = ''
 var publicKey_string = ''
 var logged_in_wallet_balance = 0
-var snap_mode = False
+var logged_in = false
 
 
 function disconnect() {
@@ -86,13 +86,10 @@ function login() {
                 if (document.getElementById("top_bar").clientWidth < 768) {
                     document.getElementById("top_bar").style.height = '110px';
                     myCarousel_window.style.marginTop = document.getElementById("top_bar").clientHeight + 'px';
-                    if (snap_mode) {
-                        document.getElementById("middle_bar").style.marginTop = '-8px';
-                        document.getElementById("main_section").style.marginTop = '62px';
-                    } else {
-                        document.getElementById("middle_bar").style.marginTop = '-8px';
-                        document.getElementById("main_section").style.marginTop = '62px';
-                    }
+
+                    document.getElementById("middle_bar").style.marginTop = '-8px';
+                    document.getElementById("main_section").style.marginTop = '62px';
+
                 }
                 console.log(logged_in_wallet_balance);
 
@@ -119,5 +116,3 @@ function login() {
 
 
 };
-
-login()

@@ -42,7 +42,6 @@ def reload_evo_game_titles():
     for row in reader:
         for category in icon_placement:
             for game_placed in icon_placement[category]:
-
                 if row['table_ID'].lower() == game_placed.split('.')[0].lower():
                     evo_game_titles[row['table_ID']] = row
                     break
@@ -50,6 +49,7 @@ def reload_evo_game_titles():
 
 
 def reload_icon_placement():
+
     global icon_placement
     print('reloading csv:' + icon_path)
     icon_files = [f for f in listdir(icon_path) if isfile(join(icon_path, f)) and not f.endswith('.DS_Store')]

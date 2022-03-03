@@ -137,6 +137,7 @@ def db_create_user_wallet(wallet_ID):
     return dataclass_wallet
 
 
+# actions made at startup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shhh its a secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import InputRequired
 
+import csv
+
 language_choices = [('al', 'Albanian'),
                     ('sq', 'Albanian'),
                     ('ar', 'Arabic'),
@@ -348,10 +350,16 @@ class ConnectWallet(FlaskForm):
 
 
 class UserSettingsForm(FlaskForm):
+    reader = csv.DictReader(open('static/csv/currencies.csv', mode='r', encoding='utf-8-sig'))
+    currency_choices = []
+    for row in reader:
+        currency_choices.append([row['Name'], row['Symbol']])
+    print('done: reload_evo_game_titles')
     # firstName = StringField('First Name', validators=[InputRequired()])
     # lastName = StringField('Last Name', validators=[InputRequired()])
     username = StringField('Username')  # , validators=[InputRequired()])
     # country = SelectField('Country', choices=country_choices)
     language = SelectField('Language', choices=language_choices)
+    currency = SelectField('Currency', choices=currency_choices)
     # game = SelectField('Game Category', choices=game_choices)
     update = SubmitField('Update')

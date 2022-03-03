@@ -36,7 +36,7 @@ body {
 .carousel {
   bottom: 50px;
   position: unset;
-  margin-top: 64px;
+  margin: 0px 15% 0px 15%;
 }
 
 .carousel-inner {
